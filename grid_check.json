@@ -1,0 +1,65 @@
+{
+  "kind": "grid integrity check; NOT observational validation",
+  "passed": true,
+  "table_sha256": "a33db2d4b2806f216eef356c761460383bb4a9fca53e3b958715bc12e6d6dcba",
+  "seed": 20260905,
+  "sampled_cells": 512,
+  "cells": 38718,
+  "hours": 24,
+  "time_start_utc": "2026-09-05T22:00:00.000000000",
+  "time_end_utc": "2026-09-06T22:00:00.000000000",
+  "icon_reference_time": "2026-09-05T12:00:00Z",
+  "cams_reference_time": "2026-09-05T00:00:00+00:00",
+  "bbox": [
+    5.3,
+    45.2,
+    11.2,
+    48.4
+  ],
+  "compute_seconds": 50.19933299999684,
+  "uvi_range": [
+    0.0,
+    10.314521789550781
+  ],
+  "maximum_uvi_component_residual": 9.5367431640625e-07,
+  "sw_reconstruction_samples": 6656,
+  "maximum_sw_reconstruction_residual_w_m2": 4.7118677457547165e-05,
+  "quality_flags": {
+    "1": {
+      "meaning": "shortwave_above_clear_sky",
+      "cell_hours": 26172,
+      "cell_hours_uvi_ge1": 16107
+    },
+    "2": {
+      "meaning": "shortwave_below_cloud_table_minimum",
+      "cell_hours": 0,
+      "cell_hours_uvi_ge1": 0
+    },
+    "4": {
+      "meaning": "weak_solar_signal",
+      "cell_hours": 425898,
+      "cell_hours_uvi_ge1": 0
+    },
+    "8": {
+      "meaning": "nonmonotonic_cloud_response",
+      "cell_hours": 1,
+      "cell_hours_uvi_ge1": 1
+    },
+    "16": {
+      "meaning": "local_column_approximation",
+      "cell_hours": 0,
+      "cell_hours_uvi_ge1": 0
+    },
+    "32": {
+      "meaning": "terrain_screening_approximation",
+      "cell_hours": 0,
+      "cell_hours_uvi_ge1": 0
+    },
+    "64": {
+      "meaning": "low_sun_plane_parallel_approximation",
+      "cell_hours": 142338,
+      "cell_hours_uvi_ge1": 0
+    }
+  },
+  "file_bytes": 21943275
+}

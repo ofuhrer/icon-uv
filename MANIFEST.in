@@ -1,0 +1,2 @@
+include README.md VALIDATION.md validation.json *_check.json cams_comparison.json observation_comparison.json observation_quality.json observation_quality.ipynb
+recursive-include examples *.json

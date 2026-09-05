@@ -1,0 +1,397 @@
+{
+  "kind": "exploratory public-measurement comparison, NOT calibrated forecast qualification",
+  "source": "https://uv-data.i-med.ac.at/public/",
+  "qc_status": "Public display values; no per-value QC/calibration metadata supplied",
+  "time_assumption": "Mean of reported values at :15 and :45 approximates the hourly mean; provider averaging bounds unconfirmed",
+  "spatial_treatment": "Nearest native-grid cell, no altitude/horizon/albedo correction; not a local POI forecast",
+  "icon_reference_time": "2026-09-05T00:00:00Z",
+  "cams_reference_time": "2026-09-04T12:00:00+00:00",
+  "table_sha256": "a33db2d4b2806f216eef356c761460383bb4a9fca53e3b958715bc12e6d6dcba",
+  "sites": {
+    "Dornbirn": {
+      "matched_hours": 0,
+      "source_latitude": 47.4325,
+      "source_longitude": 9.7256,
+      "source_altitude_m": 407.0,
+      "model_altitude_m": 405.2394242286682,
+      "source_cell": 146305,
+      "distance_km": 0.6790794103291365,
+      "pairs": [],
+      "hours_reported_uvi_ge1": 0
+    },
+    "Davos": {
+      "matched_hours": 13,
+      "source_latitude": 46.8,
+      "source_longitude": 9.83,
+      "source_altitude_m": 1610.0,
+      "model_altitude_m": 1717.4894242286682,
+      "source_cell": 143496,
+      "distance_km": 0.7894421099071197,
+      "pairs": [
+        {
+          "time_utc": "2026-09-05T05:30:00.000000000",
+          "reported_pair_mean_uvi": 0.105,
+          "forecast_hourly_mean_uvi": 0.14092037081718445,
+          "forecast_flag": 64
+        },
+        {
+          "time_utc": "2026-09-05T06:30:00.000000000",
+          "reported_pair_mean_uvi": 0.47,
+          "forecast_hourly_mean_uvi": 0.5586961507797241,
+          "forecast_flag": 0
+        },
+        {
+          "time_utc": "2026-09-05T07:30:00.000000000",
+          "reported_pair_mean_uvi": 0.655,
+          "forecast_hourly_mean_uvi": 1.5346453189849854,
+          "forecast_flag": 0
+        },
+        {
+          "time_utc": "2026-09-05T08:30:00.000000000",
+          "reported_pair_mean_uvi": 0.575,
+          "forecast_hourly_mean_uvi": 2.7435572147369385,
+          "forecast_flag": 0
+        },
+        {
+          "time_utc": "2026-09-05T09:30:00.000000000",
+          "reported_pair_mean_uvi": 1.0350000000000001,
+          "forecast_hourly_mean_uvi": 3.264627456665039,
+          "forecast_flag": 0
+        },
+        {
+          "time_utc": "2026-09-05T10:30:00.000000000",
+          "reported_pair_mean_uvi": 3.515,
+          "forecast_hourly_mean_uvi": 5.355833053588867,
+          "forecast_flag": 0
+        },
+        {
+          "time_utc": "2026-09-05T11:30:00.000000000",
+          "reported_pair_mean_uvi": 2.495,
+          "forecast_hourly_mean_uvi": 5.847896099090576,
+          "forecast_flag": 0
+        },
+        {
+          "time_utc": "2026-09-05T12:30:00.000000000",
+          "reported_pair_mean_uvi": 3.255,
+          "forecast_hourly_mean_uvi": 5.014268398284912,
+          "forecast_flag": 0
+        },
+        {
+          "time_utc": "2026-09-05T13:30:00.000000000",
+          "reported_pair_mean_uvi": 2.505,
+          "forecast_hourly_mean_uvi": 3.568108081817627,
+          "forecast_flag": 0
+        },
+        {
+          "time_utc": "2026-09-05T14:30:00.000000000",
+          "reported_pair_mean_uvi": 1.495,
+          "forecast_hourly_mean_uvi": 2.1418774127960205,
+          "forecast_flag": 0
+        },
+        {
+          "time_utc": "2026-09-05T15:30:00.000000000",
+          "reported_pair_mean_uvi": 0.71,
+          "forecast_hourly_mean_uvi": 1.2838233709335327,
+          "forecast_flag": 0
+        },
+        {
+          "time_utc": "2026-09-05T16:30:00.000000000",
+          "reported_pair_mean_uvi": 0.29,
+          "forecast_hourly_mean_uvi": 0.42366915941238403,
+          "forecast_flag": 64
+        },
+        {
+          "time_utc": "2026-09-05T17:30:00.000000000",
+          "reported_pair_mean_uvi": 0.060000000000000005,
+          "forecast_hourly_mean_uvi": 0.0550883486866951,
+          "forecast_flag": 64
+        }
+      ],
+      "hours_reported_uvi_ge1": 6,
+      "bias_uvi": 1.8154350837071735,
+      "mae_uvi": 1.8154350837071735,
+      "rmse_uvi": 2.010202794745359
+    },
+    "Weissfluhjoch": {
+      "matched_hours": 13,
+      "source_latitude": 46.83,
+      "source_longitude": 9.82,
+      "source_altitude_m": 2540.0,
+      "model_altitude_m": 2194.114424228668,
+      "source_cell": 143518,
+      "distance_km": 1.0197658886440903,
+      "pairs": [
+        {
+          "time_utc": "2026-09-05T05:30:00.000000000",
+          "reported_pair_mean_uvi": 0.08,
+          "forecast_hourly_mean_uvi": 0.13384918868541718,
+          "forecast_flag": 64
+        },
+        {
+          "time_utc": "2026-09-05T06:30:00.000000000",
+          "reported_pair_mean_uvi": 0.375,
+          "forecast_hourly_mean_uvi": 0.5465606451034546,
+          "forecast_flag": 0
+        },
+        {
+          "time_utc": "2026-09-05T07:30:00.000000000",
+          "reported_pair_mean_uvi": 0.6399999999999999,
+          "forecast_hourly_mean_uvi": 1.4446935653686523,
+          "forecast_flag": 0
+        },
+        {
+          "time_utc": "2026-09-05T08:30:00.000000000",
+          "reported_pair_mean_uvi": 0.585,
+          "forecast_hourly_mean_uvi": 2.574936866760254,
+          "forecast_flag": 0
+        },
+        {
+          "time_utc": "2026-09-05T09:30:00.000000000",
+          "reported_pair_mean_uvi": 0.855,
+          "forecast_hourly_mean_uvi": 3.5390782356262207,
+          "forecast_flag": 0
+        },
+        {
+          "time_utc": "2026-09-05T10:30:00.000000000",
+          "reported_pair_mean_uvi": 3.62,
+          "forecast_hourly_mean_uvi": 5.209831237792969,
+          "forecast_flag": 0
+        },
+        {
+          "time_utc": "2026-09-05T11:30:00.000000000",
+          "reported_pair_mean_uvi": 3.0250000000000004,
+          "forecast_hourly_mean_uvi": 5.882975101470947,
+          "forecast_flag": 0
+        },
+        {
+          "time_utc": "2026-09-05T12:30:00.000000000",
+          "reported_pair_mean_uvi": 1.775,
+          "forecast_hourly_mean_uvi": 5.315760612487793,
+          "forecast_flag": 0
+        },
+        {
+          "time_utc": "2026-09-05T13:30:00.000000000",
+          "reported_pair_mean_uvi": 1.96,
+          "forecast_hourly_mean_uvi": 3.286759614944458,
+          "forecast_flag": 0
+        },
+        {
+          "time_utc": "2026-09-05T14:30:00.000000000",
+          "reported_pair_mean_uvi": 1.205,
+          "forecast_hourly_mean_uvi": 2.531095266342163,
+          "forecast_flag": 0
+        },
+        {
+          "time_utc": "2026-09-05T15:30:00.000000000",
+          "reported_pair_mean_uvi": 0.91,
+          "forecast_hourly_mean_uvi": 1.184656023979187,
+          "forecast_flag": 0
+        },
+        {
+          "time_utc": "2026-09-05T16:30:00.000000000",
+          "reported_pair_mean_uvi": 0.33,
+          "forecast_hourly_mean_uvi": 0.41679415106773376,
+          "forecast_flag": 64
+        },
+        {
+          "time_utc": "2026-09-05T17:30:00.000000000",
+          "reported_pair_mean_uvi": 0.060000000000000005,
+          "forecast_hourly_mean_uvi": 0.04986267909407616,
+          "forecast_flag": 64
+        }
+      ],
+      "hours_reported_uvi_ge1": 5,
+      "bias_uvi": 2.1282843666076663,
+      "mae_uvi": 2.1282843666076663,
+      "rmse_uvi": 2.3130668166526354
+    },
+    "Zugspitze": {
+      "matched_hours": 13,
+      "source_latitude": 47.417,
+      "source_longitude": 10.982,
+      "source_altitude_m": 2667.0,
+      "model_altitude_m": 2329.989424228668,
+      "source_cell": 250627,
+      "distance_km": 0.41004453553643816,
+      "pairs": [
+        {
+          "time_utc": "2026-09-05T05:30:00.000000000",
+          "reported_pair_mean_uvi": 0.01,
+          "forecast_hourly_mean_uvi": 0.06417451798915863,
+          "forecast_flag": 64
+        },
+        {
+          "time_utc": "2026-09-05T06:30:00.000000000",
+          "reported_pair_mean_uvi": 0.025,
+          "forecast_hourly_mean_uvi": 0.2720653712749481,
+          "forecast_flag": 0
+        },
+        {
+          "time_utc": "2026-09-05T07:30:00.000000000",
+          "reported_pair_mean_uvi": 0.25,
+          "forecast_hourly_mean_uvi": 1.1477234363555908,
+          "forecast_flag": 0
+        },
+        {
+          "time_utc": "2026-09-05T08:30:00.000000000",
+          "reported_pair_mean_uvi": 0.75,
+          "forecast_hourly_mean_uvi": 1.660027027130127,
+          "forecast_flag": 0
+        },
+        {
+          "time_utc": "2026-09-05T09:30:00.000000000",
+          "reported_pair_mean_uvi": 1.175,
+          "forecast_hourly_mean_uvi": 2.745516061782837,
+          "forecast_flag": 0
+        },
+        {
+          "time_utc": "2026-09-05T10:30:00.000000000",
+          "reported_pair_mean_uvi": 1.4500000000000002,
+          "forecast_hourly_mean_uvi": 3.7901530265808105,
+          "forecast_flag": 0
+        },
+        {
+          "time_utc": "2026-09-05T11:30:00.000000000",
+          "reported_pair_mean_uvi": 2.26,
+          "forecast_hourly_mean_uvi": 4.111745834350586,
+          "forecast_flag": 0
+        },
+        {
+          "time_utc": "2026-09-05T12:30:00.000000000",
+          "reported_pair_mean_uvi": 0.805,
+          "forecast_hourly_mean_uvi": 4.054748058319092,
+          "forecast_flag": 0
+        },
+        {
+          "time_utc": "2026-09-05T13:30:00.000000000",
+          "reported_pair_mean_uvi": 0.39,
+          "forecast_hourly_mean_uvi": 2.9108550548553467,
+          "forecast_flag": 0
+        },
+        {
+          "time_utc": "2026-09-05T14:30:00.000000000",
+          "reported_pair_mean_uvi": 0.32999999999999996,
+          "forecast_hourly_mean_uvi": 1.6519696712493896,
+          "forecast_flag": 0
+        },
+        {
+          "time_utc": "2026-09-05T15:30:00.000000000",
+          "reported_pair_mean_uvi": 0.135,
+          "forecast_hourly_mean_uvi": 0.9114600419998169,
+          "forecast_flag": 0
+        },
+        {
+          "time_utc": "2026-09-05T16:30:00.000000000",
+          "reported_pair_mean_uvi": 0.05,
+          "forecast_hourly_mean_uvi": 0.35056161880493164,
+          "forecast_flag": 64
+        },
+        {
+          "time_utc": "2026-09-05T17:30:00.000000000",
+          "reported_pair_mean_uvi": 0.005,
+          "forecast_hourly_mean_uvi": 0.04330235719680786,
+          "forecast_flag": 64
+        }
+      ],
+      "hours_reported_uvi_ge1": 3,
+      "bias_uvi": 1.920804974238078,
+      "mae_uvi": 1.920804974238078,
+      "rmse_uvi": 1.9469462861250133
+    },
+    "Aosta": {
+      "matched_hours": 13,
+      "source_latitude": 45.7422,
+      "source_longitude": 7.357,
+      "source_altitude_m": 570.0,
+      "model_altitude_m": 576.3644242286682,
+      "source_cell": 186058,
+      "distance_km": 0.5439242268972978,
+      "pairs": [
+        {
+          "time_utc": "2026-09-05T05:30:00.000000000",
+          "reported_pair_mean_uvi": 0.085,
+          "forecast_hourly_mean_uvi": 0.0947449654340744,
+          "forecast_flag": 64
+        },
+        {
+          "time_utc": "2026-09-05T06:30:00.000000000",
+          "reported_pair_mean_uvi": 0.44499999999999995,
+          "forecast_hourly_mean_uvi": 0.5539047718048096,
+          "forecast_flag": 64
+        },
+        {
+          "time_utc": "2026-09-05T07:30:00.000000000",
+          "reported_pair_mean_uvi": 1.435,
+          "forecast_hourly_mean_uvi": 1.6011512279510498,
+          "forecast_flag": 0
+        },
+        {
+          "time_utc": "2026-09-05T08:30:00.000000000",
+          "reported_pair_mean_uvi": 2.935,
+          "forecast_hourly_mean_uvi": 3.20744252204895,
+          "forecast_flag": 0
+        },
+        {
+          "time_utc": "2026-09-05T09:30:00.000000000",
+          "reported_pair_mean_uvi": 4.785,
+          "forecast_hourly_mean_uvi": 4.99794340133667,
+          "forecast_flag": 0
+        },
+        {
+          "time_utc": "2026-09-05T10:30:00.000000000",
+          "reported_pair_mean_uvi": 5.965,
+          "forecast_hourly_mean_uvi": 6.320539474487305,
+          "forecast_flag": 0
+        },
+        {
+          "time_utc": "2026-09-05T11:30:00.000000000",
+          "reported_pair_mean_uvi": 6.425000000000001,
+          "forecast_hourly_mean_uvi": 6.683910369873047,
+          "forecast_flag": 0
+        },
+        {
+          "time_utc": "2026-09-05T12:30:00.000000000",
+          "reported_pair_mean_uvi": 5.665,
+          "forecast_hourly_mean_uvi": 5.9107818603515625,
+          "forecast_flag": 0
+        },
+        {
+          "time_utc": "2026-09-05T13:30:00.000000000",
+          "reported_pair_mean_uvi": 3.5,
+          "forecast_hourly_mean_uvi": 4.697071075439453,
+          "forecast_flag": 0
+        },
+        {
+          "time_utc": "2026-09-05T14:30:00.000000000",
+          "reported_pair_mean_uvi": 2.63,
+          "forecast_hourly_mean_uvi": 3.047717571258545,
+          "forecast_flag": 0
+        },
+        {
+          "time_utc": "2026-09-05T15:30:00.000000000",
+          "reported_pair_mean_uvi": 1.3599999999999999,
+          "forecast_hourly_mean_uvi": 1.580804705619812,
+          "forecast_flag": 0
+        },
+        {
+          "time_utc": "2026-09-05T16:30:00.000000000",
+          "reported_pair_mean_uvi": 0.5,
+          "forecast_hourly_mean_uvi": 0.5583696961402893,
+          "forecast_flag": 64
+        },
+        {
+          "time_utc": "2026-09-05T17:30:00.000000000",
+          "reported_pair_mean_uvi": 0.08,
+          "forecast_hourly_mean_uvi": 0.09212562441825867,
+          "forecast_flag": 64
+        }
+      ],
+      "hours_reported_uvi_ge1": 9,
+      "bias_uvi": 0.3719291342629326,
+      "mae_uvi": 0.3719291342629326,
+      "rmse_uvi": 0.4781038378594019
+    }
+  },
+  "measurements_sha256": "0615b0a4a7276aaf18e443b8ef5d1ef40ff1ee0f29d210e71dceb77a0af64731",
+  "sites_sha256": "ccc754df3504a839c04d3f0e5bdd06f6e66f0fea1141db385e552934468d1686"
+}
