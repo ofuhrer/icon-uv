@@ -96,7 +96,7 @@ included in the stated scores, not silently discarded.
 Dust/smoke and specific low-cloud or convective event types have not been
 independently classified. A later event challenge set should be selected from
 meteorological evidence, without choosing cases by UV errors. This campaign
-broadens evidence substantially; it does not qualify an operational UV product.
+provides a broader sample of the specified sites, dates and weather conditions.
 
 ## Verification and reproducibility
 

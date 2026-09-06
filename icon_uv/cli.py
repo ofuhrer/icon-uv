@@ -12,7 +12,7 @@ from .radiation import DEFAULT_TABLE, RadiationTable
 
 
 def main():
-    p = argparse.ArgumentParser(description="Experimental offline ICON/CAMS UV diagnostic")
+    p = argparse.ArgumentParser(description="Compute UV Index fields and daily map data from ICON and CAMS")
     commands = p.add_subparsers(dest="command", required=True)
     icon = commands.add_parser("fetch-icon", help="Fetch a native-grid ICON-CH2 control subset")
     icon.add_argument("--reference", required=True)

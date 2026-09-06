@@ -1,77 +1,75 @@
-# Development and artifact policy
+# Development
 
-Keep the repository small enough to understand and sufficient to rebuild the
-tool and reproduce its scientific methods. Grid-to-station mismatch in complex
-terrain is expected; improvements should serve useful UV values and categories,
-not pursue exact agreement at every instrument.
-
-## Versioned content
-
-| Content | Decision |
-|---|---|
-| `icon_uv/`, regression tests, `pyproject.toml`, `uv.lock` | Retain implementation, contracts and the resolved development environment. |
-| `icon_uv/data/rt.npz` | Retain this 202 kB runtime dependency so users need no solver installation. Changes require a new qualification record. |
-| `icon_uv/data/daily-uv-v1.schema.json` | Retain the public data contract with the implementation and schema tests. |
-| `examples/`, `analysis/product_locations.example.json` | Retain explicit example geometry/configuration; these are not operational station catalogs. |
-| `analysis/*.py` | Retain acquisition, scoring, independent verification and report generators. Earlier scripts are dependencies of later studies, not disposable duplicates. |
-| Protocols, campaign definitions, concise findings | Retain the declared samples, assumptions, acceptance criteria and scientific history. Older milestones are labelled in the analysis index. |
-
-The `analysis/*GOAL.md` files record product requirements and evaluation scope;
-they are retained scientific design documents. They are not active task state.
-
-## Local, untracked content
-
-Use `work/<study>/` for downloaded ICON/CAMS/UV/DWH data, source metadata and
-calibration inventories, frozen input hashes, extraction/Slurm scripts and logs,
-raw score tables, generated JSON/NetCDF, plots, HTML/PDF reports, executed
-notebooks, solver installations and reference caches. Credentials stay in the
-normal external client configuration. Do not copy them into `work/` or Git.
-
-Generated files are not included in the wheel or source distribution. The
-source distribution includes the analysis source, tests and small experiment
-definitions; the wheel contains only the runtime package, table and schema.
-Reviewed findings are edited deliberately. Report generators write into local
-result directories and do not overwrite versioned findings.
-
-Local does not mean disposable. Preserve frozen observations, expiring forecast
-inputs, their identities and any solver/data installation needed for replay.
-Back up those directories separately when transferring or removing a checkout;
-a Git clone alone does not restore them. Do not rewrite frozen expected hashes
-to accommodate changed inputs or code. Start a new study or restore the exact
-source snapshot recorded for the old one.
-
-Rebuildable Python/test caches and packaging build directories may be discarded.
-One-off access probes, rejected tables and intermediate runs stay local unless
-their method is needed to explain or reproduce a retained result.
-
-## Working environment and checks
+## Set up and test
 
 ```sh
 uv sync --locked --extra cams --group analysis
 uv run --no-sync pytest -q
 uv run --no-sync icon-uv --help
-uv build --out-dir work/build-check
-git diff --check
+uv build --out-dir work/dist
 ```
 
-Add `--group notebooks` when executing generated notebooks. Analysis packages
-are development groups, not forecast runtime dependencies. Run analysis modules
-from the repository root with `uv run --no-sync python -m analysis.<module>`.
-See [the replay guide](analysis/README.md) for required local inputs and access.
-Tests use synthetic fixtures and temporary directories; ordinary tests require
-neither DWH/ADS credentials nor the local measurement archive.
+The normal tests use synthetic fixtures and temporary files; they require no
+DWH/ADS credentials or downloaded measurement archive. Add `--group notebooks`
+when executing analysis notebooks. `uv.lock` records resolved dependencies;
+analysis and notebook packages are separate from the forecast runtime.
 
-Build candidate radiation tables under `work/`; compare their numerical and
-product effects before deliberately replacing the shipped table. Preserve the
-source/provider attribution with any derived data that is later distributed.
+## Project layout
 
-## Cleanup record — 6 September 2026
+| Path | Purpose |
+|---|---|
+| `icon_uv/data.py` | ICON/CAMS acquisition, normalization and NetCDF output |
+| `icon_uv/radiation.py` | Radiation-table interpolation, cloud inversion and solar geometry |
+| `icon_uv/products.py` | Hourly grid, point and observation-comparison APIs |
+| `icon_uv/daily.py` | Daily peaks, location support and JSON export |
+| `icon_uv/cli.py` | Command-line interface |
+| `icon_uv/build_table.py`, `icon_uv/validate.py` | Table generation and numerical reference checks |
+| `icon_uv/data/` | Bundled lookup table and daily JSON Schema |
+| `docs/` | Usage, field reference and method documentation |
+| `analysis/` | Research acquisition, scoring, verification and reporting tools |
+| `tests/` | Input, numerical, calendar, output and regression checks |
 
-Seven top-level generated JSON/notebook files were moved to
-`work/initial-validation-20260905/` and removed from the versioned file set. Their
-original contents, the previous long validation record and every pre-cleanup
-source file are preserved under `work/repository-cleanup-20260906/source-before/`.
-No frozen study inputs, observation records or RT caches were removed. Four
-small campaign/reservation definitions were copied unchanged into
-`analysis/campaigns/`, with checksums. Historical figure/report links refer to
-explicitly local artifacts, not files promised by a fresh checkout.
+## Data and generated files
+
+Keep source, tests, examples, schemas, campaign definitions and reviewed findings
+in Git. The small radiation table is also versioned because it is needed at
+runtime. Downloaded forecasts, observations, detailed source metadata, generated
+score tables, plots, reports, notebooks and logs belong under `work/<study>/`.
+That directory is ignored by Git and excluded from distributions.
+
+Preserve the local inputs and hashes needed to reproduce a study, especially
+forecasts that expire from the public archive. A clone supplies code and sample
+definitions; its data archives must be restored or retrieved separately. New
+inputs or methods should produce a new run identity rather than overwrite an
+existing frozen identity. Credentials use the normal external client setup.
+
+The wheel contains the runtime package, table, schema and license. The source
+distribution additionally contains documentation, tests and analysis methods.
+Report generators write local results; reviewed findings are edited separately.
+
+## Change the radiation table
+
+Generate a candidate under `work/` with an external libRadtran installation:
+
+```sh
+uv run --no-sync icon-uv build-table --lib /path/to/libRadtran-2.0.6 \
+  --cache work/rt-cache --output work/candidate_rt.npz
+uv run --no-sync python -m icon_uv.validate --table work/candidate_rt.npz \
+  --lib /path/to/libRadtran-2.0.6 --cache work/rt-cache \
+  --output work/candidate_rt_validation.json
+```
+
+The reference cache identifies the solver executable, its data, reference code
+and numerical settings by content hashes. See [the table record](analysis/TABLE_PROVENANCE.md).
+When updating the bundled table, retain the new reference results and update
+that record. Recompute saved grids before using them with a different table;
+point and daily APIs check the table identity.
+
+For scientific comparisons and archived runs, see [analysis tools](analysis/README.md).
+For output-format changes, update the schema, field documentation and relevant
+tests together. Run `git diff --check` and inspect package contents before release.
+
+## License
+
+The project uses the [BSD 3-Clause License](LICENSE). Preserve attribution for
+any third-party code or data introduced by a contribution.

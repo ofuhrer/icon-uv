@@ -1,8 +1,7 @@
-# Product readiness: first verified milestone
+# Daily-peak comparison at Davos
 
-**A functioning daily map-data export is available. Broad scientific qualification
-is not established, and the current historical diagnostic does not meet all
-working accuracy targets. The goal remains active.**
+This comparison uses the fixed Davos instrument and prescribed UV albedo 0.05.
+For additional sites and periods, see the [Swiss-site results](SWISS_UV_FINDINGS.md).
 
 ## Product-level evidence
 
@@ -38,7 +37,7 @@ among 65 following-day dates. A zero-event empirical bootstrap gives [0,0],
 which cannot bound the probability of an unseen event and is not a reliability
 guarantee. There are no observed extreme-category days and only 12/14 very-high
 days. Primary native forecasts miss the observed >=8 category on 6/12 dates.
-Rare-category and geographical coverage remain insufficient for qualification.
+The sample has limited rare-category and geographical coverage.
 
 ## Temporal resolution matters at display precision
 
@@ -75,21 +74,3 @@ daily maxima, maximum difference 3.4e-13
 UVI. Independent scalar arithmetic checked 600
 summary values. Repository tests: 98 passed, with the pre-existing netCDF4 import
 warning. Frozen inputs, source identities and all date-level exclusions are saved.
-
-## Remaining work toward the active goal
-
-1. Add independent, quality-controlled UV observations at more sites/elevations,
-   including snow and high/extreme UV; reserve fresh evaluation data before tuning.
-2. Investigate cloud/SW and temporal-peak behavior using the new attribution
-   result. Evaluate candidate changes against display/category outcomes, with
-   independent data and explicit rare-event uncertainty.
-3. Perform targeted snow/albedo, seasonal-profile and high-elevation reference
-   checks. The prescribed-surface historic score cannot qualify production snow
-   treatment or the illustrative regional percentile product.
-4. Validate the current ICON configuration separately, finish geographic
-   acceptance and delivery-latency requirements, and expand interface/schema
-   and failure-mode checks where those requirements reveal gaps.
-
-The existing 2024–2025 UV data do not validate the newest ICON configuration or
-all regions shown by the example. No public deployment or automated collection
-has been started.

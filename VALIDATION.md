@@ -1,103 +1,85 @@
-# Validation status
+# Validation results
 
-Updated 6 September 2026. The tool is suitable for continued internal development
-of Swiss UV map data. Its numerical implementation, daily export contract and
-measurement comparisons have been exercised independently. Public operational
-qualification remains separate from this engineering assessment.
+This page summarizes numerical tests and comparisons with Swiss UV measurements.
+The figures below describe the stated samples and averaging methods, providing
+a basis for assessing the package for a particular location or product.
 
-## Current observational evidence
+## Swiss UV measurements
 
-The fixed campaign contains 150 ICON initializations on distinct dates from
-August 2024 to August 2026. The latest Swiss assessment yields 583 complete
-site-days at three locations, with both forecast days evaluated separately.
+The campaign samples 150 ICON initialization dates from August 2024 to August
+2026. Comparisons use 583 complete site-days across Davos, Weissfluhjoch and
+Payerne, with the two forecast days scored separately.
 
-| Site | Complete days, forecast day 1 / 2 | Peak MAE (UVI), day 1 / 2 | Within one displayed unit |
-|---|---:|---:|---:|
-| Davos | 146 / 146 | 0.613 / 0.635 | 89.0% / 88.4% |
-| Weissfluhjoch | 100 / 99 | 0.777 / 0.854 | 86.0% / 80.8% |
-| Payerne | 46 / 46 | 0.484 / 0.502 | 97.8% / 93.5% |
+| Site | Complete days, first / second forecast day | Daily-peak MAE (UVI) | Within one displayed unit | Same category |
+|---|---:|---:|---:|---:|
+| Davos | 146 / 146 | 0.613 / 0.635 | 89.0% / 88.4% | 76.0% / 80.8% |
+| Weissfluhjoch | 100 / 99 | 0.777 / 0.854 | 86.0% / 80.8% | 76.0% / 72.7% |
+| Payerne | 46 / 46 | 0.484 / 0.502 | 97.8% / 93.5% | 89.1% / 87.0% |
 
-These are daily maxima on common half-hour windows with prescribed UV albedo
-0.05. The historical archive lacks production snow fraction. At Payerne, minute
-observations also support the actual 30-minute rolling peak sampled every five
-minutes: MAE is 0.523 / 0.521 UVI. The mountain feed cannot directly verify that
-finer temporal support. No empirical correction was fitted to these results.
+These peaks use matched half-hour windows and fixed UV albedo 0.05 because the
+historical archive lacks production snow fraction. Payerne minute observations
+also support the exported 30-minute rolling peak on five-minute window starts:
+MAE is 0.523 / 0.521 UVI. The mountain feed provides half-hour values only.
 
-Grid-to-station differences are expected in complex terrain. The sensitivity
-study quantifies their effect; exact station agreement is not a prerequisite
-for useful regional products. Interpret errors together with spatial support,
-season, snow conditions, displayed values and category boundaries. Measured
-shortwave substitutions improve all three sites, identifying a practical
-cloud/shortwave development priority.
+On paired dates, replacing forecast shortwave with measured shortwave reduces
+MAE by 0.268–0.338 UVI at Davos, 0.171–0.301 at Weissfluhjoch and 0.269–0.309 at
+Payerne. All six date-block 95% intervals exclude zero. Payerne uses colocated
+shortwave measurements; the mountain sites use nearby stations.
 
-Jungfraujoch and Locarno-Monti were located through DWH, but corrected UV was
-unavailable. Payerne spring instrument metadata and much of the 2026 Weissfluhjoch
-record are missing. These gaps limit regional and seasonal conclusions. Extreme
-UV and regional elevation-band accuracy are not established by the sample.
-See [the Swiss findings](analysis/SWISS_UV_FINDINGS.md) for category errors,
-dependence-aware intervals, exclusions, primary citations and next steps.
+Alternative station-to-grid matches change individual peaks by up to 2.112 UVI
+at Davos and 1.084 at Weissfluhjoch. These differences reflect the spatial
+representativeness of model terrain, clouds and instrument locations.
 
-## Numerical and delivery evidence
+Underestimation by at least two displayed categories occurs on 2/292 Davos and
+4/199 Weissfluhjoch site-days, and 0/92 at Payerne. Only two observed site-days
+reach the extreme category. Payerne spring instrument metadata and much of
+Weissfluhjoch's 2026 record are absent. Jungfraujoch and Locarno-Monti were
+identified, but accessible corrected UV was unavailable for comparison.
 
-The shipped lookup table uses libRadtran 2.0.6, plane-parallel DISORT, eight
-streams and 0.5 nm UV sampling. Across 80 withheld atmospheric states, forward
-interpolation has 2.76% 95th-percentile and 3.21% maximum absolute relative error
-for reference UVI at least 1. SW inversion with different SW/UV albedos gives
-1.66% and 1.97%. Maximum forward absolute error across all states is 0.248 UVI.
-These test interpolation of the selected physics, not observational truth.
+The [detailed Swiss results](analysis/SWISS_UV_FINDINGS.md) include source
+citations, exclusions, timestamp sensitivity and spatial-support checks.
 
-An initial pseudo-spherical configuration was rejected because thick-cloud,
-low-sun states violated energy conservation. The shipped table and builder use
-explicit plane-parallel energy checks. Low-sun approximation and scalar cloud
-extensions remain flagged. The table identity, reference assumptions and rebuild
-process are in [the table record](analysis/TABLE_PROVENANCE.md).
+## Numerical accuracy
 
-The daily export has a versioned schema and explicit local dates, rolling-peak
-semantics, spatial support, freshness, quality flags and unavailable values.
-A complete archived-input replay produced 54 town/elevation entries for two days
-in approximately 17 seconds, using 242 MiB peak RSS. This is a local deterministic
-replay benchmark, not a live-service availability measurement. See the
-[data interface](analysis/PRODUCT_DATA_INTERFACE.md) and
-[product contract](analysis/PRODUCT_CONTRACT_V1.md).
+The lookup table is compared with direct libRadtran calculations at 80 withheld
+atmospheric states. Relative errors below use the 57 states with reference
+UVI at least 1; the largest forward absolute error across all 80 is 0.248 UVI.
 
-All 110 repository tests passed at the measurement-assessment checkpoint.
-Independent checks reconciled 14,129 unique observed UV windows, 92 Payerne
-rolling peaks, 3,462 accepted daily method rows, 6,516 summary values and 85,950
-native values. Separate full-field decoding checked 95 values across four ICON
-archive configurations. The existing netCDF4/NumPy binary-size import warning
-was recorded; numerical and NetCDF round-trip tests passed without masking it.
+| Calculation | 95th-percentile absolute relative error | Maximum |
+|---|---:|---:|
+| Forward interpolation | 2.76% | 3.21% |
+| SW inversion with equal SW/UV albedo | 1.12% | 1.43% |
+| SW inversion with different SW/UV albedos | 1.66% | 1.97% |
 
-## Retained scientific history
+These compare interpolation with the selected solver physics. An additional
+72-state study varies seasonal profile, water vapour, elevation, albedo and
+cloud state. Conversion MAE ranges from 0.064 to 0.187 UVI across its three
+profile/water groups. See [physical sensitivity results](analysis/PRODUCT_READINESS_ASSESSMENT.md).
 
-Each study has its own scope. Earlier counts and conclusions describe that
-milestone; they are not additional independent cases to add to the latest total.
-In particular, Payerne was metadata-only before its separately frozen adapter
-was qualified for provisional scoring.
+## Performance and verification
 
-| Study | Retained record |
-|---|---|
-| Expanded three-cycle and observation-driven diagnostics | [Protocol](analysis/SCIENTIFIC_PLAN.md), [findings](analysis/FINDINGS.md) |
-| 150-date, 135-station shortwave and historical Davos UV | [Protocol](analysis/MULTIYEAR_PLAN.md), [findings](analysis/MULTIYEAR_FINDINGS.md) |
-| Daily product and independent-site reservation | [Contract](analysis/PRODUCT_CONTRACT_V1.md), [findings](analysis/PRODUCT_FINDINGS.md) |
-| Additional 72 RT stress cases and complete delivery replay | [Readiness assessment](analysis/PRODUCT_READINESS_ASSESSMENT.md) |
-| Broader Swiss measurement assessment | [Protocol](analysis/SWISS_UV_PROTOCOL.md), [findings](analysis/SWISS_UV_FINDINGS.md) |
+A 38,718-cell, 24-hour calculation took approximately 52 seconds on the tested
+Apple-silicon Mac. A two-day catalog replay using 1,781 cells produced 54 JSON
+entries in approximately 17 seconds with 242 MiB peak resident memory. Both
+measurements use saved local inputs and exclude network acquisition.
 
-Detailed generated reports, plots, raw pairs, notebooks and input hashes remain
-in their local `work/` study directories. The initial top-level JSON reports and
-one-day notebook are retained in `work/initial-validation-20260905/`; their
-removal from Git does not discard the evidence. A source snapshot preceding
-cleanup is in `work/repository-cleanup-20260906/source-before/`.
+Tests cover input units and intervals, packing tolerance, radiation interpolation,
+cloud inversion, missing data, local-day/DST handling, spatial support, rounding,
+JSON/NetCDF output and failed writes. Independent data checks reconciled 14,129
+observed UV windows, 92 Payerne rolling peaks and 85,950 native values against
+separate readers. The test environment reports a netCDF4/NumPy binary-size import
+warning; the numerical and round-trip checks pass.
 
-## Reproduce
+## Run checks
 
 ```sh
 uv sync --locked --extra cams --group analysis
 uv run --no-sync pytest -q
-uv run --no-sync python -m icon_uv.check_grid --grid work/uv.nc --output work/grid_check.json
+uv run --no-sync python -m icon_uv.check_grid \
+  --grid work/uv.nc --output work/grid_check.json
 ```
 
-The final command requires a previously generated UV grid. Full observational
-replay needs the retained local archives and authorized source access; ordinary
-tests need neither. See [analysis/replay instructions](analysis/README.md) and
-[artifact policy](CONTRIBUTING.md). Freshly rebuilding RT references additionally
-requires the external libRadtran installation and its data.
+The final command requires a saved UV grid. Direct-solver checks additionally
+need libRadtran; see [table rebuilding](CONTRIBUTING.md#change-the-radiation-table).
+[Analysis tools](analysis/README.md) provide acquisition, scoring and replay
+instructions for the measurement studies.

@@ -1,4 +1,5 @@
-include README.md VALIDATION.md CONTRIBUTING.md uv.lock
+include README.md VALIDATION.md CONTRIBUTING.md LICENSE uv.lock
+recursive-include docs *.md
 recursive-include analysis *.py *.md *.csv *.json
 recursive-include tests *.py
 recursive-include examples *.json

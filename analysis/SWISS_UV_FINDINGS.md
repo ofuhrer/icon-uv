@@ -1,10 +1,9 @@
 # Swiss measurement-site validation — 6 September 2026
 
-The broader validation goal is complete for the observations accessible through
-the authorized DWH client on Balfrin and primary public archives. Five distinct
-Swiss UV locations were identified; three support provisional comparisons.
-This advances the evidence for internal map-product development, while leaving
-important Alpine, southern-Swiss and seasonal gaps.
+Five Swiss UV measurement locations were identified through DWH and primary
+public archives. Davos, Weissfluhjoch and Payerne provide records suitable for
+the comparisons below; corrected UV for Jungfraujoch and Locarno-Monti was
+unavailable.
 
 The fixed 150-date ICON campaign spans August 2024–August 2026 and both forecast
 days. It yields **583 complete site-days** out of 900 planned comparisons at the
@@ -44,8 +43,8 @@ No alternative was selected from its error score.
 The provisional primary experiment still underestimates by at least two
 categories on 2/292 Davos and 4/199 Weissfluhjoch site-days. Payerne has 0/92,
 which is not evidence of zero future risk. Only two observed Weissfluhjoch
-site-days reach the displayed extreme category. Regional altitude-band products
-and extreme-UV performance remain unqualified.
+site-days reach the displayed extreme category. This provides little evidence
+for extreme UV and does not directly measure regional altitude-band aggregates.
 
 ## Coverage and access limits
 
@@ -65,25 +64,22 @@ and extreme-UV performance remain unqualified.
 - Snow and sunshine strata remain explicit. The primary automatic snow-depth
   series is absent at Weissfluhjoch; it is not silently inferred from season.
 
-## Next steps for reliable products
+## Additional evidence
 
-1. Obtain calibrated SACRaM records for Jungfraujoch and Locarno-Monti, Payerne's
-   missing instrument history and missing Weissfluhjoch periods.
-2. Resolve surveyed UV coordinates, height, timestamp support and calibration/QC
-   metadata, then replay the frozen evaluation.
-3. Validate actual production snow-fraction inputs and improve cloud/shortwave
-   and spatial-support treatment. Keep subsequent fitting separate from held-out
-   assessment; do not choose a universal snow albedo from these outcomes.
-4. Run a prospective, season-spanning product replay with the existing coverage,
-   category and severe-underestimation checks before operational qualification.
+Calibrated SACRaM records at Jungfraujoch and Locarno-Monti would add high-Alpine
+and southern-Swiss coverage. Payerne instrument history and missing
+Weissfluhjoch periods would extend seasonal coverage. Surveyed instrument
+coordinates and calibration/QC metadata would further constrain representativeness
+and measurement uncertainty. Actual production snow-fraction inputs would allow
+direct testing of the runtime surface treatment alongside these fixed-albedo
+comparisons.
 
 ## Reproduction and verification
 
 Detailed results, source citations, interval estimates, coverage figures and
 exclusion records are in
 [the generated report](../work/swiss-uv-sites-20260906/results/report.md).
-The acquisition/analysis plans are [the goal](SWISS_UV_VALIDATION_GOAL.md),
-[Swiss protocol](SWISS_UV_PROTOCOL.md),
+The acquisition/analysis plans are the [Swiss protocol](SWISS_UV_PROTOCOL.md),
 [Payerne protocol](PAYERNE_EXPLORATORY_PROTOCOL.md) and
 [spatial sensitivity protocol](SWISS_SPATIAL_SENSITIVITY.md).
 
@@ -103,9 +99,3 @@ checks passed for another 95 values spanning all four archive configurations.
 The full run reproduces all 3,672 daily rows and 68,217 paired windows from the
 pre-2026 subset exactly. All 110 repository tests pass; the existing netCDF4/NumPy
 binary-size warning remains, with round-trip tests passing.
-
-The analysis summary initially lacked a window `year` label. Deriving it from
-the existing valid date repaired summary generation without changing observations
-or predictions. A slow 2026 CAMS bulk request was replaced by monthly requests
-for the same variables, region, cycles and leads. Historical freeze manifests
-remain intact; `final_identity.json` records final code, input and result hashes.

@@ -15,16 +15,10 @@ and asymmetry 0.7; effective liquid cloud at 1–2 km above the pressure-equival
 surface, with 10 μm effective radius. Fluxes are horizontal at 1 AU, with separate
 shortwave and erythemal direct/diffuse components.
 
-It was generated and numerically qualified on 5 September 2026, then rechecked
-with strengthened reference-cache provenance on 6 September. The original table
-metadata predates executable/data content hashes; those are available in the
-later local reference-validation reports. Do not imply that later metadata was
-embedded in the original table. The rejected pseudo-spherical table remains a
-local investigation artifact and is not shipped.
-
-Numerical interpolation results are summarized in [validation status](../VALIDATION.md).
-Scientific observations and the 72 additional physical stress cases assess
-limitations beyond interpolation. No new table was fitted to those outcomes.
+Numerical interpolation errors and measurement comparisons are summarized in
+[validation results](../VALIDATION.md). The table's embedded metadata records
+its physical configuration. Reference calculations made with the current builder
+also record executable, data and reference-code content hashes in their reports.
 
 Build candidates without overwriting the shipped table:
 
