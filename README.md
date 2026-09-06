@@ -7,19 +7,29 @@ functions and one CLI; no server, scheduler, database, model plugin or frontend.
 against measured UV. This package must not be presented as an official or
 operationally qualified UV forecast.
 
-The real-data prototype runs 38,718 cells × 24 hours in about 52 seconds on the
-tested Mac. Numerical checks pass, but an exploratory measurement comparison
-shows substantial mountain-site overprediction. See [VALIDATION.md](VALIDATION.md)
-before interpreting these fields as forecast guidance.
+The [`daily` export](analysis/PRODUCT_DATA_INTERFACE.md) supplies versioned
+today/tomorrow map data with explicit categories, daylight coverage and native
+altitude-band support. The native-grid calculation runs 38,718 cells × 24 hours
+in about 52 seconds on the tested Mac; no libRadtran installation is needed at
+runtime.
+
+The [broader Swiss measurement assessment](analysis/SWISS_UV_FINDINGS.md) adds
+Davos, Weissfluhjoch and Payerne comparisons: 583 complete site-days, with
+daily-peak MAE of roughly 0.5–0.9 UVI under fixed albedo. DWH probes also locate
+Jungfraujoch and Locarno-Monti raw UV, but corrected records were unavailable.
+Terrain-related grid-to-station differences are expected and remain part of the
+reported uncertainty. The practical objective is reliable displayed values and
+categories. See [validation status](VALIDATION.md), [analysis and replay](analysis/README.md)
+and [development / artifact policy](CONTRIBUTING.md).
 
 ## Install
 
 ```sh
 git clone https://github.com/ofuhrer/icon-uv.git
 cd icon-uv
-uv sync --extra cams
-uv run pytest -q
-uv run icon-uv --help
+uv sync --locked --extra cams
+uv run --no-sync pytest -q
+uv run --no-sync icon-uv --help
 ```
 
 Or install the directory with `uv pip install '.[cams]'`. The `cams` extra is only
@@ -198,17 +208,30 @@ uv run python -m icon_uv.check_grid --grid work/uv.nc --output work/grid_check.j
 
 # Developer workflow only; libRadtran must already be installed at this path.
 uv run icon-uv build-table --lib /path/to/libRadtran-2.0.6 \
-  --cache work/rt-cache --output icon_uv/data/rt.npz
+  --cache work/rt-cache --output work/candidate_rt.npz
 
-uv run python -m icon_uv.validate --table icon_uv/data/rt.npz \
+uv run python -m icon_uv.validate --table work/candidate_rt.npz \
   --lib /path/to/libRadtran-2.0.6 --cache work/rt-cache \
   --output work/rt_validation.json
 ```
+
+Keep the shipped table until a candidate and its scientific effects have been
+reviewed. Its identity and retention rationale are in
+[the table record](analysis/TABLE_PROVENANCE.md).
 
 The numerical validator uses a fixed, recorded seed and withheld atmospheric
 states, not the lookup nodes. It checks forward interpolation and the complete
 SW-inversion-to-UVI path. Input handling, night behaviour, interval accounting,
 chunk consistency, POI contracts and serialization have separate synthetic tests.
+Reference caches are identified by hashes of the actual solver executable, all
+files in its `data/` directory, and the packaged reference/radiation source, plus
+the atmospheric inputs and solver settings. The builder and validator hash the
+installation once per batch; keep it unchanged during that batch. Identical
+content can reuse its cache after relocation. Old cache files without this
+identity remain on disk but are ignored, so the first run after this change
+recomputes its references. New tables and validation reports record reference
+provenance and counts of cache hits versus freshly computed columns. The shipped
+table and historical reports retain their original provenance.
 The numerical interpolation gate is ≤5% at the 95th percentile and ≤10% maximum
 relative error for reference UVI ≥1, for both paths; failure gives a nonzero exit
 status. These are engineering thresholds, not an observational accuracy promise.
@@ -232,6 +255,10 @@ both must have matching hourly bounds and named POIs; observations supply `uvi`
 in units `1` and boolean `qc_good`. It returns matched-sample bias/MAE/RMSE without
 fitting or calibration. This small API is not a substitute for seasonal/regime
 verification, instrument calibration or an agreed observation delivery contract.
+Both UVI arrays and observation QC must use dimensions `time,poi`, with unique,
+nonmissing coordinate labels. Adapt a provider's `station` dimension explicitly
+before comparison. Partial coverage is matched by the shared time and POI labels;
+incompatible dimensions are rejected rather than broadcast across sites.
 
 ## Deliberate limits
 

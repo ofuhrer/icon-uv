@@ -1,6 +1,9 @@
 .venv/
 __pycache__/
 .pytest_cache/
+.ipynb_checkpoints/
+.ruff_cache/
+.codebase-memory/
 *.egg-info/
 build/
 dist/
@@ -9,3 +12,17 @@ work/
 .env
 .env.*
 .DS_Store
+
+# Downloaded inputs, generated run products and historical inspection outputs.
+# The small, required icon_uv/data/rt.npz and schema stay versioned.
+/*.nc
+/*.grib
+/*.grib.json
+/*.npz
+/validation.json
+/grid_check.json
+/cams_comparison.json
+/observation_comparison.json
+/observation_day_grid_check.json
+/observation_quality.json
+/observation_quality.ipynb

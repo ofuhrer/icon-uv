@@ -8,13 +8,23 @@ version = "0.1.0"
 description = "Small offline ICON/CAMS UV diagnostic with explicit POI geometry"
 readme = "README.md"
 requires-python = ">=3.11"
-dependencies = ["numpy>=2,<2.4", "scipy>=1.14", "xarray>=2024.10", "netCDF4>=1.7", "requests>=2.32", "eccodes>=2.43", "eccodeslib>=2.43; platform_system != 'Windows'"]
+dependencies = [
+    "numpy>=2,<2.4",
+    "scipy>=1.14",
+    "xarray>=2024.10",
+    "netCDF4>=1.7",
+    "requests>=2.32",
+    "eccodes>=2.43",
+    "eccodeslib>=2.43; platform_system != 'Windows'",
+]
 
 [project.optional-dependencies]
 cams = ["cdsapi>=0.7"]
 
 [dependency-groups]
-dev = ["pytest>=8"]
+dev = ["pytest>=8", "jsonschema>=4.23"]
+analysis = ["pandas>=2.2", "matplotlib>=3.8", "nbformat>=5.10"]
+notebooks = [{include-group = "analysis"}, "nbclient>=0.10", "ipykernel>=6.29"]
 
 [project.scripts]
 icon-uv = "icon_uv.cli:main"
@@ -23,7 +33,7 @@ icon-uv = "icon_uv.cli:main"
 include = ["icon_uv*"]
 
 [tool.setuptools.package-data]
-icon_uv = ["data/*.npz"]
+icon_uv = ["data/*.npz", "data/*.json"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

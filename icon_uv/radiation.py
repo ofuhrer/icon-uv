@@ -49,7 +49,10 @@ def solar_geometry(times, latitude, longitude):
         raise ValueError("Missing UTC time")
     day = (t.astype("datetime64[D]") - t.astype("datetime64[Y]")).astype(float) + 1
     hour = (t - t.astype("datetime64[D]")) / np.timedelta64(1, "h")
-    g = 2 * np.pi / 365 * (day - 1 + (hour - 12) / 24)
+    year = t.astype("datetime64[Y]")
+    days_in_year = ((year + np.timedelta64(1, "Y")).astype("datetime64[D]")
+                    - year.astype("datetime64[D]")).astype(float)
+    g = 2 * np.pi / days_in_year * (day - 1 + (hour - 12) / 24)
     eq = 229.18 * (.000075 + .001868*np.cos(g) - .032077*np.sin(g)
                   - .014615*np.cos(2*g) - .040849*np.sin(2*g))
     dec = (.006918 - .399912*np.cos(g) + .070257*np.sin(g)

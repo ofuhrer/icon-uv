@@ -9,11 +9,12 @@ import json
 
 import numpy as np
 
-from .build_table import reference
+from .build_table import ReferenceSolver
 from .radiation import RadiationTable
 
 
 def validate(table, lib, cache, output, count=80, seed=20260905):
+    reference = ReferenceSolver(lib, cache)
     rng = np.random.default_rng(seed)
     # Sample broad physical regimes; all coordinates withheld from table nodes.
     points = np.column_stack([rng.uniform(max(25, table.axes["sza"][0]), min(85, table.axes["sza"][-1]), count), rng.uniform(230, 450, count),
@@ -21,7 +22,7 @@ def validate(table, lib, cache, output, count=80, seed=20260905):
                               rng.uniform(.02, .8, count), np.expm1(rng.uniform(0, np.log(101), count))])
     points[:count//4, -1] = 0  # include clear sky, not only cloudy cases
     with ThreadPoolExecutor(max_workers=4) as pool:
-        truth = np.array(list(pool.map(lambda p: reference(lib, p, cache), points)))
+        truth = np.array(list(pool.map(reference, points)))
     prediction = table.at(*points.T)
     uvi = 40*truth[:, 2:].sum(axis=-1)
     estimated = 40*prediction[:, 2:].sum(axis=-1)
@@ -38,7 +39,7 @@ def validate(table, lib, cache, output, count=80, seed=20260905):
     sw_points = points.copy()
     sw_points[:, 4] = .12 + .65*points[:, 4]
     with ThreadPoolExecutor(max_workers=4) as pool:
-        sw_truth = np.array(list(pool.map(lambda p: reference(lib, p, cache), sw_points)))[:, :2].sum(axis=-1)
+        sw_truth = np.array(list(pool.map(reference, sw_points)))[:, :2].sum(axis=-1)
     paired_tau, paired_scale, _ = table.cloud(points[:, 0][None, :], 1., points[:, 1], points[:, 2],
                                                points[:, 3], sw_points[:, 4], sw_truth)
     paired_uvi = 40*table.at(*points[:, :5].T, paired_tau)[:, 2:].sum(axis=-1)*paired_scale
@@ -48,16 +49,16 @@ def validate(table, lib, cache, output, count=80, seed=20260905):
                                   [80., 350., 85000., .3, .2, 30.]])
     resolution = []
     for point in resolution_points:
-        standard = 40*reference(lib, point, cache)[2:].sum()
-        fine = 40*reference(lib, point, cache, spacing=.25)[2:].sum()
-        streams = 40*reference(lib, point, cache, streams=16)[2:].sum()
+        standard = 40*reference(point)[2:].sum()
+        fine = 40*reference(point, spacing=.25)[2:].sum()
+        streams = 40*reference(point, streams=16)[2:].sum()
         resolution.append({"point": point.tolist(), "standard_uvi": float(standard),
                            "quarter_nm_relative_change": float(fine/standard-1),
                            "sixteen_stream_relative_change": float(streams/standard-1)})
     water_cases = []
     for water in (10, 40):
         point = np.array([50., 300., 95000., .15, .15, 5.])
-        actual = reference(lib, point, cache, water=water)
+        actual = reference(point, water=water)
         t, sc, _ = table.cloud(point[:1, None], 1., point[1:2], point[2:3], point[3:4],
                                point[4:5], np.array([actual[:2].sum()]))
         estimate = 40*table.at(*point[:5], t)[..., 2:].sum()*sc[0]
@@ -65,6 +66,7 @@ def validate(table, lib, cache, output, count=80, seed=20260905):
         water_cases.append({"water_mm": water, "reference_uvi": float(true),
                             "inferred_uvi": float(estimate), "relative_error": float(estimate/true-1)})
     report = {"kind": "numerical RT qualification, NOT observational validation", "seed": seed,
+              "reference_provenance": reference.provenance, "reference_cache": reference.cache_info(),
               "table_sha256": table.sha256, "table_configuration": table.metadata,
               "columns": count, "uvi_ge1_columns": int(mask.sum()),
               "forward_max_abs_uvi": float(np.max(abs(estimated-uvi))),

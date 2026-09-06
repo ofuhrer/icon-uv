@@ -1,0 +1,309 @@
+{
+  "catalog_version": 1,
+  "status": "illustrative; verify location and region choices before adoption",
+  "entries": [
+    {
+      "id": "bas",
+      "kind": "town",
+      "label": "Basel",
+      "latitude": 47.541142,
+      "longitude": 7.583525,
+      "altitude_m": 316.0,
+      "coordinate_source": "SwissMetNet BAS station vicinity; illustrative product location"
+    },
+    {
+      "id": "ber",
+      "kind": "town",
+      "label": "Bern",
+      "latitude": 46.990744,
+      "longitude": 7.464061,
+      "altitude_m": 553.0,
+      "coordinate_source": "SwissMetNet BER station vicinity; illustrative product location"
+    },
+    {
+      "id": "chu",
+      "kind": "town",
+      "label": "Chur",
+      "latitude": 46.870572,
+      "longitude": 9.530761,
+      "altitude_m": 556.0,
+      "coordinate_source": "SwissMetNet CHU station vicinity; illustrative product location"
+    },
+    {
+      "id": "dav",
+      "kind": "town",
+      "label": "Davos",
+      "latitude": 46.812969,
+      "longitude": 9.843558,
+      "altitude_m": 1594.0,
+      "coordinate_source": "SwissMetNet DAV station vicinity; illustrative product location"
+    },
+    {
+      "id": "gve",
+      "kind": "town",
+      "label": "Geneva",
+      "latitude": 46.247519,
+      "longitude": 6.127742,
+      "altitude_m": 411.0,
+      "coordinate_source": "SwissMetNet GVE station vicinity; illustrative product location"
+    },
+    {
+      "id": "lug",
+      "kind": "town",
+      "label": "Lugano",
+      "latitude": 46.004217,
+      "longitude": 8.960322,
+      "altitude_m": 273.0,
+      "coordinate_source": "SwissMetNet LUG station vicinity; illustrative product location"
+    },
+    {
+      "id": "luz",
+      "kind": "town",
+      "label": "Lucerne",
+      "latitude": 47.036439,
+      "longitude": 8.301022,
+      "altitude_m": 454.0,
+      "coordinate_source": "SwissMetNet LUZ station vicinity; illustrative product location"
+    },
+    {
+      "id": "puy",
+      "kind": "town",
+      "label": "Lausanne vicinity",
+      "latitude": 46.512283,
+      "longitude": 6.667517,
+      "altitude_m": 456.0,
+      "coordinate_source": "SwissMetNet PUY station vicinity; illustrative product location"
+    },
+    {
+      "id": "sam",
+      "kind": "town",
+      "label": "St Moritz vicinity",
+      "latitude": 46.526247,
+      "longitude": 9.879469,
+      "altitude_m": 1709.0,
+      "coordinate_source": "SwissMetNet SAM station vicinity; illustrative product location"
+    },
+    {
+      "id": "sio",
+      "kind": "town",
+      "label": "Sion",
+      "latitude": 46.21865,
+      "longitude": 7.330203,
+      "altitude_m": 482.0,
+      "coordinate_source": "SwissMetNet SIO station vicinity; illustrative product location"
+    },
+    {
+      "id": "sma",
+      "kind": "town",
+      "label": "Zurich",
+      "latitude": 47.381003,
+      "longitude": 8.567194,
+      "altitude_m": 604.0,
+      "coordinate_source": "SwissMetNet SMA station vicinity; illustrative product location"
+    },
+    {
+      "id": "stg",
+      "kind": "town",
+      "label": "St Gallen",
+      "latitude": 47.425475,
+      "longitude": 9.398528,
+      "altitude_m": 776.0,
+      "coordinate_source": "SwissMetNet STG station vicinity; illustrative product location"
+    },
+    {
+      "id": "bernese_1000",
+      "kind": "region_altitude",
+      "label": "Bernese Alps",
+      "altitude_m": 1000,
+      "bbox": [
+        7.3,
+        46.4,
+        8.4,
+        46.8
+      ],
+      "boundary_source": "Illustrative bounding box; not an official forecast region"
+    },
+    {
+      "id": "bernese_2000",
+      "kind": "region_altitude",
+      "label": "Bernese Alps",
+      "altitude_m": 2000,
+      "bbox": [
+        7.3,
+        46.4,
+        8.4,
+        46.8
+      ],
+      "boundary_source": "Illustrative bounding box; not an official forecast region"
+    },
+    {
+      "id": "bernese_3000",
+      "kind": "region_altitude",
+      "label": "Bernese Alps",
+      "altitude_m": 3000,
+      "bbox": [
+        7.3,
+        46.4,
+        8.4,
+        46.8
+      ],
+      "boundary_source": "Illustrative bounding box; not an official forecast region"
+    },
+    {
+      "id": "valais_1000",
+      "kind": "region_altitude",
+      "label": "Valais Alps",
+      "altitude_m": 1000,
+      "bbox": [
+        7.0,
+        45.9,
+        8.4,
+        46.4
+      ],
+      "boundary_source": "Illustrative bounding box; not an official forecast region"
+    },
+    {
+      "id": "valais_2000",
+      "kind": "region_altitude",
+      "label": "Valais Alps",
+      "altitude_m": 2000,
+      "bbox": [
+        7.0,
+        45.9,
+        8.4,
+        46.4
+      ],
+      "boundary_source": "Illustrative bounding box; not an official forecast region"
+    },
+    {
+      "id": "valais_3000",
+      "kind": "region_altitude",
+      "label": "Valais Alps",
+      "altitude_m": 3000,
+      "bbox": [
+        7.0,
+        45.9,
+        8.4,
+        46.4
+      ],
+      "boundary_source": "Illustrative bounding box; not an official forecast region"
+    },
+    {
+      "id": "ticino_1000",
+      "kind": "region_altitude",
+      "label": "Ticino Alps",
+      "altitude_m": 1000,
+      "bbox": [
+        8.4,
+        46.2,
+        9.1,
+        46.7
+      ],
+      "boundary_source": "Illustrative bounding box; not an official forecast region"
+    },
+    {
+      "id": "ticino_2000",
+      "kind": "region_altitude",
+      "label": "Ticino Alps",
+      "altitude_m": 2000,
+      "bbox": [
+        8.4,
+        46.2,
+        9.1,
+        46.7
+      ],
+      "boundary_source": "Illustrative bounding box; not an official forecast region"
+    },
+    {
+      "id": "ticino_3000",
+      "kind": "region_altitude",
+      "label": "Ticino Alps",
+      "altitude_m": 3000,
+      "bbox": [
+        8.4,
+        46.2,
+        9.1,
+        46.7
+      ],
+      "boundary_source": "Illustrative bounding box; not an official forecast region"
+    },
+    {
+      "id": "glarus_1000",
+      "kind": "region_altitude",
+      "label": "Glarus Alps",
+      "altitude_m": 1000,
+      "bbox": [
+        8.7,
+        46.7,
+        9.3,
+        47.0
+      ],
+      "boundary_source": "Illustrative bounding box; not an official forecast region"
+    },
+    {
+      "id": "glarus_2000",
+      "kind": "region_altitude",
+      "label": "Glarus Alps",
+      "altitude_m": 2000,
+      "bbox": [
+        8.7,
+        46.7,
+        9.3,
+        47.0
+      ],
+      "boundary_source": "Illustrative bounding box; not an official forecast region"
+    },
+    {
+      "id": "glarus_3000",
+      "kind": "region_altitude",
+      "label": "Glarus Alps",
+      "altitude_m": 3000,
+      "bbox": [
+        8.7,
+        46.7,
+        9.3,
+        47.0
+      ],
+      "boundary_source": "Illustrative bounding box; not an official forecast region"
+    },
+    {
+      "id": "grisons_1000",
+      "kind": "region_altitude",
+      "label": "Grisons Alps",
+      "altitude_m": 1000,
+      "bbox": [
+        9.3,
+        46.3,
+        10.3,
+        46.9
+      ],
+      "boundary_source": "Illustrative bounding box; not an official forecast region"
+    },
+    {
+      "id": "grisons_2000",
+      "kind": "region_altitude",
+      "label": "Grisons Alps",
+      "altitude_m": 2000,
+      "bbox": [
+        9.3,
+        46.3,
+        10.3,
+        46.9
+      ],
+      "boundary_source": "Illustrative bounding box; not an official forecast region"
+    },
+    {
+      "id": "grisons_3000",
+      "kind": "region_altitude",
+      "label": "Grisons Alps",
+      "altitude_m": 3000,
+      "bbox": [
+        9.3,
+        46.3,
+        10.3,
+        46.9
+      ],
+      "boundary_source": "Illustrative bounding box; not an official forecast region"
+    }
+  ]
+}

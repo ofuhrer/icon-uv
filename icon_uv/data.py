@@ -35,10 +35,15 @@ def validate_bbox(bbox):
 
 
 def _request(url, body=None):
-    r = requests.get(url, timeout=120) if body is None else requests.post(url, json=body, timeout=120)
-    # Do not print signed query strings in error messages or persist them.
+    # Transport exceptions may contain signed URLs, including redirect targets.
+    # Suppress their messages and traceback chains as well as response queries.
+    endpoint = url.split("?", 1)[0].split("#", 1)[0]
+    try:
+        r = requests.get(url, timeout=120) if body is None else requests.post(url, json=body, timeout=120)
+    except requests.RequestException as exc:
+        raise RuntimeError(f"{type(exc).__name__} retrieving {endpoint}") from None
     if not r.ok:
-        raise RuntimeError(f"HTTP {r.status_code} retrieving {url.split('?')[0]}")
+        raise RuntimeError(f"HTTP {r.status_code} retrieving {endpoint}")
     return r
 
 

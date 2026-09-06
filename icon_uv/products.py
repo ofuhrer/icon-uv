@@ -261,11 +261,30 @@ def compare_observations(forecast, observations):
     Observation Dataset: uvi(time,poi), qc_good(time,poi), units 1. Caller owns
     calibration/QC and interval matching; missing or unqualified data are excluded.
     """
-    if observations.uvi.attrs.get("units") != "1":
-        raise ValueError("Observations must be UVI, not unweighted UV or dose")
-    if observations.qc_good.dtype.kind != "b":
-        raise ValueError("qc_good must be boolean")
-    f, o = xr.align(forecast, observations, join="inner")
+    for label, ds in (("Forecast", forecast), ("Observations", observations)):
+        if "uvi" not in ds or ds.uvi.dims != ("time", "poi"):
+            raise ValueError(f"{label} requires uvi(time,poi)")
+        if ds.uvi.attrs.get("units") != "1":
+            raise ValueError(f"{label} must be UVI in units 1, not unweighted UV or dose")
+        for dim in ("time", "poi"):
+            if (dim not in ds.coords or ds[dim].dims != (dim,)
+                or bool(ds[dim].isnull().any()) or not ds[dim].to_index().is_unique):
+                raise ValueError(f"{label} requires named, unique, nonmissing {dim} coordinates")
+        if ("time_bounds" not in ds or ds.time_bounds.dims != ("time", "bounds")
+            or ds.sizes["bounds"] != 2 or ds.time_bounds.dtype.kind != "M"
+            or ds.time.dtype.kind != "M"):
+            raise ValueError(f"{label} requires datetime time and time_bounds(time,bounds) with two endpoints")
+        bounds = ds.time_bounds.values
+        if (np.any(np.isnat(bounds))
+            or np.any(bounds[:, 1]-bounds[:, 0] != np.timedelta64(1, "h"))
+            or np.any(ds.time.values != bounds[:, 0]+np.timedelta64(30, "m"))):
+            raise ValueError(f"{label} bounds must be hourly with time at the midpoint")
+    if ("qc_good" not in observations or observations.qc_good.dims != ("time", "poi")
+        or observations.qc_good.dtype.kind != "b"):
+        raise ValueError("qc_good must be boolean with dimensions time,poi")
+    f, o = xr.align(forecast[["uvi", "time_bounds"]],
+                    observations[["uvi", "time_bounds", "qc_good"]],
+                    join="inner", exclude={"bounds"})
     if not f.sizes.get("time") or not f.sizes.get("poi"):
         raise ValueError("No matched forecast/observation samples")
     if "time_bounds" not in o or not np.array_equal(f.time_bounds, o.time_bounds):

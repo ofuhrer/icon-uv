@@ -1,0 +1,2443 @@
+{
+  "cases": [
+    {
+      "reference": "2024-08-03T00:00:00Z",
+      "date": "2024-08-03",
+      "year": 2024,
+      "month": 8,
+      "season": "JJA"
+    },
+    {
+      "reference": "2024-08-08T00:00:00Z",
+      "date": "2024-08-08",
+      "year": 2024,
+      "month": 8,
+      "season": "JJA"
+    },
+    {
+      "reference": "2024-08-13T00:00:00Z",
+      "date": "2024-08-13",
+      "year": 2024,
+      "month": 8,
+      "season": "JJA"
+    },
+    {
+      "reference": "2024-08-18T00:00:00Z",
+      "date": "2024-08-18",
+      "year": 2024,
+      "month": 8,
+      "season": "JJA"
+    },
+    {
+      "reference": "2024-08-23T00:00:00Z",
+      "date": "2024-08-23",
+      "year": 2024,
+      "month": 8,
+      "season": "JJA"
+    },
+    {
+      "reference": "2024-08-28T00:00:00Z",
+      "date": "2024-08-28",
+      "year": 2024,
+      "month": 8,
+      "season": "JJA"
+    },
+    {
+      "reference": "2024-09-03T00:00:00Z",
+      "date": "2024-09-03",
+      "year": 2024,
+      "month": 9,
+      "season": "SON"
+    },
+    {
+      "reference": "2024-09-08T00:00:00Z",
+      "date": "2024-09-08",
+      "year": 2024,
+      "month": 9,
+      "season": "SON"
+    },
+    {
+      "reference": "2024-09-13T00:00:00Z",
+      "date": "2024-09-13",
+      "year": 2024,
+      "month": 9,
+      "season": "SON"
+    },
+    {
+      "reference": "2024-09-18T00:00:00Z",
+      "date": "2024-09-18",
+      "year": 2024,
+      "month": 9,
+      "season": "SON"
+    },
+    {
+      "reference": "2024-09-23T00:00:00Z",
+      "date": "2024-09-23",
+      "year": 2024,
+      "month": 9,
+      "season": "SON"
+    },
+    {
+      "reference": "2024-09-28T00:00:00Z",
+      "date": "2024-09-28",
+      "year": 2024,
+      "month": 9,
+      "season": "SON"
+    },
+    {
+      "reference": "2024-10-03T00:00:00Z",
+      "date": "2024-10-03",
+      "year": 2024,
+      "month": 10,
+      "season": "SON"
+    },
+    {
+      "reference": "2024-10-08T00:00:00Z",
+      "date": "2024-10-08",
+      "year": 2024,
+      "month": 10,
+      "season": "SON"
+    },
+    {
+      "reference": "2024-10-13T00:00:00Z",
+      "date": "2024-10-13",
+      "year": 2024,
+      "month": 10,
+      "season": "SON"
+    },
+    {
+      "reference": "2024-10-18T00:00:00Z",
+      "date": "2024-10-18",
+      "year": 2024,
+      "month": 10,
+      "season": "SON"
+    },
+    {
+      "reference": "2024-10-23T00:00:00Z",
+      "date": "2024-10-23",
+      "year": 2024,
+      "month": 10,
+      "season": "SON"
+    },
+    {
+      "reference": "2024-10-28T00:00:00Z",
+      "date": "2024-10-28",
+      "year": 2024,
+      "month": 10,
+      "season": "SON"
+    },
+    {
+      "reference": "2024-11-03T00:00:00Z",
+      "date": "2024-11-03",
+      "year": 2024,
+      "month": 11,
+      "season": "SON"
+    },
+    {
+      "reference": "2024-11-08T00:00:00Z",
+      "date": "2024-11-08",
+      "year": 2024,
+      "month": 11,
+      "season": "SON"
+    },
+    {
+      "reference": "2024-11-13T00:00:00Z",
+      "date": "2024-11-13",
+      "year": 2024,
+      "month": 11,
+      "season": "SON"
+    },
+    {
+      "reference": "2024-11-18T00:00:00Z",
+      "date": "2024-11-18",
+      "year": 2024,
+      "month": 11,
+      "season": "SON"
+    },
+    {
+      "reference": "2024-11-23T00:00:00Z",
+      "date": "2024-11-23",
+      "year": 2024,
+      "month": 11,
+      "season": "SON"
+    },
+    {
+      "reference": "2024-11-28T00:00:00Z",
+      "date": "2024-11-28",
+      "year": 2024,
+      "month": 11,
+      "season": "SON"
+    },
+    {
+      "reference": "2024-12-03T00:00:00Z",
+      "date": "2024-12-03",
+      "year": 2024,
+      "month": 12,
+      "season": "DJF"
+    },
+    {
+      "reference": "2024-12-08T00:00:00Z",
+      "date": "2024-12-08",
+      "year": 2024,
+      "month": 12,
+      "season": "DJF"
+    },
+    {
+      "reference": "2024-12-13T00:00:00Z",
+      "date": "2024-12-13",
+      "year": 2024,
+      "month": 12,
+      "season": "DJF"
+    },
+    {
+      "reference": "2024-12-18T00:00:00Z",
+      "date": "2024-12-18",
+      "year": 2024,
+      "month": 12,
+      "season": "DJF"
+    },
+    {
+      "reference": "2024-12-23T00:00:00Z",
+      "date": "2024-12-23",
+      "year": 2024,
+      "month": 12,
+      "season": "DJF"
+    },
+    {
+      "reference": "2024-12-28T00:00:00Z",
+      "date": "2024-12-28",
+      "year": 2024,
+      "month": 12,
+      "season": "DJF"
+    },
+    {
+      "reference": "2025-01-03T00:00:00Z",
+      "date": "2025-01-03",
+      "year": 2025,
+      "month": 1,
+      "season": "DJF"
+    },
+    {
+      "reference": "2025-01-08T00:00:00Z",
+      "date": "2025-01-08",
+      "year": 2025,
+      "month": 1,
+      "season": "DJF"
+    },
+    {
+      "reference": "2025-01-13T00:00:00Z",
+      "date": "2025-01-13",
+      "year": 2025,
+      "month": 1,
+      "season": "DJF"
+    },
+    {
+      "reference": "2025-01-18T00:00:00Z",
+      "date": "2025-01-18",
+      "year": 2025,
+      "month": 1,
+      "season": "DJF"
+    },
+    {
+      "reference": "2025-01-23T00:00:00Z",
+      "date": "2025-01-23",
+      "year": 2025,
+      "month": 1,
+      "season": "DJF"
+    },
+    {
+      "reference": "2025-01-28T00:00:00Z",
+      "date": "2025-01-28",
+      "year": 2025,
+      "month": 1,
+      "season": "DJF"
+    },
+    {
+      "reference": "2025-02-03T00:00:00Z",
+      "date": "2025-02-03",
+      "year": 2025,
+      "month": 2,
+      "season": "DJF"
+    },
+    {
+      "reference": "2025-02-08T00:00:00Z",
+      "date": "2025-02-08",
+      "year": 2025,
+      "month": 2,
+      "season": "DJF"
+    },
+    {
+      "reference": "2025-02-13T00:00:00Z",
+      "date": "2025-02-13",
+      "year": 2025,
+      "month": 2,
+      "season": "DJF"
+    },
+    {
+      "reference": "2025-02-18T00:00:00Z",
+      "date": "2025-02-18",
+      "year": 2025,
+      "month": 2,
+      "season": "DJF"
+    },
+    {
+      "reference": "2025-02-23T00:00:00Z",
+      "date": "2025-02-23",
+      "year": 2025,
+      "month": 2,
+      "season": "DJF"
+    },
+    {
+      "reference": "2025-02-28T00:00:00Z",
+      "date": "2025-02-28",
+      "year": 2025,
+      "month": 2,
+      "season": "DJF"
+    },
+    {
+      "reference": "2025-03-03T00:00:00Z",
+      "date": "2025-03-03",
+      "year": 2025,
+      "month": 3,
+      "season": "MAM"
+    },
+    {
+      "reference": "2025-03-08T00:00:00Z",
+      "date": "2025-03-08",
+      "year": 2025,
+      "month": 3,
+      "season": "MAM"
+    },
+    {
+      "reference": "2025-03-13T00:00:00Z",
+      "date": "2025-03-13",
+      "year": 2025,
+      "month": 3,
+      "season": "MAM"
+    },
+    {
+      "reference": "2025-03-18T00:00:00Z",
+      "date": "2025-03-18",
+      "year": 2025,
+      "month": 3,
+      "season": "MAM"
+    },
+    {
+      "reference": "2025-03-23T00:00:00Z",
+      "date": "2025-03-23",
+      "year": 2025,
+      "month": 3,
+      "season": "MAM"
+    },
+    {
+      "reference": "2025-03-28T00:00:00Z",
+      "date": "2025-03-28",
+      "year": 2025,
+      "month": 3,
+      "season": "MAM"
+    },
+    {
+      "reference": "2025-04-03T00:00:00Z",
+      "date": "2025-04-03",
+      "year": 2025,
+      "month": 4,
+      "season": "MAM"
+    },
+    {
+      "reference": "2025-04-08T00:00:00Z",
+      "date": "2025-04-08",
+      "year": 2025,
+      "month": 4,
+      "season": "MAM"
+    },
+    {
+      "reference": "2025-04-13T00:00:00Z",
+      "date": "2025-04-13",
+      "year": 2025,
+      "month": 4,
+      "season": "MAM"
+    },
+    {
+      "reference": "2025-04-18T00:00:00Z",
+      "date": "2025-04-18",
+      "year": 2025,
+      "month": 4,
+      "season": "MAM"
+    },
+    {
+      "reference": "2025-04-23T00:00:00Z",
+      "date": "2025-04-23",
+      "year": 2025,
+      "month": 4,
+      "season": "MAM"
+    },
+    {
+      "reference": "2025-04-28T00:00:00Z",
+      "date": "2025-04-28",
+      "year": 2025,
+      "month": 4,
+      "season": "MAM"
+    },
+    {
+      "reference": "2025-05-03T00:00:00Z",
+      "date": "2025-05-03",
+      "year": 2025,
+      "month": 5,
+      "season": "MAM"
+    },
+    {
+      "reference": "2025-05-08T00:00:00Z",
+      "date": "2025-05-08",
+      "year": 2025,
+      "month": 5,
+      "season": "MAM"
+    },
+    {
+      "reference": "2025-05-13T00:00:00Z",
+      "date": "2025-05-13",
+      "year": 2025,
+      "month": 5,
+      "season": "MAM"
+    },
+    {
+      "reference": "2025-05-18T00:00:00Z",
+      "date": "2025-05-18",
+      "year": 2025,
+      "month": 5,
+      "season": "MAM"
+    },
+    {
+      "reference": "2025-05-23T00:00:00Z",
+      "date": "2025-05-23",
+      "year": 2025,
+      "month": 5,
+      "season": "MAM"
+    },
+    {
+      "reference": "2025-05-28T00:00:00Z",
+      "date": "2025-05-28",
+      "year": 2025,
+      "month": 5,
+      "season": "MAM"
+    },
+    {
+      "reference": "2025-06-03T00:00:00Z",
+      "date": "2025-06-03",
+      "year": 2025,
+      "month": 6,
+      "season": "JJA"
+    },
+    {
+      "reference": "2025-06-08T00:00:00Z",
+      "date": "2025-06-08",
+      "year": 2025,
+      "month": 6,
+      "season": "JJA"
+    },
+    {
+      "reference": "2025-06-13T00:00:00Z",
+      "date": "2025-06-13",
+      "year": 2025,
+      "month": 6,
+      "season": "JJA"
+    },
+    {
+      "reference": "2025-06-18T00:00:00Z",
+      "date": "2025-06-18",
+      "year": 2025,
+      "month": 6,
+      "season": "JJA"
+    },
+    {
+      "reference": "2025-06-23T00:00:00Z",
+      "date": "2025-06-23",
+      "year": 2025,
+      "month": 6,
+      "season": "JJA"
+    },
+    {
+      "reference": "2025-06-28T00:00:00Z",
+      "date": "2025-06-28",
+      "year": 2025,
+      "month": 6,
+      "season": "JJA"
+    },
+    {
+      "reference": "2025-07-03T00:00:00Z",
+      "date": "2025-07-03",
+      "year": 2025,
+      "month": 7,
+      "season": "JJA"
+    },
+    {
+      "reference": "2025-07-08T00:00:00Z",
+      "date": "2025-07-08",
+      "year": 2025,
+      "month": 7,
+      "season": "JJA"
+    },
+    {
+      "reference": "2025-07-13T00:00:00Z",
+      "date": "2025-07-13",
+      "year": 2025,
+      "month": 7,
+      "season": "JJA"
+    },
+    {
+      "reference": "2025-07-18T00:00:00Z",
+      "date": "2025-07-18",
+      "year": 2025,
+      "month": 7,
+      "season": "JJA"
+    },
+    {
+      "reference": "2025-07-23T00:00:00Z",
+      "date": "2025-07-23",
+      "year": 2025,
+      "month": 7,
+      "season": "JJA"
+    },
+    {
+      "reference": "2025-07-28T00:00:00Z",
+      "date": "2025-07-28",
+      "year": 2025,
+      "month": 7,
+      "season": "JJA"
+    },
+    {
+      "reference": "2025-08-03T00:00:00Z",
+      "date": "2025-08-03",
+      "year": 2025,
+      "month": 8,
+      "season": "JJA"
+    },
+    {
+      "reference": "2025-08-08T00:00:00Z",
+      "date": "2025-08-08",
+      "year": 2025,
+      "month": 8,
+      "season": "JJA"
+    },
+    {
+      "reference": "2025-08-13T00:00:00Z",
+      "date": "2025-08-13",
+      "year": 2025,
+      "month": 8,
+      "season": "JJA"
+    },
+    {
+      "reference": "2025-08-18T00:00:00Z",
+      "date": "2025-08-18",
+      "year": 2025,
+      "month": 8,
+      "season": "JJA"
+    },
+    {
+      "reference": "2025-08-23T00:00:00Z",
+      "date": "2025-08-23",
+      "year": 2025,
+      "month": 8,
+      "season": "JJA"
+    },
+    {
+      "reference": "2025-08-28T00:00:00Z",
+      "date": "2025-08-28",
+      "year": 2025,
+      "month": 8,
+      "season": "JJA"
+    },
+    {
+      "reference": "2025-09-03T00:00:00Z",
+      "date": "2025-09-03",
+      "year": 2025,
+      "month": 9,
+      "season": "SON"
+    },
+    {
+      "reference": "2025-09-08T00:00:00Z",
+      "date": "2025-09-08",
+      "year": 2025,
+      "month": 9,
+      "season": "SON"
+    },
+    {
+      "reference": "2025-09-13T00:00:00Z",
+      "date": "2025-09-13",
+      "year": 2025,
+      "month": 9,
+      "season": "SON"
+    },
+    {
+      "reference": "2025-09-18T00:00:00Z",
+      "date": "2025-09-18",
+      "year": 2025,
+      "month": 9,
+      "season": "SON"
+    },
+    {
+      "reference": "2025-09-23T00:00:00Z",
+      "date": "2025-09-23",
+      "year": 2025,
+      "month": 9,
+      "season": "SON"
+    },
+    {
+      "reference": "2025-09-28T00:00:00Z",
+      "date": "2025-09-28",
+      "year": 2025,
+      "month": 9,
+      "season": "SON"
+    },
+    {
+      "reference": "2025-10-03T00:00:00Z",
+      "date": "2025-10-03",
+      "year": 2025,
+      "month": 10,
+      "season": "SON"
+    },
+    {
+      "reference": "2025-10-08T00:00:00Z",
+      "date": "2025-10-08",
+      "year": 2025,
+      "month": 10,
+      "season": "SON"
+    },
+    {
+      "reference": "2025-10-13T00:00:00Z",
+      "date": "2025-10-13",
+      "year": 2025,
+      "month": 10,
+      "season": "SON"
+    },
+    {
+      "reference": "2025-10-18T00:00:00Z",
+      "date": "2025-10-18",
+      "year": 2025,
+      "month": 10,
+      "season": "SON"
+    },
+    {
+      "reference": "2025-10-23T00:00:00Z",
+      "date": "2025-10-23",
+      "year": 2025,
+      "month": 10,
+      "season": "SON"
+    },
+    {
+      "reference": "2025-10-28T00:00:00Z",
+      "date": "2025-10-28",
+      "year": 2025,
+      "month": 10,
+      "season": "SON"
+    },
+    {
+      "reference": "2025-11-03T00:00:00Z",
+      "date": "2025-11-03",
+      "year": 2025,
+      "month": 11,
+      "season": "SON"
+    },
+    {
+      "reference": "2025-11-08T00:00:00Z",
+      "date": "2025-11-08",
+      "year": 2025,
+      "month": 11,
+      "season": "SON"
+    },
+    {
+      "reference": "2025-11-13T00:00:00Z",
+      "date": "2025-11-13",
+      "year": 2025,
+      "month": 11,
+      "season": "SON"
+    },
+    {
+      "reference": "2025-11-18T00:00:00Z",
+      "date": "2025-11-18",
+      "year": 2025,
+      "month": 11,
+      "season": "SON"
+    },
+    {
+      "reference": "2025-11-23T00:00:00Z",
+      "date": "2025-11-23",
+      "year": 2025,
+      "month": 11,
+      "season": "SON"
+    },
+    {
+      "reference": "2025-11-28T00:00:00Z",
+      "date": "2025-11-28",
+      "year": 2025,
+      "month": 11,
+      "season": "SON"
+    },
+    {
+      "reference": "2025-12-03T00:00:00Z",
+      "date": "2025-12-03",
+      "year": 2025,
+      "month": 12,
+      "season": "DJF"
+    },
+    {
+      "reference": "2025-12-08T00:00:00Z",
+      "date": "2025-12-08",
+      "year": 2025,
+      "month": 12,
+      "season": "DJF"
+    },
+    {
+      "reference": "2025-12-13T00:00:00Z",
+      "date": "2025-12-13",
+      "year": 2025,
+      "month": 12,
+      "season": "DJF"
+    },
+    {
+      "reference": "2025-12-18T00:00:00Z",
+      "date": "2025-12-18",
+      "year": 2025,
+      "month": 12,
+      "season": "DJF"
+    },
+    {
+      "reference": "2025-12-23T00:00:00Z",
+      "date": "2025-12-23",
+      "year": 2025,
+      "month": 12,
+      "season": "DJF"
+    },
+    {
+      "reference": "2025-12-28T00:00:00Z",
+      "date": "2025-12-28",
+      "year": 2025,
+      "month": 12,
+      "season": "DJF"
+    },
+    {
+      "reference": "2026-01-03T00:00:00Z",
+      "date": "2026-01-03",
+      "year": 2026,
+      "month": 1,
+      "season": "DJF"
+    },
+    {
+      "reference": "2026-01-08T00:00:00Z",
+      "date": "2026-01-08",
+      "year": 2026,
+      "month": 1,
+      "season": "DJF"
+    },
+    {
+      "reference": "2026-01-13T00:00:00Z",
+      "date": "2026-01-13",
+      "year": 2026,
+      "month": 1,
+      "season": "DJF"
+    },
+    {
+      "reference": "2026-01-18T00:00:00Z",
+      "date": "2026-01-18",
+      "year": 2026,
+      "month": 1,
+      "season": "DJF"
+    },
+    {
+      "reference": "2026-01-23T00:00:00Z",
+      "date": "2026-01-23",
+      "year": 2026,
+      "month": 1,
+      "season": "DJF"
+    },
+    {
+      "reference": "2026-01-28T00:00:00Z",
+      "date": "2026-01-28",
+      "year": 2026,
+      "month": 1,
+      "season": "DJF"
+    },
+    {
+      "reference": "2026-02-03T00:00:00Z",
+      "date": "2026-02-03",
+      "year": 2026,
+      "month": 2,
+      "season": "DJF"
+    },
+    {
+      "reference": "2026-02-08T00:00:00Z",
+      "date": "2026-02-08",
+      "year": 2026,
+      "month": 2,
+      "season": "DJF"
+    },
+    {
+      "reference": "2026-02-13T00:00:00Z",
+      "date": "2026-02-13",
+      "year": 2026,
+      "month": 2,
+      "season": "DJF"
+    },
+    {
+      "reference": "2026-02-18T00:00:00Z",
+      "date": "2026-02-18",
+      "year": 2026,
+      "month": 2,
+      "season": "DJF"
+    },
+    {
+      "reference": "2026-02-23T00:00:00Z",
+      "date": "2026-02-23",
+      "year": 2026,
+      "month": 2,
+      "season": "DJF"
+    },
+    {
+      "reference": "2026-02-28T00:00:00Z",
+      "date": "2026-02-28",
+      "year": 2026,
+      "month": 2,
+      "season": "DJF"
+    },
+    {
+      "reference": "2026-03-03T00:00:00Z",
+      "date": "2026-03-03",
+      "year": 2026,
+      "month": 3,
+      "season": "MAM"
+    },
+    {
+      "reference": "2026-03-08T00:00:00Z",
+      "date": "2026-03-08",
+      "year": 2026,
+      "month": 3,
+      "season": "MAM"
+    },
+    {
+      "reference": "2026-03-13T00:00:00Z",
+      "date": "2026-03-13",
+      "year": 2026,
+      "month": 3,
+      "season": "MAM"
+    },
+    {
+      "reference": "2026-03-18T00:00:00Z",
+      "date": "2026-03-18",
+      "year": 2026,
+      "month": 3,
+      "season": "MAM"
+    },
+    {
+      "reference": "2026-03-23T00:00:00Z",
+      "date": "2026-03-23",
+      "year": 2026,
+      "month": 3,
+      "season": "MAM"
+    },
+    {
+      "reference": "2026-03-28T00:00:00Z",
+      "date": "2026-03-28",
+      "year": 2026,
+      "month": 3,
+      "season": "MAM"
+    },
+    {
+      "reference": "2026-04-03T00:00:00Z",
+      "date": "2026-04-03",
+      "year": 2026,
+      "month": 4,
+      "season": "MAM"
+    },
+    {
+      "reference": "2026-04-08T00:00:00Z",
+      "date": "2026-04-08",
+      "year": 2026,
+      "month": 4,
+      "season": "MAM"
+    },
+    {
+      "reference": "2026-04-13T00:00:00Z",
+      "date": "2026-04-13",
+      "year": 2026,
+      "month": 4,
+      "season": "MAM"
+    },
+    {
+      "reference": "2026-04-18T00:00:00Z",
+      "date": "2026-04-18",
+      "year": 2026,
+      "month": 4,
+      "season": "MAM"
+    },
+    {
+      "reference": "2026-04-23T00:00:00Z",
+      "date": "2026-04-23",
+      "year": 2026,
+      "month": 4,
+      "season": "MAM"
+    },
+    {
+      "reference": "2026-04-28T00:00:00Z",
+      "date": "2026-04-28",
+      "year": 2026,
+      "month": 4,
+      "season": "MAM"
+    },
+    {
+      "reference": "2026-05-03T00:00:00Z",
+      "date": "2026-05-03",
+      "year": 2026,
+      "month": 5,
+      "season": "MAM"
+    },
+    {
+      "reference": "2026-05-08T00:00:00Z",
+      "date": "2026-05-08",
+      "year": 2026,
+      "month": 5,
+      "season": "MAM"
+    },
+    {
+      "reference": "2026-05-13T00:00:00Z",
+      "date": "2026-05-13",
+      "year": 2026,
+      "month": 5,
+      "season": "MAM"
+    },
+    {
+      "reference": "2026-05-18T00:00:00Z",
+      "date": "2026-05-18",
+      "year": 2026,
+      "month": 5,
+      "season": "MAM"
+    },
+    {
+      "reference": "2026-05-23T00:00:00Z",
+      "date": "2026-05-23",
+      "year": 2026,
+      "month": 5,
+      "season": "MAM"
+    },
+    {
+      "reference": "2026-05-28T00:00:00Z",
+      "date": "2026-05-28",
+      "year": 2026,
+      "month": 5,
+      "season": "MAM"
+    },
+    {
+      "reference": "2026-06-03T00:00:00Z",
+      "date": "2026-06-03",
+      "year": 2026,
+      "month": 6,
+      "season": "JJA"
+    },
+    {
+      "reference": "2026-06-08T00:00:00Z",
+      "date": "2026-06-08",
+      "year": 2026,
+      "month": 6,
+      "season": "JJA"
+    },
+    {
+      "reference": "2026-06-13T00:00:00Z",
+      "date": "2026-06-13",
+      "year": 2026,
+      "month": 6,
+      "season": "JJA"
+    },
+    {
+      "reference": "2026-06-18T00:00:00Z",
+      "date": "2026-06-18",
+      "year": 2026,
+      "month": 6,
+      "season": "JJA"
+    },
+    {
+      "reference": "2026-06-23T00:00:00Z",
+      "date": "2026-06-23",
+      "year": 2026,
+      "month": 6,
+      "season": "JJA"
+    },
+    {
+      "reference": "2026-06-28T00:00:00Z",
+      "date": "2026-06-28",
+      "year": 2026,
+      "month": 6,
+      "season": "JJA"
+    },
+    {
+      "reference": "2026-07-03T00:00:00Z",
+      "date": "2026-07-03",
+      "year": 2026,
+      "month": 7,
+      "season": "JJA"
+    },
+    {
+      "reference": "2026-07-08T00:00:00Z",
+      "date": "2026-07-08",
+      "year": 2026,
+      "month": 7,
+      "season": "JJA"
+    },
+    {
+      "reference": "2026-07-13T00:00:00Z",
+      "date": "2026-07-13",
+      "year": 2026,
+      "month": 7,
+      "season": "JJA"
+    },
+    {
+      "reference": "2026-07-18T00:00:00Z",
+      "date": "2026-07-18",
+      "year": 2026,
+      "month": 7,
+      "season": "JJA"
+    },
+    {
+      "reference": "2026-07-23T00:00:00Z",
+      "date": "2026-07-23",
+      "year": 2026,
+      "month": 7,
+      "season": "JJA"
+    },
+    {
+      "reference": "2026-07-28T00:00:00Z",
+      "date": "2026-07-28",
+      "year": 2026,
+      "month": 7,
+      "season": "JJA"
+    },
+    {
+      "reference": "2026-08-03T00:00:00Z",
+      "date": "2026-08-03",
+      "year": 2026,
+      "month": 8,
+      "season": "JJA"
+    },
+    {
+      "reference": "2026-08-08T00:00:00Z",
+      "date": "2026-08-08",
+      "year": 2026,
+      "month": 8,
+      "season": "JJA"
+    },
+    {
+      "reference": "2026-08-13T00:00:00Z",
+      "date": "2026-08-13",
+      "year": 2026,
+      "month": 8,
+      "season": "JJA"
+    },
+    {
+      "reference": "2026-08-18T00:00:00Z",
+      "date": "2026-08-18",
+      "year": 2026,
+      "month": 8,
+      "season": "JJA"
+    },
+    {
+      "reference": "2026-08-23T00:00:00Z",
+      "date": "2026-08-23",
+      "year": 2026,
+      "month": 8,
+      "season": "JJA"
+    },
+    {
+      "reference": "2026-08-28T00:00:00Z",
+      "date": "2026-08-28",
+      "year": 2026,
+      "month": 8,
+      "season": "JJA"
+    }
+  ],
+  "stations": [
+    {
+      "station": "ABO",
+      "latitude": 46.491703,
+      "longitude": 7.560703,
+      "altitude_m": 1321.0,
+      "cell": 192142,
+      "grid_latitude": 46.49261474609375,
+      "grid_longitude": 7.554104208946228,
+      "distance_km": 0.5152273539158208
+    },
+    {
+      "station": "AIG",
+      "latitude": 46.326647,
+      "longitude": 6.924472,
+      "altitude_m": 381.0,
+      "cell": 183698,
+      "grid_latitude": 46.33807373046875,
+      "grid_longitude": 6.916408896446228,
+      "distance_km": 1.4133820044058953
+    },
+    {
+      "station": "ALT",
+      "latitude": 46.887069,
+      "longitude": 8.621894,
+      "altitude_m": 438.0,
+      "cell": 196931,
+      "grid_latitude": 46.88739013671875,
+      "grid_longitude": 8.621487021446228,
+      "distance_km": 0.04724055650834245
+    },
+    {
+      "station": "AND",
+      "latitude": 46.610139,
+      "longitude": 9.431981,
+      "altitude_m": 987.0,
+      "cell": 195587,
+      "grid_latitude": 46.61614990234375,
+      "grid_longitude": 9.422268271446228,
+      "distance_km": 0.9985580982853477
+    },
+    {
+      "station": "ANT",
+      "latitude": 46.630914,
+      "longitude": 8.580553,
+      "altitude_m": 1435.0,
+      "cell": 190234,
+      "grid_latitude": 46.63299560546875,
+      "grid_longitude": 8.580959677696228,
+      "distance_km": 0.23353758090048501
+    },
+    {
+      "station": "ARH",
+      "latitude": 47.483631,
+      "longitude": 9.56685,
+      "altitude_m": 398.0,
+      "cell": 197638,
+      "grid_latitude": 47.48431396484375,
+      "grid_longitude": 9.578029990196228,
+      "distance_km": 0.8435472448205696
+    },
+    {
+      "station": "ARO",
+      "latitude": 46.792661,
+      "longitude": 9.679014,
+      "altitude_m": 1878.0,
+      "cell": 143567,
+      "grid_latitude": 46.79119873046875,
+      "grid_longitude": 9.682522177696228,
+      "distance_km": 0.31267780899191344
+    },
+    {
+      "station": "ATT",
+      "latitude": 46.0991,
+      "longitude": 7.26865,
+      "altitude_m": 2734.0,
+      "cell": 193572,
+      "grid_latitude": 46.10198974609375,
+      "grid_longitude": 7.268459677696228,
+      "distance_km": 0.32166000078078655
+    },
+    {
+      "station": "BAN",
+      "latitude": 46.977806,
+      "longitude": 7.528667,
+      "altitude_m": 942.0,
+      "cell": 191638,
+      "grid_latitude": 46.97967529296875,
+      "grid_longitude": 7.538479208946228,
+      "distance_km": 0.7728772057623224
+    },
+    {
+      "station": "BAS",
+      "latitude": 47.541142,
+      "longitude": 7.583525,
+      "altitude_m": 316.0,
+      "cell": 150897,
+      "grid_latitude": 47.54168701171875,
+      "grid_longitude": 7.589748740196228,
+      "distance_km": 0.47108649504544853
+    },
+    {
+      "station": "BEH",
+      "latitude": 46.409158,
+      "longitude": 10.019567,
+      "altitude_m": 2260.0,
+      "cell": 142922,
+      "grid_latitude": 46.41351318359375,
+      "grid_longitude": 10.025783896446228,
+      "distance_km": 0.6794808030679281
+    },
+    {
+      "station": "BER",
+      "latitude": 46.990744,
+      "longitude": 7.464061,
+      "altitude_m": 553.0,
+      "cell": 191644,
+      "grid_latitude": 46.98968505859375,
+      "grid_longitude": 7.466213583946228,
+      "distance_km": 0.2013009873030586
+    },
+    {
+      "station": "BEZ",
+      "latitude": 47.557256,
+      "longitude": 8.233325,
+      "altitude_m": 326.0,
+      "cell": 195016,
+      "grid_latitude": 47.55657958984375,
+      "grid_longitude": 8.241115927696228,
+      "distance_km": 0.589455105179712
+    },
+    {
+      "station": "BIA",
+      "latitude": 46.336053,
+      "longitude": 8.978197,
+      "altitude_m": 278.0,
+      "cell": 190135,
+      "grid_latitude": 46.33197021484375,
+      "grid_longitude": 8.995510458946228,
+      "distance_km": 1.4046274201953777
+    },
+    {
+      "station": "BIE",
+      "latitude": 46.524908,
+      "longitude": 6.342386,
+      "altitude_m": 684.0,
+      "cell": 184433,
+      "grid_latitude": 46.53411865234375,
+      "grid_longitude": 6.350979208946228,
+      "distance_km": 1.217000020844955
+    },
+    {
+      "station": "BIZ",
+      "latitude": 47.508828,
+      "longitude": 9.266797,
+      "altitude_m": 507.0,
+      "cell": 197792,
+      "grid_latitude": 47.50531005859375,
+      "grid_longitude": 9.282619833946228,
+      "distance_km": 1.2512069512641495
+    },
+    {
+      "station": "BLA",
+      "latitude": 46.422261,
+      "longitude": 7.825914,
+      "altitude_m": 1548.0,
+      "cell": 192688,
+      "grid_latitude": 46.42401123046875,
+      "grid_longitude": 7.834377646446228,
+      "distance_km": 0.6772988437342226
+    },
+    {
+      "station": "BOL",
+      "latitude": 46.623519,
+      "longitude": 7.384206,
+      "altitude_m": 820.0,
+      "cell": 192196,
+      "grid_latitude": 46.62078857421875,
+      "grid_longitude": 7.402737021446228,
+      "distance_km": 1.447403977437118
+    },
+    {
+      "station": "BRL",
+      "latitude": 46.983844,
+      "longitude": 6.610297,
+      "altitude_m": 1050.0,
+      "cell": 185565,
+      "grid_latitude": 46.98162841796875,
+      "grid_longitude": 6.612209677696228,
+      "distance_km": 0.2859131656855613
+    },
+    {
+      "station": "BUF",
+      "latitude": 46.648408,
+      "longitude": 10.2672,
+      "altitude_m": 1971.0,
+      "cell": 145566,
+      "grid_latitude": 46.64300537109375,
+      "grid_longitude": 10.274319052696228,
+      "distance_km": 0.8100758166510461
+    },
+    {
+      "station": "BUS",
+      "latitude": 47.384381,
+      "longitude": 8.07955,
+      "altitude_m": 387.0,
+      "cell": 194628,
+      "grid_latitude": 47.39056396484375,
+      "grid_longitude": 8.086819052696228,
+      "distance_km": 0.878717148787053
+    },
+    {
+      "station": "CDF",
+      "latitude": 47.082947,
+      "longitude": 6.792314,
+      "altitude_m": 1017.0,
+      "cell": 185533,
+      "grid_latitude": 47.09295654296875,
+      "grid_longitude": 6.805080771446228,
+      "distance_km": 1.4741268518537016
+    },
+    {
+      "station": "CEV",
+      "latitude": 46.320486,
+      "longitude": 8.603161,
+      "altitude_m": 417.0,
+      "cell": 190638,
+      "grid_latitude": 46.33050537109375,
+      "grid_longitude": 8.593654990196228,
+      "distance_km": 1.3319283849409405
+    },
+    {
+      "station": "CGI",
+      "latitude": 46.401053,
+      "longitude": 6.227722,
+      "altitude_m": 458.0,
+      "cell": 184638,
+      "grid_latitude": 46.40325927734375,
+      "grid_longitude": 6.222072958946228,
+      "distance_km": 0.4978113030782178
+    },
+    {
+      "station": "CHA",
+      "latitude": 47.131761,
+      "longitude": 7.054367,
+      "altitude_m": 1594.0,
+      "cell": 185706,
+      "grid_latitude": 47.12786865234375,
+      "grid_longitude": 7.043850302696228,
+      "distance_km": 0.905698403291352
+    },
+    {
+      "station": "CHD",
+      "latitude": 46.479819,
+      "longitude": 7.139656,
+      "altitude_m": 1028.0,
+      "cell": 193367,
+      "grid_latitude": 46.48260498046875,
+      "grid_longitude": 7.149319052696228,
+      "distance_km": 0.8021165624150217
+    },
+    {
+      "station": "CHM",
+      "latitude": 47.049169,
+      "longitude": 6.978825,
+      "altitude_m": 1136.0,
+      "cell": 185364,
+      "grid_latitude": 47.05633544921875,
+      "grid_longitude": 6.984768271446228,
+      "distance_km": 0.9152822215327782
+    },
+    {
+      "station": "CHU",
+      "latitude": 46.870572,
+      "longitude": 9.530761,
+      "altitude_m": 556.0,
+      "cell": 143589,
+      "grid_latitude": 46.85931396484375,
+      "grid_longitude": 9.539455771446228,
+      "distance_km": 1.4156468637876718
+    },
+    {
+      "station": "CHZ",
+      "latitude": 47.188278,
+      "longitude": 8.464642,
+      "altitude_m": 443.0,
+      "cell": 196949,
+      "grid_latitude": 47.18548583984375,
+      "grid_longitude": 8.458401083946228,
+      "distance_km": 0.564641446934187
+    },
+    {
+      "station": "CIM",
+      "latitude": 46.200467,
+      "longitude": 8.79165,
+      "altitude_m": 1661.0,
+      "cell": 190179,
+      "grid_latitude": 46.20623779296875,
+      "grid_longitude": 8.777248740196228,
+      "distance_km": 1.2806529798368083
+    },
+    {
+      "station": "CMA",
+      "latitude": 46.842275,
+      "longitude": 9.180042,
+      "altitude_m": 2468.0,
+      "cell": 195873,
+      "grid_latitude": 46.85003662109375,
+      "grid_longitude": 9.178615927696228,
+      "distance_km": 0.8698408915533072
+    },
+    {
+      "station": "COM",
+      "latitude": 46.459517,
+      "longitude": 8.935486,
+      "altitude_m": 575.0,
+      "cell": 195338,
+      "grid_latitude": 46.46649169921875,
+      "grid_longitude": 8.940334677696228,
+      "distance_km": 0.8598842937028321
+    },
+    {
+      "station": "COV",
+      "latitude": 46.418039,
+      "longitude": 9.821308,
+      "altitude_m": 3294.0,
+      "cell": 143363,
+      "grid_latitude": 46.40838623046875,
+      "grid_longitude": 9.815822958946228,
+      "distance_km": 1.1527703509700915
+    },
+    {
+      "station": "CRM",
+      "latitude": 47.047581,
+      "longitude": 7.059147,
+      "altitude_m": 430.0,
+      "cell": 185686,
+      "grid_latitude": 47.04681396484375,
+      "grid_longitude": 7.057522177696228,
+      "distance_km": 0.14976752033148424
+    },
+    {
+      "station": "DAV",
+      "latitude": 46.812969,
+      "longitude": 9.843558,
+      "altitude_m": 1594.0,
+      "cell": 143519,
+      "grid_latitude": 46.81927490234375,
+      "grid_longitude": 9.836330771446228,
+      "distance_km": 0.8911306630440098
+    },
+    {
+      "station": "DEM",
+      "latitude": 47.351706,
+      "longitude": 7.349567,
+      "altitude_m": 439.0,
+      "cell": 194057,
+      "grid_latitude": 47.34417724609375,
+      "grid_longitude": 7.340725302696228,
+      "distance_km": 1.0698428079759388
+    },
+    {
+      "station": "DIA",
+      "latitude": 46.32675,
+      "longitude": 7.203781,
+      "altitude_m": 2964.0,
+      "cell": 193452,
+      "grid_latitude": 46.32489013671875,
+      "grid_longitude": 7.206447958946228,
+      "distance_km": 0.29104406002710365
+    },
+    {
+      "station": "DIS",
+      "latitude": 46.706569,
+      "longitude": 8.853478,
+      "altitude_m": 1197.0,
+      "cell": 195203,
+      "grid_latitude": 46.71160888671875,
+      "grid_longitude": 8.854397177696228,
+      "distance_km": 0.5647751625263144
+    },
+    {
+      "station": "DOL",
+      "latitude": 46.424794,
+      "longitude": 6.099453,
+      "altitude_m": 1670.0,
+      "cell": 184727,
+      "grid_latitude": 46.43133544921875,
+      "grid_longitude": 6.089748740196228,
+      "distance_km": 1.040315504894218
+    },
+    {
+      "station": "EBK",
+      "latitude": 47.273389,
+      "longitude": 9.108494,
+      "altitude_m": 623.0,
+      "cell": 196211,
+      "grid_latitude": 47.27117919921875,
+      "grid_longitude": 9.120022177696228,
+      "distance_km": 0.9038141515141963
+    },
+    {
+      "station": "EGH",
+      "latitude": 46.426528,
+      "longitude": 8.092728,
+      "altitude_m": 2892.0,
+      "cell": 192523,
+      "grid_latitude": 46.42572021484375,
+      "grid_longitude": 8.090725302696228,
+      "distance_km": 0.17784672978990118
+    },
+    {
+      "station": "EGO",
+      "latitude": 47.179428,
+      "longitude": 8.004758,
+      "altitude_m": 522.0,
+      "cell": 194759,
+      "grid_latitude": 47.17108154296875,
+      "grid_longitude": 8.008694052696228,
+      "distance_km": 0.9746029904964033
+    },
+    {
+      "station": "EIN",
+      "latitude": 47.133042,
+      "longitude": 8.756556,
+      "altitude_m": 911.0,
+      "cell": 196790,
+      "grid_latitude": 47.12445068359375,
+      "grid_longitude": 8.753811240196228,
+      "distance_km": 0.9776173194966373
+    },
+    {
+      "station": "ELM",
+      "latitude": 46.923742,
+      "longitude": 9.175347,
+      "altitude_m": 958.0,
+      "cell": 195898,
+      "grid_latitude": 46.91961669921875,
+      "grid_longitude": 9.183010458946228,
+      "distance_km": 0.7410468162202073
+    },
+    {
+      "station": "ENG",
+      "latitude": 46.821639,
+      "longitude": 8.410514,
+      "altitude_m": 1036.0,
+      "cell": 195088,
+      "grid_latitude": 46.82537841796875,
+      "grid_longitude": 8.397854208946228,
+      "distance_km": 1.0491348580013165
+    },
+    {
+      "station": "EVI",
+      "latitude": 46.182953,
+      "longitude": 7.026747,
+      "altitude_m": 482.0,
+      "cell": 193537,
+      "grid_latitude": 46.17669677734375,
+      "grid_longitude": 7.026272177696228,
+      "distance_km": 0.6966200976611852
+    },
+    {
+      "station": "EVO",
+      "latitude": 46.112211,
+      "longitude": 7.508631,
+      "altitude_m": 1825.0,
+      "cell": 193749,
+      "grid_latitude": 46.10736083984375,
+      "grid_longitude": 7.496975302696228,
+      "distance_km": 1.0479548942830246
+    },
+    {
+      "station": "FAH",
+      "latitude": 47.423814,
+      "longitude": 6.941194,
+      "altitude_m": 596.0,
+      "cell": 148083,
+      "grid_latitude": 47.42596435546875,
+      "grid_longitude": 6.932522177696228,
+      "distance_km": 0.6948163427127096
+    },
+    {
+      "station": "FRE",
+      "latitude": 46.840622,
+      "longitude": 6.576369,
+      "altitude_m": 1205.0,
+      "cell": 185094,
+      "grid_latitude": 46.83978271484375,
+      "grid_longitude": 6.580471396446228,
+      "distance_km": 0.32569051911299923
+    },
+    {
+      "station": "FRU",
+      "latitude": 46.599003,
+      "longitude": 7.657542,
+      "altitude_m": 756.0,
+      "cell": 192249,
+      "grid_latitude": 46.59783935546875,
+      "grid_longitude": 7.655666708946228,
+      "distance_km": 0.19305595828786612
+    },
+    {
+      "station": "GEN",
+      "latitude": 45.927592,
+      "longitude": 9.017875,
+      "altitude_m": 1600.0,
+      "cell": 189764,
+      "grid_latitude": 45.92987060546875,
+      "grid_longitude": 9.019924521446228,
+      "distance_km": 0.29886903631784356
+    },
+    {
+      "station": "GIH",
+      "latitude": 46.849447,
+      "longitude": 8.190225,
+      "altitude_m": 471.0,
+      "cell": 190986,
+      "grid_latitude": 46.85858154296875,
+      "grid_longitude": 8.182522177696228,
+      "distance_km": 1.1725029139259269
+    },
+    {
+      "station": "GLA",
+      "latitude": 47.034586,
+      "longitude": 9.066961,
+      "altitude_m": 517.0,
+      "cell": 196337,
+      "grid_latitude": 47.03265380859375,
+      "grid_longitude": 9.069240927696228,
+      "distance_km": 0.2757108800628628
+    },
+    {
+      "station": "GOE",
+      "latitude": 47.363147,
+      "longitude": 7.973733,
+      "altitude_m": 380.0,
+      "cell": 194643,
+      "grid_latitude": 47.36663818359375,
+      "grid_longitude": 7.970119833946228,
+      "distance_km": 0.47408192903569235
+    },
+    {
+      "station": "GOR",
+      "latitude": 45.983644,
+      "longitude": 7.785944,
+      "altitude_m": 3129.0,
+      "cell": 193181,
+      "grid_latitude": 45.98333740234375,
+      "grid_longitude": 7.791408896446228,
+      "distance_km": 0.4236221792592429
+    },
+    {
+      "station": "GRA",
+      "latitude": 46.7714,
+      "longitude": 7.113736,
+      "altitude_m": 651.0,
+      "cell": 191875,
+      "grid_latitude": 46.78216552734375,
+      "grid_longitude": 7.125393271446228,
+      "distance_km": 1.490307241031307
+    },
+    {
+      "station": "GRC",
+      "latitude": 46.195314,
+      "longitude": 7.836822,
+      "altitude_m": 1605.0,
+      "cell": 192285,
+      "grid_latitude": 46.19451904296875,
+      "grid_longitude": 7.829494833946228,
+      "distance_km": 0.5708568233059175
+    },
+    {
+      "station": "GRE",
+      "latitude": 47.179097,
+      "longitude": 7.415144,
+      "altitude_m": 428.0,
+      "cell": 191397,
+      "grid_latitude": 47.17401123046875,
+      "grid_longitude": 7.413479208946228,
+      "distance_km": 0.5793419230244583
+    },
+    {
+      "station": "GRH",
+      "latitude": 46.571689,
+      "longitude": 8.333256,
+      "altitude_m": 1980.0,
+      "cell": 190351,
+      "grid_latitude": 46.57757568359375,
+      "grid_longitude": 8.339260458946228,
+      "distance_km": 0.7994402102251013
+    },
+    {
+      "station": "GRO",
+      "latitude": 46.255075,
+      "longitude": 9.163758,
+      "altitude_m": 324.0,
+      "cell": 190000,
+      "grid_latitude": 46.26214599609375,
+      "grid_longitude": 9.162990927696228,
+      "distance_km": 0.7884674145900901
+    },
+    {
+      "station": "GSB",
+      "latitude": 45.869092,
+      "longitude": 7.170683,
+      "altitude_m": 2472.0,
+      "cell": 193943,
+      "grid_latitude": 45.85906982421875,
+      "grid_longitude": 7.165432333946228,
+      "distance_km": 1.1862630001793493
+    },
+    {
+      "station": "GUE",
+      "latitude": 46.652475,
+      "longitude": 8.615531,
+      "altitude_m": 2286.0,
+      "cell": 195142,
+      "grid_latitude": 46.65692138671875,
+      "grid_longitude": 8.612209677696228,
+      "distance_km": 0.5556136117199546
+    },
+    {
+      "station": "GUT",
+      "latitude": 47.601733,
+      "longitude": 9.279428,
+      "altitude_m": 440.0,
+      "cell": 197815,
+      "grid_latitude": 47.60394287109375,
+      "grid_longitude": 9.266506552696228,
+      "distance_km": 0.999462498086854
+    },
+    {
+      "station": "GVE",
+      "latitude": 46.247519,
+      "longitude": 6.127742,
+      "altitude_m": 411.0,
+      "cell": 182820,
+      "grid_latitude": 46.25457763671875,
+      "grid_longitude": 6.128322958946228,
+      "distance_km": 0.7861547507028861
+    },
+    {
+      "station": "HAI",
+      "latitude": 47.651242,
+      "longitude": 9.023911,
+      "altitude_m": 719.0,
+      "cell": 197344,
+      "grid_latitude": 47.65765380859375,
+      "grid_longitude": 9.014065146446228,
+      "distance_km": 1.0257511767617213
+    },
+    {
+      "station": "HLL",
+      "latitude": 47.697278,
+      "longitude": 8.470464,
+      "altitude_m": 419.0,
+      "cell": 153888,
+      "grid_latitude": 47.70159912109375,
+      "grid_longitude": 8.457912802696228,
+      "distance_km": 1.0550479074939918
+    },
+    {
+      "station": "HOE",
+      "latitude": 47.370864,
+      "longitude": 8.941644,
+      "altitude_m": 1133.0,
+      "cell": 196358,
+      "grid_latitude": 47.36639404296875,
+      "grid_longitude": 8.953029990196228,
+      "distance_km": 0.9911180502433817
+    },
+    {
+      "station": "ILZ",
+      "latitude": 46.775039,
+      "longitude": 9.215353,
+      "altitude_m": 698.0,
+      "cell": 195910,
+      "grid_latitude": 46.77508544921875,
+      "grid_longitude": 9.225979208946228,
+      "distance_km": 0.8092388265532497
+    },
+    {
+      "station": "INT",
+      "latitude": 46.672033,
+      "longitude": 7.87045,
+      "altitude_m": 578.0,
+      "cell": 192814,
+      "grid_latitude": 46.66156005859375,
+      "grid_longitude": 7.877834677696228,
+      "distance_km": 1.2937074119745686
+    },
+    {
+      "station": "JUN",
+      "latitude": 46.547556,
+      "longitude": 7.985444,
+      "altitude_m": 3571.0,
+      "cell": 192836,
+      "grid_latitude": 46.53680419921875,
+      "grid_longitude": 7.975002646446228,
+      "distance_km": 1.4377255600029362
+    },
+    {
+      "station": "KLO",
+      "latitude": 47.479611,
+      "longitude": 8.535961,
+      "altitude_m": 426.0,
+      "cell": 196470,
+      "grid_latitude": 47.48675537109375,
+      "grid_longitude": 8.528225302696228,
+      "distance_km": 0.984387892342159
+    },
+    {
+      "station": "KOP",
+      "latitude": 47.11885,
+      "longitude": 7.605503,
+      "altitude_m": 485.0,
+      "cell": 191275,
+      "grid_latitude": 47.11956787109375,
+      "grid_longitude": 7.600002646446228,
+      "distance_km": 0.42377228233766706
+    },
+    {
+      "station": "LAE",
+      "latitude": 47.481933,
+      "longitude": 8.397222,
+      "altitude_m": 845.0,
+      "cell": 195034,
+      "grid_latitude": 47.47967529296875,
+      "grid_longitude": 8.403713583946228,
+      "distance_km": 0.5486456934398067
+    },
+    {
+      "station": "LAG",
+      "latitude": 46.939633,
+      "longitude": 7.806425,
+      "altitude_m": 744.0,
+      "cell": 191095,
+      "grid_latitude": 46.92816162109375,
+      "grid_longitude": 7.815334677696228,
+      "distance_km": 1.4438495886772658
+    },
+    {
+      "station": "LAT",
+      "latitude": 46.627275,
+      "longitude": 9.753706,
+      "altitude_m": 1408.0,
+      "cell": 143325,
+      "grid_latitude": 46.62664794921875,
+      "grid_longitude": 9.755276083946228,
+      "distance_km": 0.13869585843546545
+    },
+    {
+      "station": "LEI",
+      "latitude": 47.597361,
+      "longitude": 8.1882,
+      "altitude_m": 341.0,
+      "cell": 195014,
+      "grid_latitude": 47.59124755859375,
+      "grid_longitude": 8.200100302696228,
+      "distance_km": 1.1217976733457717
+    },
+    {
+      "station": "LUG",
+      "latitude": 46.004217,
+      "longitude": 8.960322,
+      "altitude_m": 273.0,
+      "cell": 189725,
+      "grid_latitude": 46.01165771484375,
+      "grid_longitude": 8.954494833946228,
+      "distance_km": 0.9418475928972648
+    },
+    {
+      "station": "LUZ",
+      "latitude": 47.036439,
+      "longitude": 8.301022,
+      "altitude_m": 454.0,
+      "cell": 194438,
+      "grid_latitude": 47.03265380859375,
+      "grid_longitude": 8.289944052696228,
+      "distance_km": 0.9391465301164253
+    },
+    {
+      "station": "MAG",
+      "latitude": 46.160025,
+      "longitude": 8.933672,
+      "altitude_m": 203.0,
+      "cell": 190156,
+      "grid_latitude": 46.16595458984375,
+      "grid_longitude": 8.924221396446228,
+      "distance_km": 0.9820759174079564
+    },
+    {
+      "station": "MAH",
+      "latitude": 46.736978,
+      "longitude": 6.567983,
+      "altitude_m": 435.0,
+      "cell": 183910,
+      "grid_latitude": 46.73455810546875,
+      "grid_longitude": 6.564846396446228,
+      "distance_km": 0.359920704452022
+    },
+    {
+      "station": "MER",
+      "latitude": 46.732222,
+      "longitude": 8.169247,
+      "altitude_m": 589.0,
+      "cell": 193004,
+      "grid_latitude": 46.72650146484375,
+      "grid_longitude": 8.157619833946228,
+      "distance_km": 1.0908557690883132
+    },
+    {
+      "station": "MLS",
+      "latitude": 46.546197,
+      "longitude": 7.017753,
+      "altitude_m": 1974.0,
+      "cell": 183808,
+      "grid_latitude": 46.53900146484375,
+      "grid_longitude": 7.021877646446228,
+      "distance_km": 0.8600498889633628
+    },
+    {
+      "station": "MOA",
+      "latitude": 47.243847,
+      "longitude": 8.232831,
+      "altitude_m": 453.0,
+      "cell": 194577,
+      "grid_latitude": 47.24481201171875,
+      "grid_longitude": 8.245998740196228,
+      "distance_km": 0.9997719982703559
+    },
+    {
+      "station": "MOE",
+      "latitude": 47.572197,
+      "longitude": 7.877911,
+      "altitude_m": 343.0,
+      "cell": 151085,
+      "grid_latitude": 47.58245849609375,
+      "grid_longitude": 7.870510458946228,
+      "distance_km": 1.268899317593078
+    },
+    {
+      "station": "MTE",
+      "latitude": 46.147897,
+      "longitude": 7.624033,
+      "altitude_m": 1580.0,
+      "cell": 193124,
+      "grid_latitude": 46.15740966796875,
+      "grid_longitude": 7.614651083946228,
+      "distance_km": 1.2810637433173064
+    },
+    {
+      "station": "MTR",
+      "latitude": 46.410103,
+      "longitude": 8.924742,
+      "altitude_m": 2171.0,
+      "cell": 190066,
+      "grid_latitude": 46.41351318359375,
+      "grid_longitude": 8.929104208946228,
+      "distance_km": 0.5056018855968424
+    },
+    {
+      "station": "MUB",
+      "latitude": 46.973278,
+      "longitude": 7.278217,
+      "altitude_m": 480.0,
+      "cell": 191505,
+      "grid_latitude": 46.97528076171875,
+      "grid_longitude": 7.278225302696228,
+      "distance_km": 0.22269783334125728
+    },
+    {
+      "station": "MVE",
+      "latitude": 46.298806,
+      "longitude": 7.460814,
+      "altitude_m": 1423.0,
+      "cell": 193329,
+      "grid_latitude": 46.30218505859375,
+      "grid_longitude": 7.457912802696228,
+      "distance_km": 0.4368634599826767
+    },
+    {
+      "station": "NAP",
+      "latitude": 47.004667,
+      "longitude": 7.940117,
+      "altitude_m": 1404.0,
+      "cell": 191048,
+      "grid_latitude": 47.00482177734375,
+      "grid_longitude": 7.940822958946228,
+      "distance_km": 0.05623004726386968
+    },
+    {
+      "station": "NAS",
+      "latitude": 46.817164,
+      "longitude": 10.2614,
+      "altitude_m": 2380.0,
+      "cell": 145214,
+      "grid_latitude": 46.81268310546875,
+      "grid_longitude": 10.267483115196228,
+      "distance_km": 0.6801020465615254
+    },
+    {
+      "station": "NEU",
+      "latitude": 47.000067,
+      "longitude": 6.953297,
+      "altitude_m": 485.0,
+      "cell": 185390,
+      "grid_latitude": 47.00555419921875,
+      "grid_longitude": 6.949612021446228,
+      "distance_km": 0.6710925688091686
+    },
+    {
+      "station": "ORO",
+      "latitude": 46.572269,
+      "longitude": 6.858239,
+      "altitude_m": 828.0,
+      "cell": 183855,
+      "grid_latitude": 46.57415771484375,
+      "grid_longitude": 6.870998740196228,
+      "distance_km": 0.9976890153602027
+    },
+    {
+      "station": "OTL",
+      "latitude": 46.172256,
+      "longitude": 8.787494,
+      "altitude_m": 367.0,
+      "cell": 190202,
+      "grid_latitude": 46.16302490234375,
+      "grid_longitude": 8.778225302696228,
+      "distance_km": 1.2502250124211576
+    },
+    {
+      "station": "PAY",
+      "latitude": 46.811581,
+      "longitude": 6.942469,
+      "altitude_m": 490.0,
+      "cell": 185266,
+      "grid_latitude": 46.81927490234375,
+      "grid_longitude": 6.946682333946228,
+      "distance_km": 0.9136280226069018
+    },
+    {
+      "station": "PFA",
+      "latitude": 47.376817,
+      "longitude": 8.754864,
+      "altitude_m": 537.0,
+      "cell": 196408,
+      "grid_latitude": 47.37152099609375,
+      "grid_longitude": 8.756740927696228,
+      "distance_km": 0.605612082741928
+    },
+    {
+      "station": "PIL",
+      "latitude": 46.978869,
+      "longitude": 8.252256,
+      "altitude_m": 2105.0,
+      "cell": 194421,
+      "grid_latitude": 46.97186279296875,
+      "grid_longitude": 8.241115927696228,
+      "distance_km": 1.1494691253832714
+    },
+    {
+      "station": "PIO",
+      "latitude": 46.514811,
+      "longitude": 8.688039,
+      "altitude_m": 990.0,
+      "cell": 190225,
+      "grid_latitude": 46.52069091796875,
+      "grid_longitude": 8.694729208946228,
+      "distance_km": 0.8303796030930776
+    },
+    {
+      "station": "PLF",
+      "latitude": 46.747717,
+      "longitude": 7.266264,
+      "altitude_m": 1042.0,
+      "cell": 191916,
+      "grid_latitude": 46.74627685546875,
+      "grid_longitude": 7.276760458946228,
+      "distance_km": 0.8156325919623081
+    },
+    {
+      "station": "PMA",
+      "latitude": 46.577181,
+      "longitude": 9.529544,
+      "altitude_m": 2668.0,
+      "cell": 143233,
+      "grid_latitude": 46.58441162109375,
+      "grid_longitude": 9.525783896446228,
+      "distance_km": 0.8538234736746949
+    },
+    {
+      "station": "PSI",
+      "latitude": 47.536475,
+      "longitude": 8.226944,
+      "altitude_m": 334.0,
+      "cell": 194966,
+      "grid_latitude": 47.53021240234375,
+      "grid_longitude": 8.236233115196228,
+      "distance_km": 0.9855265066507244
+    },
+    {
+      "station": "PUY",
+      "latitude": 46.512283,
+      "longitude": 6.667517,
+      "altitude_m": 456.0,
+      "cell": 184014,
+      "grid_latitude": 46.50579833984375,
+      "grid_longitude": 6.676662802696228,
+      "distance_km": 1.0048948976329348
+    },
+    {
+      "station": "RAG",
+      "latitude": 47.016631,
+      "longitude": 9.502594,
+      "altitude_m": 497.0,
+      "cell": 196097,
+      "grid_latitude": 47.01385498046875,
+      "grid_longitude": 9.510158896446228,
+      "distance_km": 0.6513111836923818
+    },
+    {
+      "station": "REH",
+      "latitude": 47.427694,
+      "longitude": 8.517953,
+      "altitude_m": 444.0,
+      "cell": 196494,
+      "grid_latitude": 47.43377685546875,
+      "grid_longitude": 8.517483115196228,
+      "distance_km": 0.6773055477925221
+    },
+    {
+      "station": "ROB",
+      "latitude": 46.347217,
+      "longitude": 10.063031,
+      "altitude_m": 1078.0,
+      "cell": 142890,
+      "grid_latitude": 46.35028076171875,
+      "grid_longitude": 10.058010458946228,
+      "distance_km": 0.5143462318905829
+    },
+    {
+      "station": "ROE",
+      "latitude": 46.443067,
+      "longitude": 8.513389,
+      "altitude_m": 1898.0,
+      "cell": 190531,
+      "grid_latitude": 46.44036865234375,
+      "grid_longitude": 8.505764365196228,
+      "distance_km": 0.6567695097421353
+    },
+    {
+      "station": "RUE",
+      "latitude": 47.434572,
+      "longitude": 7.879414,
+      "altitude_m": 611.0,
+      "cell": 194663,
+      "grid_latitude": 47.43206787109375,
+      "grid_longitude": 7.880276083946228,
+      "distance_km": 0.28589707866580594
+    },
+    {
+      "station": "SAE",
+      "latitude": 47.249447,
+      "longitude": 9.343469,
+      "altitude_m": 2501.0,
+      "cell": 197566,
+      "grid_latitude": 47.25238037109375,
+      "grid_longitude": 9.329494833946228,
+      "distance_km": 1.104023840596251
+    },
+    {
+      "station": "SAM",
+      "latitude": 46.526247,
+      "longitude": 9.879469,
+      "altitude_m": 1709.0,
+      "cell": 143286,
+      "grid_latitude": 46.52166748046875,
+      "grid_longitude": 9.878322958946228,
+      "distance_km": 0.5167129832890849
+    },
+    {
+      "station": "SBE",
+      "latitude": 46.463542,
+      "longitude": 9.1847,
+      "altitude_m": 1639.0,
+      "cell": 195501,
+      "grid_latitude": 46.46429443359375,
+      "grid_longitude": 9.195705771446228,
+      "distance_km": 0.8470994678906829
+    },
+    {
+      "station": "SBO",
+      "latitude": 45.843444,
+      "longitude": 8.932364,
+      "altitude_m": 351.0,
+      "cell": 189606,
+      "grid_latitude": 45.83612060546875,
+      "grid_longitude": 8.928127646446228,
+      "distance_km": 0.8779643753752977
+    },
+    {
+      "station": "SCU",
+      "latitude": 46.793275,
+      "longitude": 10.283267,
+      "altitude_m": 1304.0,
+      "cell": 145215,
+      "grid_latitude": 46.79583740234375,
+      "grid_longitude": 10.273830771446228,
+      "distance_km": 0.7727850948432604
+    },
+    {
+      "station": "SHA",
+      "latitude": 47.689842,
+      "longitude": 8.620142,
+      "altitude_m": 438.0,
+      "cell": 197161,
+      "grid_latitude": 47.67718505859375,
+      "grid_longitude": 8.631252646446228,
+      "distance_km": 1.6347851181036022
+    },
+    {
+      "station": "SIA",
+      "latitude": 46.432331,
+      "longitude": 9.762325,
+      "altitude_m": 1804.0,
+      "cell": 142747,
+      "grid_latitude": 46.41839599609375,
+      "grid_longitude": 9.770901083946228,
+      "distance_km": 1.6831620927752282
+    },
+    {
+      "station": "SIM",
+      "latitude": 46.196825,
+      "longitude": 8.056336,
+      "altitude_m": 1465.0,
+      "cell": 192396,
+      "grid_latitude": 46.19818115234375,
+      "grid_longitude": 8.058498740196228,
+      "distance_km": 0.2246065923706711
+    },
+    {
+      "station": "SIO",
+      "latitude": 46.21865,
+      "longitude": 7.330203,
+      "altitude_m": 482.0,
+      "cell": 193347,
+      "grid_latitude": 46.21551513671875,
+      "grid_longitude": 7.323635458946228,
+      "distance_km": 0.6138696600476183
+    },
+    {
+      "station": "SMA",
+      "latitude": 47.381003,
+      "longitude": 8.567194,
+      "altitude_m": 604.0,
+      "cell": 196531,
+      "grid_latitude": 47.38616943359375,
+      "grid_longitude": 8.572658896446228,
+      "distance_km": 0.7066224128361072
+    },
+    {
+      "station": "SMM",
+      "latitude": 46.602256,
+      "longitude": 10.426314,
+      "altitude_m": 1386.0,
+      "cell": 145652,
+      "grid_latitude": 46.59686279296875,
+      "grid_longitude": 10.446682333946228,
+      "distance_km": 1.6677202998806264
+    },
+    {
+      "station": "SPF",
+      "latitude": 46.947042,
+      "longitude": 8.012442,
+      "altitude_m": 744.0,
+      "cell": 191171,
+      "grid_latitude": 46.95159912109375,
+      "grid_longitude": 8.015041708946228,
+      "distance_km": 0.5437970317825546
+    },
+    {
+      "station": "STC",
+      "latitude": 47.571767,
+      "longitude": 7.687094,
+      "altitude_m": 493.0,
+      "cell": 150919,
+      "grid_latitude": 47.56829833984375,
+      "grid_longitude": 7.679592490196228,
+      "distance_km": 0.6822619568231685
+    },
+    {
+      "station": "STG",
+      "latitude": 47.425475,
+      "longitude": 9.398528,
+      "altitude_m": 776.0,
+      "cell": 197581,
+      "grid_latitude": 47.41864013671875,
+      "grid_longitude": 9.403225302696228,
+      "distance_km": 0.8381476216243281
+    },
+    {
+      "station": "TAE",
+      "latitude": 47.479892,
+      "longitude": 8.904928,
+      "altitude_m": 539.0,
+      "cell": 197228,
+      "grid_latitude": 47.48382568359375,
+      "grid_longitude": 8.902737021446228,
+      "distance_km": 0.4673678146934212
+    },
+    {
+      "station": "THU",
+      "latitude": 46.749853,
+      "longitude": 7.585222,
+      "altitude_m": 570.0,
+      "cell": 191572,
+      "grid_latitude": 46.75848388671875,
+      "grid_longitude": 7.573635458946228,
+      "distance_km": 1.303916879653234
+    },
+    {
+      "station": "TIT",
+      "latitude": 46.770608,
+      "longitude": 8.425981,
+      "altitude_m": 3045.0,
+      "cell": 195082,
+      "grid_latitude": 46.77020263671875,
+      "grid_longitude": 8.413967490196228,
+      "distance_km": 0.9160587912913928
+    },
+    {
+      "station": "UEB",
+      "latitude": 47.351364,
+      "longitude": 8.490225,
+      "altitude_m": 854.0,
+      "cell": 196589,
+      "grid_latitude": 47.34442138671875,
+      "grid_longitude": 8.489651083946228,
+      "distance_km": 0.773193317763379
+    },
+    {
+      "station": "ULR",
+      "latitude": 46.504881,
+      "longitude": 8.308236,
+      "altitude_m": 1346.0,
+      "cell": 190439,
+      "grid_latitude": 46.50067138671875,
+      "grid_longitude": 8.298244833946228,
+      "distance_km": 0.8965892937259304
+    },
+    {
+      "station": "VAB",
+      "latitude": 46.755039,
+      "longitude": 9.554433,
+      "altitude_m": 1568.0,
+      "cell": 143448,
+      "grid_latitude": 46.76019287109375,
+      "grid_longitude": 9.554592490196228,
+      "distance_km": 0.5732130930440906
+    },
+    {
+      "station": "VAD",
+      "latitude": 47.127472,
+      "longitude": 9.517578,
+      "altitude_m": 457.0,
+      "cell": 197474,
+      "grid_latitude": 47.13665771484375,
+      "grid_longitude": 9.527248740196228,
+      "distance_km": 1.256365059625489
+    },
+    {
+      "station": "VEV",
+      "latitude": 46.471239,
+      "longitude": 6.815056,
+      "altitude_m": 405.0,
+      "cell": 183749,
+      "grid_latitude": 46.47088623046875,
+      "grid_longitude": 6.828029990196228,
+      "distance_km": 0.9943515503306707
+    },
+    {
+      "station": "VIO",
+      "latitude": 46.353019,
+      "longitude": 9.6278,
+      "altitude_m": 1089.0,
+      "cell": 142805,
+      "grid_latitude": 46.34710693359375,
+      "grid_longitude": 9.619045615196228,
+      "distance_km": 0.9400212195738916
+    },
+    {
+      "station": "VIS",
+      "latitude": 46.3029,
+      "longitude": 7.842958,
+      "altitude_m": 639.0,
+      "cell": 192317,
+      "grid_latitude": 46.29998779296875,
+      "grid_longitude": 7.848537802696228,
+      "distance_km": 0.5372118512890588
+    },
+    {
+      "station": "VLS",
+      "latitude": 46.627758,
+      "longitude": 9.188711,
+      "altitude_m": 1242.0,
+      "cell": 195647,
+      "grid_latitude": 46.62591552734375,
+      "grid_longitude": 9.204006552696228,
+      "distance_km": 1.1858428452864351
+    },
+    {
+      "station": "WAE",
+      "latitude": 47.220958,
+      "longitude": 8.677706,
+      "altitude_m": 485.0,
+      "cell": 196769,
+      "grid_latitude": 47.23162841796875,
+      "grid_longitude": 8.690822958946228,
+      "distance_km": 1.545595369752156
+    },
+    {
+      "station": "WFJ",
+      "latitude": 46.833342,
+      "longitude": 9.806397,
+      "altitude_m": 2691.0,
+      "cell": 143517,
+      "grid_latitude": 46.83880615234375,
+      "grid_longitude": 9.804104208946228,
+      "distance_km": 0.6321220007284887
+    },
+    {
+      "station": "WYN",
+      "latitude": 47.255025,
+      "longitude": 7.787475,
+      "altitude_m": 422.0,
+      "cell": 194785,
+      "grid_latitude": 47.25531005859375,
+      "grid_longitude": 7.800686240196228,
+      "distance_km": 0.9975802300644165
+    },
+    {
+      "station": "ZER",
+      "latitude": 46.029272,
+      "longitude": 7.752433,
+      "altitude_m": 1638.0,
+      "cell": 193198,
+      "grid_latitude": 46.02850341796875,
+      "grid_longitude": 7.763088583946228,
+      "distance_km": 0.8270613517055423
+    }
+  ],
+  "grid_uuid": "bbbd5a09855499243c7a4aa4c8762920",
+  "source_grid_file": "work/scientific-hardening-20260906/icon_20260905_00.nc",
+  "source_grid_sha256": "c9c20e1051c9e9f10873930b92d48544c6847f40e8d55fea632b8b70bd6fd39e",
+  "boundary_leads": [
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    32,
+    33,
+    34,
+    35,
+    36,
+    37,
+    38,
+    39,
+    40
+  ],
+  "archive": "/store_new/mch/msopr/osm/ICON-CH2-EPS",
+  "protocol_sha256": "7d145fecd3d512339bb55bec02fb6acbe105e4ac798c7a49e7468cf034b74645",
+  "uv_stations": [
+    {
+      "station": "WOUDC501",
+      "latitude": 46.82,
+      "longitude": 9.85,
+      "altitude_m": 1590.0,
+      "cell": 143512,
+      "grid_latitude": 46.81658935546875,
+      "grid_longitude": 9.862209677696228,
+      "distance_km": 1.0034861186587254
+    }
+  ]
+}

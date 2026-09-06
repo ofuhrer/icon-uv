@@ -1,5 +1,6 @@
 """Single small CLI; all core operations are also ordinary Python functions."""
 import argparse
+import hashlib
 import json
 from pathlib import Path
 
@@ -36,6 +37,12 @@ def main():
     poi.add_argument("--locations", type=Path, required=True)
     poi.add_argument("--table", type=Path, default=DEFAULT_TABLE)
     poi.add_argument("--output", type=Path, required=True)
+    daily = commands.add_parser("daily", help="Export explicit today/tomorrow map data from a saved UV grid")
+    daily.add_argument("--grid", type=Path, required=True)
+    daily.add_argument("--catalog", type=Path, required=True)
+    daily.add_argument("--issued-at", required=True, help="Timezone-aware issuance timestamp; also fixes replay dates")
+    daily.add_argument("--table", type=Path, default=DEFAULT_TABLE)
+    daily.add_argument("--output", type=Path, required=True)
     build = commands.add_parser("build-table", help="Developer only: rebuild LUT with libRadtran")
     build.add_argument("--lib", type=Path, required=True)
     build.add_argument("--cache", type=Path, required=True)
@@ -60,6 +67,13 @@ def main():
     elif args.command == "build-table":
         from .build_table import build as make_table
         make_table(args.lib, args.output, args.cache, workers=args.workers)
+    elif args.command == "daily":
+        from .daily import export_daily, write_json_atomic
+        with xr.open_dataset(args.grid) as ds:
+            payload = export_daily(ds.load(), json.loads(args.catalog.read_text()), args.issued_at,
+                                   table=RadiationTable(args.table),
+                                   input_sha256=hashlib.sha256(args.grid.read_bytes()).hexdigest())
+        write_json_atomic(payload, args.output)
 
 
 if __name__ == "__main__":
