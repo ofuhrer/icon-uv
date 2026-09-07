@@ -30,8 +30,10 @@ giving the Valais and Grisons Alps and the main cities priority; zoom in to
 reveal more locations. Zoom-out stops at the overview of Switzerland, and the
 home control restores that view. Wheel and button zoom use short animated
 transitions and respect the browser’s reduced-motion preference. Select a
-marker for its unrounded UV Index and availability details. Small screens
-also have a mountain-elevation table. The cog above Home opens map settings.
+marker for approximate peak times in Swiss local time and the model elevation
+used for towns. Peak times are rounded to 15 minutes; ranges describe variation
+across regional cells or ensemble members. Small screens also have a
+mountain-elevation table. The cog above Home opens map settings.
 
 ## Prepare a four-day forecast
 
@@ -48,7 +50,7 @@ CAMS_REFERENCE="PREVIOUS-YYYY-MM-DDT12:00:00Z"
 uv run --no-sync icon-uv fetch-icon \
   --reference "$ICON_REFERENCE" --first-lead 1 --last-lead 96 --output work/icon.nc
 uv run --no-sync icon-uv fetch-cams \
-  --reference "$CAMS_REFERENCE" --first-lead 12 --last-lead 108 --output work/cams.grib
+  --reference "$CAMS_REFERENCE" --first-lead 12 --last-lead 108 --output work/cams.nc
 ```
 
 Compute the full downloaded grid, using twelve solar samples per hour. Both the
@@ -59,7 +61,7 @@ import xarray as xr
 from icon_uv.data import load_cams, write_netcdf
 from icon_uv.products import compute_grid
 
-cams = load_cams("work/cams.grib")
+cams = load_cams("work/cams.nc")
 with xr.open_dataset("work/icon.nc") as source:
     icon = source.load()
 grid = compute_grid(icon, cams, samples=12)

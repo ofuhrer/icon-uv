@@ -261,73 +261,95 @@ def cams_request(reference, hours, bbox=BBOX):
 
 
 def fetch_cams(reference, hours, output, bbox=BBOX):
-    """Official open dataset; requires the user's ADS account/licence acceptance."""
+    """Fetch ozone/AOD from ADS and atomically publish normalized NetCDF.
+
+    Requires the user's ADS account/licence acceptance. The temporary GRIB is
+    decoded and validated before publication; its hash and request are embedded
+    in the NetCDF so the intermediate is self-contained.
+    """
     import cdsapi
     request = cams_request(reference, hours, bbox)
+    output = Path(output)
+    output.parent.mkdir(parents=True, exist_ok=True)
     client = cdsapi.Client(url="https://ads.atmosphere.copernicus.eu/api", retry_max=3, sleep_max=20, timeout=60)
-    client.retrieve(CAMS_DATASET, request, str(output))
-    Path(str(output)+".json").write_text(json.dumps(
-        {"dataset": CAMS_DATASET, "reference": utc(reference).isoformat(), "request": request,
-         "sha256": hashlib.sha256(Path(output).read_bytes()).hexdigest()}, indent=2)+"\n")
+    with tempfile.TemporaryDirectory(dir=output.parent, prefix=".cams-") as tmp:
+        downloaded = Path(tmp)/"cams.grib"
+        client.retrieve(CAMS_DATASET, request, str(downloaded))
+        ds = _decode_cams_grib(downloaded)
+        ref = utc(reference)
+        expected = (np.datetime64(ref.replace(tzinfo=None), "ns")
+                    + np.asarray(request["leadtime_hour"], dtype="int64").astype("timedelta64[h]"))
+        if utc(ds.attrs["forecast_reference_time"]) != ref or not np.array_equal(ds.time.values, expected):
+            raise ValueError("Downloaded CAMS cycle/times do not match the request")
+        ds.attrs.update(source_grib_sha256=hashlib.sha256(downloaded.read_bytes()).hexdigest(),
+                        retrieval_request=json.dumps(request, sort_keys=True))
+        write_netcdf(ds, output)
+
+
+def _decode_cams_grib(path):
+    """Normalize the ADS transport format inside the CAMS input filter."""
+    arrays = {"ozone_du": {}, "aod550": {}}
+    refs = set()
+    target_lat = target_lon = None
+    for m, values, coords in grib_messages(path):
+        if m["shortName"] not in ("gtco3", "tco3", "aod550"):
+            continue
+        if coords is None:
+            raise ValueError("CAMS input must be on ADS regular latitude/longitude grid")
+        refs.add((m["dataDate"], m["dataTime"]))
+        lat, lon = coords
+        lon = (lon+180) % 360 - 180
+        ys, xs = np.unique(lat), np.unique(lon)
+        if len(ys)*len(xs) != len(values):
+            raise ValueError("Incomplete/duplicate CAMS spatial grid")
+        if target_lat is not None and (not np.array_equal(ys, target_lat) or not np.array_equal(xs, target_lon)):
+            raise ValueError("CAMS messages use different grids")
+        target_lat, target_lon = ys, xs
+        v = np.empty((len(ys), len(xs)))
+        v[np.searchsorted(ys, lat), np.searchsorted(xs, lon)] = values
+        key = "aod550" if m["shortName"] == "aod550" else "ozone_du"
+        if key == "ozone_du":
+            if m["units"] not in ("kg m**-2", "kg m-2"):
+                raise ValueError("Expected CAMS ozone kg/m²")
+            v /= DU_KG_M2
+        elif m["units"] not in ("~", "1", "Numeric", "dimensionless"):
+            raise ValueError("Expected dimensionless CAMS AOD")
+        if m["stepType"] != "instant":
+            raise ValueError("Expected instantaneous CAMS composition")
+        valid = datetime.strptime(f"{m['validityDate']}{m['validityTime']:04d}", "%Y%m%d%H%M")
+        if valid in arrays[key]:
+            raise ValueError("Duplicate CAMS valid time")
+        arrays[key][valid] = v
+    if len(refs) != 1 or not arrays["ozone_du"] or set(arrays["ozone_du"]) != set(arrays["aod550"]):
+        raise ValueError("Need matching ozone/AOD times from exactly one CAMS cycle")
+    times = sorted(arrays["ozone_du"])
+    date, hour = refs.pop()
+    ref = datetime.strptime(f"{date}{hour:04d}", "%Y%m%d%H%M").replace(tzinfo=timezone.utc)
+    ds = xr.Dataset({k: (("time", "latitude", "longitude"), np.array([a[t] for t in times]))
+                     for k, a in arrays.items()},
+                    coords={"time": np.array(times, dtype="datetime64[ns]"),
+                            "latitude": target_lat, "longitude": target_lon},
+                    attrs={"forecast_reference_time": ref.isoformat(), "source": CAMS_DATASET})
+    ds.ozone_du.attrs["units"] = "DU"
+    ds.aod550.attrs["units"] = "1"
+    return _validate_cams(ds)
 
 
 def load_cams(path):
-    """Read a single CAMS forecast cycle: GRIB or normalized NetCDF.
+    """Read normalized CAMS NetCDF produced by fetch_cams.
 
-    NetCDF contract: ozone_du and aod550(time,latitude,longitude), units DU and 1,
-    forecast_reference_time attribute. No surface ozone substitutions.
+    Requires ozone_du and aod550(time,latitude,longitude), units DU and 1,
+    and the forecast_reference_time attribute.
     """
     path = Path(path)
-    with path.open("rb") as f:
-        is_grib = f.read(4) == b"GRIB"
-    if not is_grib:
-        with xr.open_dataset(path) as source:
-            ds = source.load()
-    else:
-        arrays = {"ozone_du": {}, "aod550": {}}
-        refs = set()
-        target_lat = target_lon = None
-        for m, values, coords in grib_messages(path):
-            if m["shortName"] not in ("gtco3", "tco3", "aod550"):
-                continue
-            if coords is None:
-                raise ValueError("CAMS input must be on ADS regular latitude/longitude grid")
-            refs.add((m["dataDate"], m["dataTime"]))
-            lat, lon = coords
-            lon = (lon+180) % 360 - 180
-            ys, xs = np.unique(lat), np.unique(lon)
-            if len(ys)*len(xs) != len(values):
-                raise ValueError("Incomplete/duplicate CAMS spatial grid")
-            if target_lat is not None and (not np.array_equal(ys, target_lat) or not np.array_equal(xs, target_lon)):
-                raise ValueError("CAMS messages use different grids")
-            target_lat, target_lon = ys, xs
-            v = np.empty((len(ys), len(xs)))
-            v[np.searchsorted(ys, lat), np.searchsorted(xs, lon)] = values
-            key = "aod550" if m["shortName"] == "aod550" else "ozone_du"
-            if key == "ozone_du":
-                if m["units"] not in ("kg m**-2", "kg m-2"):
-                    raise ValueError("Expected CAMS ozone kg/m²")
-                v /= DU_KG_M2
-            elif m["units"] not in ("~", "1", "Numeric", "dimensionless"):
-                raise ValueError("Expected dimensionless CAMS AOD")
-            if m["stepType"] != "instant":
-                raise ValueError("Expected instantaneous CAMS composition")
-            valid = datetime.strptime(f"{m['validityDate']}{m['validityTime']:04d}", "%Y%m%d%H%M")
-            if valid in arrays[key]:
-                raise ValueError("Duplicate CAMS valid time")
-            arrays[key][valid] = v
-        if len(refs) != 1 or not arrays["ozone_du"] or set(arrays["ozone_du"]) != set(arrays["aod550"]):
-            raise ValueError("Need matching ozone/AOD times from exactly one CAMS cycle")
-        times = sorted(arrays["ozone_du"])
-        date, hour = refs.pop()
-        ref = datetime.strptime(f"{date}{hour:04d}", "%Y%m%d%H%M").replace(tzinfo=timezone.utc)
-        ds = xr.Dataset({k: (("time", "latitude", "longitude"), np.array([a[t] for t in times]))
-                         for k, a in arrays.items()},
-                        coords={"time": np.array(times, dtype="datetime64[ns]"),
-                                "latitude": target_lat, "longitude": target_lon},
-                        attrs={"forecast_reference_time": ref.isoformat(), "source": CAMS_DATASET})
-        ds.ozone_du.attrs["units"] = "DU"
-        ds.aod550.attrs["units"] = "1"
+    with xr.open_dataset(path, engine="netcdf4") as source:
+        ds = _validate_cams(source.load())
+    ds.attrs["input_sha256"] = hashlib.sha256(path.read_bytes()).hexdigest()
+    return ds
+
+
+def _validate_cams(ds):
+    """Validate the normalized composition contract at ingestion and consumption."""
     for name, units in (("ozone_du", "DU"), ("aod550", "1")):
         if name not in ds or ds[name].attrs.get("units") != units:
             raise ValueError(f"CAMS contract requires {name} in {units}")
@@ -343,7 +365,6 @@ def load_cams(path):
             raise ValueError(f"CAMS {dim} needs at least two unique coordinates")
     if np.any((ds.ozone_du < 100) | (ds.ozone_du > 700)) or np.any((ds.aod550 < 0) | (ds.aod550 > 10)):
         raise ValueError("Implausible CAMS ozone/AOD; check units")
-    ds.attrs["input_sha256"] = hashlib.sha256(path.read_bytes()).hexdigest()
     return ds
 
 

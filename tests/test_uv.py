@@ -1,11 +1,15 @@
+import hashlib
 import json
+from pathlib import Path
+import sys
+from types import SimpleNamespace
 
 import numpy as np
 import pytest
 import xarray as xr
 import eccodes as ec
 
-from icon_uv.data import interval_radiation, load_cams, write_netcdf, cams_request
+from icon_uv.data import interval_radiation, load_cams, write_netcdf, cams_request, fetch_cams
 from icon_uv.products import POI, compute_grid, compute_pois, compare_observations
 from icon_uv.radiation import AXES, RadiationTable, erythema, solar_geometry
 from icon_uv.check_grid import check_grid
@@ -317,10 +321,11 @@ def test_duplicate_cells(icon, cams, table):
         compute_grid(icon, cams, table)
 
 
-def test_grib_cams_conversion(tmp_path):
+@pytest.fixture
+def cams_grib(tmp_path):
     path = tmp_path/"synthetic-cams.grib"
     with path.open("wb") as f:
-        for lead in (0, 3):
+        for lead in (33, 36, 39):
             for parameter, value in ((206, .0064245), (210207, .15)):
                 g = ec.codes_grib_new_from_samples("regular_ll_sfc_grib1")
                 try:
@@ -334,11 +339,105 @@ def test_grib_cams_conversion(tmp_path):
                     ec.codes_write(g, f)
                 finally:
                     ec.codes_release(g)
+    return path
+
+
+@pytest.fixture
+def ads_download(monkeypatch, cams_grib):
+    calls = []
+
+    def retrieve(dataset, request, target):
+        calls.append((dataset, request))
+        Path(target).write_bytes(cams_grib.read_bytes())
+
+    monkeypatch.setitem(sys.modules, "cdsapi", SimpleNamespace(
+        Client=lambda **kwargs: SimpleNamespace(retrieve=retrieve)))
+    return calls
+
+
+def test_fetch_cams_normalized_netcdf(tmp_path, cams_grib, ads_download):
+    path = tmp_path/"output"/"cams.nc"
+    fetch_cams("2026-09-05T00:00:00Z", [33, 36, 39], path)
     ds = load_cams(path)
-    assert ds.sizes == {"time": 2, "latitude": 2, "longitude": 2}
+    assert ds.sizes == {"time": 3, "latitude": 2, "longitude": 2}
     np.testing.assert_allclose(ds.ozone_du, 300., rtol=1e-6)
     np.testing.assert_allclose(ds.aod550, .15, rtol=1e-6)
     assert list(ds.latitude.values) == [46, 48]
+    assert ds.ozone_du.attrs["units"] == "DU"
+    assert ds.aod550.attrs["units"] == "1"
+    assert ds.ozone_du.dtype == np.float32
+    assert ds.ozone_du.encoding["zlib"]
+    assert ds.aod550.encoding["zlib"]
+    assert ds.attrs["source_grib_sha256"] == hashlib.sha256(cams_grib.read_bytes()).hexdigest()
+    assert ds.attrs["input_sha256"] == hashlib.sha256(path.read_bytes()).hexdigest()
+    assert ds.attrs["source"] == ads_download[0][0]
+    assert json.loads(ds.attrs["retrieval_request"]) == ads_download[0][1]
+    np.testing.assert_array_equal(ds.time, np.array([
+        "2026-09-06T09:00", "2026-09-06T12:00", "2026-09-06T15:00"], dtype="datetime64[ns]"))
+    assert list(path.parent.iterdir()) == [path]
+
+
+def test_load_cams_requires_netcdf(cams_grib):
+    with pytest.raises(OSError):
+        load_cams(cams_grib)
+
+
+@pytest.mark.parametrize("failure", ["cycle", "times", "missing_aod", "download"])
+def test_fetch_cams_failure_preserves_output(tmp_path, cams_grib, ads_download, monkeypatch, failure):
+    path = tmp_path/"output"/"cams.nc"
+    path.parent.mkdir()
+    path.write_bytes(b"previous publication")
+    reference, leads = "2026-09-05T00:00:00Z", [33, 36, 39]
+    error, message = ValueError, "cycle/times"
+    if failure == "cycle":
+        reference = "2026-09-05T12:00:00Z"
+    elif failure == "times":
+        leads = [33, 36]
+    elif failure == "missing_aod":
+        # Each lead has ozone followed by AOD; retaining the first message
+        # simulates a truncated but readable response.
+        with cams_grib.open("rb") as f:
+            g = ec.codes_grib_new_from_file(f)
+            try:
+                ozone_only = ec.codes_get_message(g)
+            finally:
+                ec.codes_release(g)
+        cams_grib.write_bytes(ozone_only)
+        message = "matching ozone/AOD"
+    else:
+        def fail(dataset, request, target):
+            Path(target).write_bytes(b"partial download")
+            raise OSError("connection lost")
+        monkeypatch.setitem(sys.modules, "cdsapi", SimpleNamespace(
+            Client=lambda **kwargs: SimpleNamespace(retrieve=fail)))
+        error, message = OSError, "connection lost"
+    with pytest.raises(error, match=message):
+        fetch_cams(reference, leads, path)
+    assert path.read_bytes() == b"previous publication"
+    assert list(path.parent.iterdir()) == [path]
+
+
+def test_cli_cams_netcdf_to_uv(tmp_path, ads_download, icon, table, monkeypatch):
+    from icon_uv import cli
+
+    cams_path, icon_path, uv_path = (tmp_path/name for name in ("cams.nc", "icon.nc", "uv.nc"))
+    monkeypatch.setattr(sys, "argv", ["icon-uv", "fetch-cams", "--reference", "2026-09-05T00:00:00Z",
+                                     "--first-lead", "33", "--last-lead", "39", "--output", str(cams_path)])
+    cli.main()
+    write_netcdf(icon, icon_path)
+    monkeypatch.setattr(cli, "RadiationTable", lambda path: table)
+    monkeypatch.setattr(sys, "argv", ["icon-uv", "run", "--icon", str(icon_path),
+                                     "--cams", str(cams_path), "--output", str(uv_path)])
+    cli.main()
+    # Independent normalized composition values, avoiding a GRIB reader in run.
+    expected_cams = load_cams(cams_path).copy(deep=True)
+    expected_cams["ozone_du"][:] = 300.
+    expected_cams["aod550"][:] = .15
+    expected = compute_grid(icon, expected_cams, table)
+    with xr.open_dataset(uv_path) as result:
+        for name in ("uvi", "clear_sky_uvi"):
+            assert np.isfinite(result[name]).all()
+            np.testing.assert_allclose(result[name], expected[name], rtol=1e-6)
 
 
 def test_failed_publication_preserves_existing(icon, tmp_path, monkeypatch):

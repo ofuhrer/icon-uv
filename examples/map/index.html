@@ -752,7 +752,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 <script>
 'use strict';
 // Integer shades stay within their warning colour family; 0 uses low, 11+ purple.
-const UVI_COLOURS=['#76c74a','#43a047','#fff59d','#ffeb3b','#f4d21b',
+const UVI_COLOURS=['#43a047','#76c74a','#fff59d','#ffeb3b','#f4d21b',
                    '#ffab45','#f58220','#d9363e','#bc2034','#96132f','#7848b5'];
 const UVI_RGB=UVI_COLOURS.map(hex=>[1,3,5].map(i=>parseInt(hex.slice(i,i+2),16)));
 function uviStep(value){return Math.max(1,Math.min(11,Math.floor(value+.5)));}
@@ -811,11 +811,39 @@ const Settings=L.Control.extend({options:{position:'bottomright'},onAdd(){
 }});new Settings().addTo(map);
 
 const markers=L.layerGroup().addTo(map);
-const categoryNames={low:'Low',moderate:'Moderate',high:'High',very_high:'Very high',extreme:'Extreme'};
 const reasonNames={incomplete_daylight:'Full-day forecast coverage is incomplete.',insufficient_native_support:'No suitable model terrain is available.',stale_icon:'The weather forecast is too old.',stale_cams:'The atmospheric composition forecast is too old.',partial_spatial_support:'Some regional cells have missing data.',partial_ensemble_support:'Some ensemble members are unavailable.',insufficient_ensemble_members:'Too few complete ensemble members are available.'};
 function element(tag,cls,text){const e=document.createElement(tag);if(cls)e.className=cls;if(text!==undefined)e.textContent=text;return e;}
 function tile(row){const node=element('span','tile '+(row.display_uvi===null?'missing':row.category),row.display_uvi===null?'—':String(row.display_uvi));return row.display_uvi===null?node:colourTile(node,row.display_uvi);}
-function details(rows){const d=element('div');d.append(element('h3','',rows[0].location.label));for(const r of rows){const altitude=r.location.kind==='region_altitude'?`${r.location.altitude_m} m: `:'';d.append(element('p','',altitude+(r.display_uvi===null?'Not available':`UV Index ${r.display_uvi} · ${categoryNames[r.category]}`)));if(r.uvi!==null)d.append(element('p','',`Unrounded UV Index: ${r.uvi.toFixed(2)}`));if(r.ensemble)d.append(element('p','',`Ensemble P10–P90: ${r.ensemble.p10.toFixed(1)}–${r.ensemble.p90.toFixed(1)} · ${r.ensemble.valid_member_count}/${forecast.ensemble.requested_member_ids.length} members`));if(r.reasons.length)d.append(element('p','',r.reasons.map(x=>reasonNames[x]||'Forecast data unavailable.').join(' ')));}return d;}
+function peakTiming(row){
+  if(!(row.uvi>0)||forecast.peak_definition!=='maximum_30min_mean_on_5min_grid_hourly_cloud_reconstruction')return null;
+  const starts=row.peak_window_start_utc?[row.peak_window_start_utc,row.peak_window_start_utc]:row.peak_window_start_range_utc;
+  if(!starts||starts.length!==2)return null;
+  // Centre of the maximum 30-minute window, rounded to a quarter hour.
+  const times=starts.map(value=>Math.round((Date.parse(value)+15*60000)/(15*60000))*15*60000);
+  if(!times.every(Number.isFinite))return null;
+  const format=value=>new Date(value).toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit',timeZone:'Europe/Zurich'});
+  if(times[0]===times[1])return 'Peak around '+format(times[0]);
+  const scope=row.ensemble?(row.location.kind==='region_altitude'?'members and region':'members'):'region';
+  return `Peak times across ${scope}: ${format(times[0])}–${format(times[1])}`;
+}
+function details(rows){
+  const d=element('div'),loc=rows[0].location,region=loc.kind==='region_altitude';
+  d.append(element('h3','',loc.label));
+  d.append(element('p','',dateLabel(rows[0].valid_date)+' · Swiss local time'));
+  if(!region){
+    const model=rows[0].source_point?.altitude_m;
+    d.append(element('p','',`Elevation: ${Math.round(loc.altitude_m)} m`+(Number.isFinite(model)?` · model: ${Math.round(model/10)*10} m`:'')));
+  }
+  for(const row of rows){
+    if(region)d.append(element('strong','',row.location.altitude_m+' m'));
+    if(row.display_uvi===null){
+      d.append(element('p','',row.reasons.length?row.reasons.map(x=>reasonNames[x]||'Forecast unavailable.').join(' '):'Forecast unavailable.'));
+    }else{
+      d.append(element('p','',peakTiming(row)||'Peak time unavailable.'));
+    }
+  }
+  return d;
+}
 function addMarker(rows){
   const loc=rows[0].location,region=loc.kind==='region_altitude',box=element('div','place');
   if(region){
@@ -870,7 +898,6 @@ function declutter(){
 }
 // Re-evaluate collisions after animated marker transforms have settled.
 map.on('zoomend moveend popupopen popupclose',()=>requestAnimationFrame(declutter));
-map.on('click',event=>inspectField(event.latlng));
 document.getElementById('map-toggle').hidden=!fields;
 document.getElementById('show-map').checked=mapVisible;
 document.getElementById('show-locations').onchange=event=>{locationsVisible=event.target.checked;updateLayers();};
@@ -884,8 +911,8 @@ async function decodeField(date,type){
   await new Promise((resolve,reject)=>{image.onload=resolve;image.onerror=reject;image.src=day[type];});
   const canvas=document.createElement('canvas');canvas.width=fields.width;canvas.height=fields.height;
   const context=canvas.getContext('2d',{willReadFrequently:true});context.drawImage(image,0,0);
-  const pixels=context.getImageData(0,0,canvas.width,canvas.height),values=new Float32Array(canvas.width*canvas.height);
-  for(let i=0;i<values.length;i++){const j=i*4;values[i]=pixels.data[j+3]?((pixels.data[j]<<8)+pixels.data[j+1])/100:NaN;const rgb=fieldColours(values[i]);pixels.data[j]=rgb[0];pixels.data[j+1]=rgb[1];pixels.data[j+2]=rgb[2];}
+  const pixels=context.getImageData(0,0,canvas.width,canvas.height);
+  for(let j=0;j<pixels.data.length;j+=4){const value=pixels.data[j+3]?((pixels.data[j]<<8)+pixels.data[j+1])/100:NaN;const rgb=fieldColours(value);pixels.data[j]=rgb[0];pixels.data[j+1]=rgb[1];pixels.data[j+2]=rgb[2];}
   context.putImageData(pixels,0,0);
   // Use the embedded relief's footprint so the overlay follows Switzerland.
   const relief=await reliefReady;
@@ -896,19 +923,8 @@ async function decodeField(date,type){
     const sw=(east-west)/(relief.east-relief.west)*relief.canvas.width;
     const sh=(projectedY(north)-projectedY(south))/(projectedY(relief.north)-projectedY(relief.south))*relief.canvas.height;
     context.globalCompositeOperation='destination-in';context.drawImage(relief.canvas,sx,sy,sw,sh,0,0,canvas.width,canvas.height);
-    const mask=context.getImageData(0,0,canvas.width,canvas.height).data;
-    for(let i=0;i<values.length;i++)if(mask[i*4+3]<128)values[i]=NaN;
   }
-  let memberCounts=null;
-  if(day[type+'_member_count']){
-    const countImage=new Image();await new Promise((resolve,reject)=>{countImage.onload=resolve;countImage.onerror=reject;countImage.src=day[type+'_member_count'];});
-    const countCanvas=document.createElement('canvas');countCanvas.width=fields.width;countCanvas.height=fields.height;
-    const countContext=countCanvas.getContext('2d');countContext.drawImage(countImage,0,0);
-    const bytes=countContext.getImageData(0,0,fields.width,fields.height).data;
-    memberCounts=new Uint8Array(values.length);
-    for(let i=0;i<values.length;i++)memberCounts[i]=Math.round(((bytes[4*i]<<8)+bytes[4*i+1])/100);
-  }
-  return {url:canvas.toDataURL('image/png'),values,memberCounts};
+  return {url:canvas.toDataURL('image/png')};
 }
 function removeField(){if(fieldLayer)map.removeLayer(fieldLayer);fieldLayer=null;fieldLayerKey=null;}
 function layerNotice(){
@@ -926,7 +942,7 @@ async function updateLayers(){
   document.getElementById('map-type').disabled=!mapVisible;
   if(locationsVisible){markers.addTo(map);declutter();}else{
     map.removeLayer(markers);
-    document.getElementById('density').textContent=mapVisible?'Select the map for its UV Index at model elevation.':'Zoom and pan to explore the terrain.';
+    document.getElementById('density').textContent='Zoom and pan to explore the map.';
   }
   document.getElementById('notice').textContent=layerNotice();
   if(!mapVisible){removeField();return;}
@@ -943,21 +959,6 @@ async function updateLayers(){
     fieldLayerKey=key;
     document.getElementById('notice').textContent=layerNotice();
   }catch(error){if(selection===fieldSelection)document.getElementById('notice').textContent='The UV map could not be loaded. Open map settings to show location forecasts.';}
-}
-async function inspectField(latlng){
-  if(!mapVisible||!fieldLayer)return;
-  const type=mapType,date=selectedDate,field=await fieldCache.get(date+'/'+type);
-  if(!mapVisible||type!==mapType||date!==selectedDate)return;
-  const [[south,west],[north,east]]=fields.bounds;
-  const x=Math.floor((latlng.lng-west)/(east-west)*fields.width);
-  const y=Math.floor((projectedY(north)-projectedY(latlng.lat))/(projectedY(north)-projectedY(south))*fields.height);
-  if(x<0||y<0||x>=fields.width||y>=fields.height)return;
-  const value=field.values[y*fields.width+x];
-  const box=element('div');box.append(element('h3','',type==='clear_sky'?'Clear-sky UV Index':'Forecast UV Index'));
-  box.append(element('p','',Number.isFinite(value)?'Daily maximum: '+value.toFixed(2):'No UV value at this position.'));
-  box.append(element('p','',dateLabel(date)+' · Model terrain'));
-  if(field.memberCounts)box.append(element('p','',`Contributing members: ${field.memberCounts[y*fields.width+x]} / ${fields.ensemble.requested_member_ids.length}`));
-  L.popup().setLatLng(latlng).setContent(box).openOn(map);
 }
 
 selectDay(dates[0]);

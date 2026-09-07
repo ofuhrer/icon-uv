@@ -27,6 +27,12 @@ bracket those midpoints, have gaps no greater than three hours, and cover the
 ICON cells. The CAMS cycle must precede or equal ICON initialization and be no
 more than 36 hours older.
 
+`fetch-cams` writes normalized NetCDF with `ozone_du` and `aod550` on
+`(time, latitude, longitude)`, together with the forecast reference time, ADS
+request and source GRIB hash. The temporary download is removed after conversion.
+Both input filters produce normalized NetCDF; subsequent UVI computations use
+these files independently of the upstream data formats.
+
 ## Radiation lookup table
 
 The bundled table was generated with libRadtran 2.0.6 using plane-parallel

@@ -19,7 +19,7 @@ from icon_uv.data import load_cams, write_netcdf
 from icon_uv.products import compute_grid
 
 with xr.open_dataset("work/icon.nc") as icon:
-    grid = compute_grid(icon.load(), load_cams("work/cams.grib"), samples=12)
+    grid = compute_grid(icon.load(), load_cams("work/cams.nc"), samples=12)
 write_netcdf(grid, "work/uv.nc")
 ```
 

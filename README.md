@@ -48,10 +48,10 @@ uv run --no-sync icon-uv fetch-icon \
 
 uv run --no-sync icon-uv fetch-cams \
   --reference "$CAMS_REFERENCE" --first-lead 12 --last-lead 60 \
-  --output work/cams.grib
+  --output work/cams.nc
 
 uv run --no-sync icon-uv run \
-  --icon work/icon.nc --cams work/cams.grib --output work/uv.nc
+  --icon work/icon.nc --cams work/cams.nc --output work/uv.nc
 ```
 
 Leads are interval boundaries in hours after initialization: ICON leads 1–48
@@ -59,6 +59,10 @@ produce 47 hourly intervals. `--bbox W S E N` selects a geographic subset during
 download; the default is 5.3–11.2°E, 45.2–48.4°N. CAMS coverage must enclose the
 ICON cells and bracket their interval midpoints. Keep downloaded files to repeat
 a calculation offline.
+
+The ICON and CAMS input filters each write normalized NetCDF, which `run`
+consumes to compute UVI products. CAMS contains ozone in Dobson units and AOD550,
+with source metadata embedded in the file.
 
 Read the result with xarray:
 
@@ -124,7 +128,7 @@ To use only the deterministic CTRL forecast, add `--control` when downloading:
 uv run --no-sync icon-uv fetch-icon --control \
   --reference "$ICON_REFERENCE" --first-lead 1 --last-lead 48 \
   --output work/icon-control.nc
-uv run --no-sync icon-uv run --icon work/icon-control.nc --cams work/cams.grib \
+uv run --no-sync icon-uv run --icon work/icon-control.nc --cams work/cams.nc \
   --samples 12 --output work/uv-control.nc
 ```
 

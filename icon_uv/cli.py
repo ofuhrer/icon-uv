@@ -25,15 +25,15 @@ def main():
     icon.add_argument("--last-lead", type=int, required=True)
     icon.add_argument("--bbox", type=float, nargs=4, default=BBOX, metavar=("W", "S", "E", "N"))
     icon.add_argument("--output", type=Path, required=True)
-    cams = commands.add_parser("fetch-cams", help="Fetch CAMS ozone/AOD using your configured ADS account")
+    cams = commands.add_parser("fetch-cams", help="Fetch CAMS ozone/AOD as NetCDF using your configured ADS account")
     cams.add_argument("--reference", required=True)
     cams.add_argument("--first-lead", type=int, required=True)
     cams.add_argument("--last-lead", type=int, required=True)
     cams.add_argument("--bbox", type=float, nargs=4, default=BBOX)
-    cams.add_argument("--output", type=Path, required=True)
+    cams.add_argument("--output", type=Path, required=True, help="Normalized NetCDF output (e.g. work/cams.nc)")
     run = commands.add_parser("run", help="Compute hourly grid fields from saved ICON and CAMS data")
-    run.add_argument("--icon", type=Path, required=True)
-    run.add_argument("--cams", type=Path, required=True)
+    run.add_argument("--icon", type=Path, required=True, help="Normalized ICON NetCDF from fetch-icon")
+    run.add_argument("--cams", type=Path, required=True, help="Normalized CAMS NetCDF from fetch-cams")
     run.add_argument("--table", type=Path, default=DEFAULT_TABLE)
     run.add_argument("--chunk-size", type=int, default=2048)
     run.add_argument("--samples", type=int, choices=(1,2,4,6,12), default=4, help="Solar samples per hour (default: 4; use 12 for daily maps)")
@@ -61,7 +61,6 @@ def main():
         ds = fetch_icon(args.reference, args.first_lead, args.last_lead, args.bbox, ensemble=args.ensemble, minimum_member_fraction=args.minimum_member_fraction)
         write_netcdf(ds, args.output)
     elif args.command == "fetch-cams":
-        args.output.parent.mkdir(parents=True, exist_ok=True)
         fetch_cams(args.reference, range(args.first_lead, args.last_lead+1, 3), args.output, args.bbox)
     elif args.command == "run":
         with xr.open_dataset(args.icon) as ds:
