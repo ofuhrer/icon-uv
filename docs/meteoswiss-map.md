@@ -20,7 +20,7 @@ Keep the server running while viewing the page. Opening the HTML directly with
 
 The included data contains a dated forecast snapshot for **7–10 September 2026**, with 184 location entries
 from ICON 7 September 00 UTC and CAMS 6 September 12 UTC. The corresponding
-[location JSON](../examples/map/index.locations.json) retains source times, hashes
+[location JSON](https://github.com/ofuhrer/icon-uv/blob/main/examples/map/index.locations.json) retains source times, hashes
 and availability details; the field JSON contains all four pairs of gridded layers.
 This is a fixed **CTRL** example, not an automatically refreshed page. New
 downloads use the full ensemble by default.
@@ -40,7 +40,7 @@ mountain-elevation table. The cog above Home opens map settings.
 Use a published 00 UTC ICON cycle with the **previous day's 12 UTC CAMS cycle**.
 This avoids waiting for the matching 00 UTC CAMS forecast, typically available
 around 10 UTC. The earlier CAMS cycle covers four complete daylight dates.
-Follow the [installation instructions](../README.md#installation), then set both dates.
+Follow the [installation instructions](https://github.com/ofuhrer/icon-uv/blob/main/README.md#installation), then set both dates.
 The default download includes all 21 members; add `--control` to `fetch-icon`
 for a CTRL-only calculation:
 
@@ -161,7 +161,7 @@ sites distinct even when their labels match. A location-only map of screened
 points explicitly identifies its terrain-screened geometry. Such locations cannot
 be paired with ambient gridded fields; the map rejects that inconsistent pairing.
 
-The [field JSON](../examples/map/index.fields.json) embeds numerical PNG
+The [field JSON](https://github.com/ofuhrer/icon-uv/blob/main/examples/map/index.fields.json) embeds numerical PNG
 rasters on a Web Mercator display grid, 360 pixels wide by default. Their red
 and green bytes encode UV Index truncated to 0.01; alpha distinguishes missing
 values from zero. This preserves the rounded category boundaries.
@@ -189,7 +189,7 @@ for schema details and the interpretation of uncertainty.
 
 ## Locations and regions
 
-The [catalog](../examples/map/locations.json) contains Geneva,
+The [catalog](https://github.com/ofuhrer/icon-uv/blob/main/examples/map/locations.json) contains Geneva,
 Neuchâtel, Lausanne, Sion, Bern, Fribourg, Delémont, Basel, Aarau, Lucerne,
 Zurich, Schaffhausen, St. Gallen, Vaduz, Glarus, Chur, Davos, St. Moritz,
 Scuol, Locarno, Interlaken, Grindelwald, Zermatt, Brig, Andermatt, Engelberg,
@@ -231,5 +231,5 @@ cells used in the calculation.
 The grey relief uses swisstopo's
 [Light Base Map terrain layer](https://api3.geo.admin.ch/rest/services/api/MapServer/ch.swisstopo.leichte-basiskarte_reliefschattierung/legend)
 through its [WMTS service](https://docs.geo.admin.ch/visualize-data/wmts.html).
-Leaflet 1.9.4 is vendored with its [BSD 2-Clause license](../examples/map/vendor/leaflet-LICENSE)
+Leaflet 1.9.4 is vendored with its [BSD 2-Clause license](https://github.com/ofuhrer/icon-uv/blob/main/examples/map/vendor/leaflet-LICENSE)
 and embedded in the generated page. Basemap attribution is displayed on the map.

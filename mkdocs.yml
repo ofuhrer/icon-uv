@@ -1,0 +1,28 @@
+site_name: icon-uv
+site_description: UV Index forecasts from ICON weather and CAMS atmospheric composition
+site_url: https://ofuhrer.github.io/icon-uv/
+repo_url: https://github.com/ofuhrer/icon-uv
+edit_uri: blob/main/docs/
+site_dir: work/site
+
+theme:
+  name: readthedocs
+
+nav:
+  - Getting started: index.md
+  - User guide:
+      - Location API: location-api.md
+      - Daily products: daily-products.md
+      - Output reference: outputs.md
+      - Map example: meteoswiss-map.md
+  - Science:
+      - Calculation method: method.md
+      - Verification and validation: validation.md
+  - Releasing: releasing.md
+
+validation:
+  nav:
+    omitted_files: warn
+  links:
+    anchors: warn
+    unrecognized_links: warn

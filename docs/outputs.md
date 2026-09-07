@@ -78,7 +78,7 @@ by an isotropic sky-view factor. Terrain reflection and anisotropic diffuse
 radiation are omitted. The elevation adjustment retains the source cloud state;
 it does not infer a summit's position relative to cloud layers.
 
-The repository's [Davos example](../examples/davos.json) supplies 72 horizon
+The repository's [Davos example](https://github.com/ofuhrer/icon-uv/blob/main/examples/davos.json) supplies 72 horizon
 samples derived from swisstopo terrain profiles at 5° azimuth spacing, with a
 20 km radius and 401 samples per ray. Its 1588.2 m altitude and UV albedo 0.05
 are example point inputs, rather than an instrument calibration record.

@@ -109,5 +109,5 @@ shortwave from the saved cloud state. Observation comparisons use matched time
 support and retain exclusions for missing data or instrument metadata.
 
 [Validation results](validation.md) report numerical errors, Swiss-site daily
-peak errors and sensitivity to spatial matching. [Table rebuilding](../CONTRIBUTING.md#change-the-radiation-table)
+peak errors and sensitivity to spatial matching. [Table rebuilding](https://github.com/ofuhrer/icon-uv/blob/main/CONTRIBUTING.md#change-the-radiation-table)
 describes the packaged table identity and reference-cache inputs.

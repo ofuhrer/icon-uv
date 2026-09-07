@@ -23,6 +23,27 @@ CI also checks PyPI metadata and saves the tested wheel and source archive.
 See the [release guide](docs/releasing.md) for version tags, GitHub releases
 and the one-time PyPI Trusted Publisher setup.
 
+## Documentation site
+
+Edit the Markdown files in `docs/` and update `mkdocs.yml` when adding a page.
+Preview the site or run the same strict build used in CI:
+
+```sh
+uv run --locked --only-group docs mkdocs serve
+uv run --locked --only-group docs mkdocs build --strict
+```
+
+The preview is at `http://127.0.0.1:8000/icon-uv/`; generated HTML stays in
+`work/site/`. Documentation dependencies are separate from the runtime package.
+The strict build rejects broken internal links and missing section anchors.
+Use relative links between pages in `docs/` and absolute GitHub links for source
+files, examples and schemas outside that directory.
+
+The **Documentation** workflow checks pull requests and deploys changes on
+`main` to [GitHub Pages](https://ofuhrer.github.io/icon-uv/). The repository's
+Pages publishing source is **GitHub Actions**. Package releases are independent
+of documentation deployments; the site follows `main`.
+
 ## Project layout
 
 | Path | Purpose |

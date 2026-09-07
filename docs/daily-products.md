@@ -10,7 +10,7 @@ two dates and v2 for other date selections. Shared point catalogs use v4.
 
 ## Prepare the grid
 
-Use the [README download workflow](../README.md#calculate-uv-fields) to obtain
+Use the [README download workflow](https://github.com/ofuhrer/icon-uv/blob/main/README.md#calculate-uv-fields) to obtain
 ICON and CAMS inputs covering daylight on the requested dates. `run` defaults to
 four solar samples per hour. Use the CLI for twelve samples:
 
@@ -26,7 +26,7 @@ samples also evaluates the cloud fit on that five-minute spacing.
 ## Define locations
 
 For a catalog shared with hourly point forecasts, use
-[the location API](location-api.md) and [shared example](../examples/shared_locations.json).
+[the location API](location-api.md) and [shared example](https://github.com/ofuhrer/icon-uv/blob/main/examples/shared_locations.json).
 It adds explicit native or adjusted point treatment and writes schema v4.
 The legacy native town/region format below remains supported.
 
@@ -58,7 +58,7 @@ Save a JSON object with an `entries` list. Each entry needs a unique `id`, a
 
 Coordinates are WGS84 degrees and elevations are metres above sea level.
 Bounding boxes use `[west, south, east, north]`. The full
-[example catalog](../examples/product_locations.json) has Swiss towns
+[example catalog](https://github.com/ofuhrer/icon-uv/blob/main/examples/product_locations.json) has Swiss towns
 and mountain regions; adapt its locations and boundaries to your product.
 For the 30-town and six-region map layout, use the
 [MeteoSwiss map example](meteoswiss-map.md).
@@ -241,9 +241,9 @@ Schema validation checks structure. Calendar pairing, freshness at consumption,
 rounding consistency and support-count relationships also have semantic rules
 implemented by the exporter and covered by the test suite.
 
-Published schemas [v1](../icon_uv/data/daily-uv-v1.schema.json),
-[v2](../icon_uv/data/daily-uv-v2.schema.json) and [v3](../icon_uv/data/daily-uv-v3.schema.json)
-retain their existing contracts. [v4](../icon_uv/data/daily-uv-v4.schema.json) adds
+Published schemas [v1](https://github.com/ofuhrer/icon-uv/blob/main/icon_uv/data/daily-uv-v1.schema.json),
+[v2](https://github.com/ofuhrer/icon-uv/blob/main/icon_uv/data/daily-uv-v2.schema.json) and [v3](https://github.com/ofuhrer/icon-uv/blob/main/icon_uv/data/daily-uv-v3.schema.json)
+retain their existing contracts. [v4](https://github.com/ofuhrer/icon-uv/blob/main/icon_uv/data/daily-uv-v4.schema.json) adds
 explicit point treatment and UV geometry, with optional ensemble metadata.
 V4 names the contributing-value summaries `support_uvi_range` and
 `support_uvi_median`, covering both native and adjusted point treatment.

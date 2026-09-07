@@ -1,6 +1,7 @@
 # icon-uv
 
 [![CI](https://github.com/ofuhrer/icon-uv/actions/workflows/tests.yml/badge.svg)](https://github.com/ofuhrer/icon-uv/actions/workflows/tests.yml)
+[![Documentation](https://img.shields.io/badge/docs-GitHub%20Pages-blue)](https://ofuhrer.github.io/icon-uv/)
 [![PyPI](https://img.shields.io/pypi/v/icon-uv)](https://pypi.org/project/icon-uv/)
 [![GitHub release](https://img.shields.io/github/v/release/ofuhrer/icon-uv)](https://github.com/ofuhrer/icon-uv/releases/latest)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue)](https://github.com/ofuhrer/icon-uv/blob/main/pyproject.toml)
@@ -18,7 +19,10 @@ and the surrounding area, producing:
 Calculations run locally using a bundled radiation lookup table. An external
 radiative-transfer solver is only needed when rebuilding that table.
 
-[![Animated Swiss UV forecast map showing zoom, day selection, town values and Alpine elevation bands](https://raw.githubusercontent.com/ofuhrer/icon-uv/main/docs/images/uv-map.gif)](https://github.com/ofuhrer/icon-uv/blob/main/docs/meteoswiss-map.md)
+[![Animated Swiss UV forecast map showing zoom, day selection, town values and Alpine elevation bands](https://raw.githubusercontent.com/ofuhrer/icon-uv/main/docs/images/uv-map.gif)](https://ofuhrer.github.io/icon-uv/meteoswiss-map/)
+
+Read the **[documentation](https://ofuhrer.github.io/icon-uv/)** for installation,
+the location API, daily products and the calculation method.
 
 ## Installation
 
@@ -31,7 +35,7 @@ icon-uv --help
 
 The wheel includes the radiation table and JSON schemas. To get the example
 scripts and develop from source, use the repository setup below. For release and
-publishing steps, see the [release guide](https://github.com/ofuhrer/icon-uv/blob/main/docs/releasing.md).
+publishing steps, see the [release guide](https://ofuhrer.github.io/icon-uv/releasing/).
 
 Python 3.11 or newer and [uv](https://docs.astral.sh/uv/) are required for the
 following setup:
@@ -106,7 +110,7 @@ with xr.open_dataset("work/uv.nc") as grid:
 `time` is the UTC interval midpoint;
 `time_bounds` gives its start and end. Native cell IDs, coordinates, elevations
 and input-source identities accompany the fields. See the
-[output reference](https://github.com/ofuhrer/icon-uv/blob/main/docs/outputs.md) for variables, units and quality flags.
+[output reference](https://ofuhrer.github.io/icon-uv/outputs/) for variables, units and quality flags.
 
 ## Generate daily map data
 
@@ -127,12 +131,12 @@ five minutes. Towns use a nearby native cell; mountain entries use native cells
 near 1000, 2000 or 3000 m within a region. The JSON includes raw UVI, its rounded
 display value, category and `ok`, `degraded` or `unavailable` status.
 
-The [daily-products guide](https://github.com/ofuhrer/icon-uv/blob/main/docs/daily-products.md) explains custom catalogs,
+The [daily-products guide](https://ofuhrer.github.io/icon-uv/daily-products/) explains custom catalogs,
 regional aggregation, freshness and missing-data handling. It also shows how
 to use twelve solar samples per hour when computing the input grid.
 
 The [examples overview](https://github.com/ofuhrer/icon-uv/blob/main/examples/README.md) covers the included inputs and scripts.
-The [MeteoSwiss map example](https://github.com/ofuhrer/icon-uv/blob/main/docs/meteoswiss-map.md) provides 30 town locations
+The [MeteoSwiss map example](https://ofuhrer.github.io/icon-uv/meteoswiss-map/) provides 30 town locations
 and six mountain regions, including the Jura elevation exception, with a script
 that exports four days and builds an English HTML map with
 zoom, pan, day selection and forecast/clear-sky shading. The [example page](https://github.com/ofuhrer/icon-uv/blob/main/examples/map/index.html)
@@ -163,7 +167,7 @@ uv run --no-sync icon-uv run --icon work/icon-control.nc --cams work/cams.nc \
 Use that grid with `daily` or `poi`; no further CTRL option is needed.
 Python callers use `fetch_icon(..., ensemble=False)`. Ensemble data and UV
 calculations require roughly 21 times the member-dependent work of CTRL.
-See [ensemble products](https://github.com/ofuhrer/icon-uv/blob/main/docs/daily-products.md#ensemble-products) for reduction
+See [ensemble products](https://ofuhrer.github.io/icon-uv/daily-products/#ensemble-products) for reduction
 choices, schema details and uncertainty limits.
 
 ## Calculate a point forecast
@@ -190,7 +194,7 @@ uv run --no-sync icon-uv poi --grid work/uv.nc \
   --locations examples/davos.json --output work/davos.nc
 ```
 
-See [point forecasts](https://github.com/ofuhrer/icon-uv/blob/main/docs/outputs.md#point-forecasts) for horizon conventions,
+See [point forecasts](https://ofuhrer.github.io/icon-uv/outputs/#point-forecasts) for horizon conventions,
 spatial matching and the distinction between ambient and terrain-screened UV.
 
 ## Use one location catalog for points and daily products
@@ -212,7 +216,7 @@ point retains model elevation and surface state; an adjusted point recalculates 
 the specified elevation, albedo and coordinates. Daily values reconstruct the
 30-minute peak from atmospheric/cloud state, rather than taking a maximum of
 hourly point means. Existing `POI`, `compute_pois`, and `--catalog` inputs remain
-supported. See the [shared Python API](https://github.com/ofuhrer/icon-uv/blob/main/docs/location-api.md) for computation,
+supported. See the [shared Python API](https://ofuhrer.github.io/icon-uv/location-api/) for computation,
 publication, screening and preflight checks.
 
 ## How it works
@@ -230,8 +234,8 @@ publication, screening and preflight checks.
    and point products reuse the saved atmospheric and cloud state.
 
 The table was generated with libRadtran using plane-parallel DISORT. The
-[method description](https://github.com/ofuhrer/icon-uv/blob/main/docs/method.md) covers the physical assumptions, table
-ranges and interpolation. [Validation results](https://github.com/ofuhrer/icon-uv/blob/main/docs/validation.md) summarize
+[method description](https://ofuhrer.github.io/icon-uv/method/) covers the physical assumptions, table
+ranges and interpolation. [Validation results](https://ofuhrer.github.io/icon-uv/validation/) summarize
 measurement comparisons and numerical accuracy. Developer setup and table
 rebuilding are documented in [CONTRIBUTING.md](https://github.com/ofuhrer/icon-uv/blob/main/CONTRIBUTING.md).
 

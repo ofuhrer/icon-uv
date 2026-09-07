@@ -37,13 +37,14 @@ cams = ["cdsapi>=0.7"]
 
 [project.urls]
 Homepage = "https://github.com/ofuhrer/icon-uv"
-Documentation = "https://github.com/ofuhrer/icon-uv#readme"
+Documentation = "https://ofuhrer.github.io/icon-uv/"
 Repository = "https://github.com/ofuhrer/icon-uv"
 Issues = "https://github.com/ofuhrer/icon-uv/issues"
 Changelog = "https://github.com/ofuhrer/icon-uv/blob/main/CHANGELOG.md"
 
 [dependency-groups]
 dev = ["pytest>=8", "jsonschema>=4.23", "twine>=6.1"]
+docs = ["mkdocs>=1.6,<2"]
 
 [project.scripts]
 icon-uv = "icon_uv.cli:main"

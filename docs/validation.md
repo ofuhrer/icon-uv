@@ -97,7 +97,7 @@ uv run --no-sync python -m icon_uv.check_grid \
 ```
 
 The final command requires a saved UV grid. Rebuilding and validating the radiation
-table against a direct solver is described in [CONTRIBUTING.md](../CONTRIBUTING.md#change-the-radiation-table).
+table against a direct solver is described in [CONTRIBUTING.md](https://github.com/ofuhrer/icon-uv/blob/main/CONTRIBUTING.md#change-the-radiation-table).
 
 ## Measurement and method sources
 
