@@ -57,6 +57,8 @@ Coordinates are WGS84 degrees and elevations are metres above sea level.
 Bounding boxes use `[west, south, east, north]`. The full
 [example catalog](../examples/product_locations.json) has Swiss towns
 and mountain regions; adapt its locations and boundaries to your product.
+For the 20-town and six-region map layout, use the
+[MeteoSwiss map example](meteoswiss-map.md).
 
 | Kind | Native-cell selection | Reported value |
 |---|---|---|

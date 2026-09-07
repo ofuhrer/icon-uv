@@ -1,0 +1,400 @@
+{
+  "catalog_version": 1,
+  "name": "MeteoSwiss map locations",
+  "geometry_description": "Town settlement points and example regional bounding boxes; Jura has a single 1000 m entry.",
+  "coordinate_sources": {
+    "search": "https://docs.geo.admin.ch/access-data/search.html",
+    "height": "https://docs.geo.admin.ch/access-data/get-point-height.html",
+    "retrieved_on": "2026-09-07"
+  },
+  "entries": [
+    {
+      "id": "genf",
+      "kind": "town",
+      "label": "Genf",
+      "latitude": 46.205872,
+      "longitude": 6.142105,
+      "altitude_m": 376,
+      "coordinate_source": "swisstopo SearchServer, gazetteer settlement 55354 (Genève); height service at the same point"
+    },
+    {
+      "id": "neuenburg",
+      "kind": "town",
+      "label": "Neuenburg",
+      "latitude": 46.995129,
+      "longitude": 6.929543,
+      "altitude_m": 481,
+      "coordinate_source": "swisstopo SearchServer, gazetteer settlement 413966 (Neuchâtel); height service at the same point"
+    },
+    {
+      "id": "lausanne",
+      "kind": "town",
+      "label": "Lausanne",
+      "latitude": 46.524818,
+      "longitude": 6.626175,
+      "altitude_m": 503,
+      "coordinate_source": "swisstopo SearchServer, gazetteer settlement 83101 (Lausanne); height service at the same point"
+    },
+    {
+      "id": "sion",
+      "kind": "town",
+      "label": "Sion",
+      "latitude": 46.226589,
+      "longitude": 7.353846,
+      "altitude_m": 484,
+      "coordinate_source": "swisstopo SearchServer, gazetteer settlement 26682 (Sion); height service at the same point"
+    },
+    {
+      "id": "bern",
+      "kind": "town",
+      "label": "Bern",
+      "latitude": 46.948997,
+      "longitude": 7.437128,
+      "altitude_m": 541,
+      "coordinate_source": "swisstopo SearchServer, gazetteer settlement 248095 (Bern); height service at the same point"
+    },
+    {
+      "id": "freiburg",
+      "kind": "town",
+      "label": "Freiburg",
+      "latitude": 46.805546,
+      "longitude": 7.157557,
+      "altitude_m": 614,
+      "coordinate_source": "swisstopo SearchServer, gazetteer settlement 165087 (Fribourg); height service at the same point"
+    },
+    {
+      "id": "delemont",
+      "kind": "town",
+      "label": "Delémont",
+      "latitude": 47.363548,
+      "longitude": 7.346996,
+      "altitude_m": 413,
+      "coordinate_source": "swisstopo SearchServer, gazetteer settlement 331923 (Delémont); height service at the same point"
+    },
+    {
+      "id": "basel",
+      "kind": "town",
+      "label": "Basel",
+      "latitude": 47.557598,
+      "longitude": 7.592385,
+      "altitude_m": 245,
+      "coordinate_source": "swisstopo SearchServer, gazetteer settlement 275727 (Basel); height service at the same point"
+    },
+    {
+      "id": "aarau",
+      "kind": "town",
+      "label": "Aarau",
+      "latitude": 47.391338,
+      "longitude": 8.049969,
+      "altitude_m": 384,
+      "coordinate_source": "swisstopo SearchServer, gazetteer settlement 191770 (Aarau); height service at the same point"
+    },
+    {
+      "id": "luzern",
+      "kind": "town",
+      "label": "Luzern",
+      "latitude": 47.051125,
+      "longitude": 8.305033,
+      "altitude_m": 433,
+      "coordinate_source": "swisstopo SearchServer, gazetteer settlement 413052 (Luzern); height service at the same point"
+    },
+    {
+      "id": "zuerich",
+      "kind": "town",
+      "label": "Zürich",
+      "latitude": 47.383949,
+      "longitude": 8.530146,
+      "altitude_m": 405,
+      "coordinate_source": "swisstopo SearchServer, gazetteer settlement 413178 (Zürich); height service at the same point"
+    },
+    {
+      "id": "schaffhausen",
+      "kind": "town",
+      "label": "Schaffhausen",
+      "latitude": 47.707722,
+      "longitude": 8.642185,
+      "altitude_m": 435,
+      "coordinate_source": "swisstopo SearchServer, gazetteer settlement 386634 (Schaffhausen); height service at the same point"
+    },
+    {
+      "id": "st_gallen",
+      "kind": "town",
+      "label": "St. Gallen",
+      "latitude": 47.423393,
+      "longitude": 9.366549,
+      "altitude_m": 678,
+      "coordinate_source": "swisstopo SearchServer, gazetteer settlement 193236 (St. Gallen); height service at the same point"
+    },
+    {
+      "id": "vaduz",
+      "kind": "town",
+      "label": "Vaduz",
+      "latitude": 47.141922,
+      "longitude": 9.519542,
+      "altitude_m": 463,
+      "coordinate_source": "swisstopo SearchServer, gazetteer settlement 165717 (Vaduz); height service at the same point"
+    },
+    {
+      "id": "glarus",
+      "kind": "town",
+      "label": "Glarus",
+      "latitude": 47.042381,
+      "longitude": 9.064495,
+      "altitude_m": 479,
+      "coordinate_source": "swisstopo SearchServer, gazetteer settlement 137142 (Glarus); height service at the same point"
+    },
+    {
+      "id": "chur",
+      "kind": "town",
+      "label": "Chur",
+      "latitude": 46.855785,
+      "longitude": 9.524787,
+      "altitude_m": 582,
+      "coordinate_source": "swisstopo SearchServer, gazetteer settlement 303999 (Chur); height service at the same point"
+    },
+    {
+      "id": "davos",
+      "kind": "town",
+      "label": "Davos",
+      "latitude": 46.792931,
+      "longitude": 9.820781,
+      "altitude_m": 1557,
+      "coordinate_source": "swisstopo SearchServer, gazetteer settlement 165726 (Davos Platz); height service at the same point"
+    },
+    {
+      "id": "st_moritz",
+      "kind": "town",
+      "label": "St. Moritz",
+      "latitude": 46.488785,
+      "longitude": 9.835339,
+      "altitude_m": 1775,
+      "coordinate_source": "swisstopo SearchServer, gazetteer settlement 136258 (St. Moritz); height service at the same point"
+    },
+    {
+      "id": "scuol",
+      "kind": "town",
+      "label": "Scuol",
+      "latitude": 46.797653,
+      "longitude": 10.297831,
+      "altitude_m": 1258,
+      "coordinate_source": "swisstopo SearchServer, gazetteer settlement 329112 (Scuol); height service at the same point"
+    },
+    {
+      "id": "locarno",
+      "kind": "town",
+      "label": "Locarno",
+      "latitude": 46.166874,
+      "longitude": 8.79277,
+      "altitude_m": 197,
+      "coordinate_source": "swisstopo SearchServer, gazetteer settlement 303555 (Locarno); height service at the same point"
+    },
+    {
+      "id": "jura_1000",
+      "kind": "region_altitude",
+      "label": "Jura",
+      "altitude_m": 1000,
+      "bbox": [
+        6.0,
+        46.5,
+        7.9,
+        47.55
+      ],
+      "boundary_source": "Example rectangular selection; may overlap adjacent regions and national borders"
+    },
+    {
+      "id": "walliser_alpen_1000",
+      "kind": "region_altitude",
+      "label": "Walliser Alpen",
+      "altitude_m": 1000,
+      "bbox": [
+        7.0,
+        45.9,
+        8.4,
+        46.4
+      ],
+      "boundary_source": "Example rectangular selection; may overlap adjacent regions and national borders"
+    },
+    {
+      "id": "walliser_alpen_2000",
+      "kind": "region_altitude",
+      "label": "Walliser Alpen",
+      "altitude_m": 2000,
+      "bbox": [
+        7.0,
+        45.9,
+        8.4,
+        46.4
+      ],
+      "boundary_source": "Example rectangular selection; may overlap adjacent regions and national borders"
+    },
+    {
+      "id": "walliser_alpen_3000",
+      "kind": "region_altitude",
+      "label": "Walliser Alpen",
+      "altitude_m": 3000,
+      "bbox": [
+        7.0,
+        45.9,
+        8.4,
+        46.4
+      ],
+      "boundary_source": "Example rectangular selection; may overlap adjacent regions and national borders"
+    },
+    {
+      "id": "berner_alpen_1000",
+      "kind": "region_altitude",
+      "label": "Berner Alpen",
+      "altitude_m": 1000,
+      "bbox": [
+        7.3,
+        46.4,
+        8.4,
+        46.8
+      ],
+      "boundary_source": "Example rectangular selection; may overlap adjacent regions and national borders"
+    },
+    {
+      "id": "berner_alpen_2000",
+      "kind": "region_altitude",
+      "label": "Berner Alpen",
+      "altitude_m": 2000,
+      "bbox": [
+        7.3,
+        46.4,
+        8.4,
+        46.8
+      ],
+      "boundary_source": "Example rectangular selection; may overlap adjacent regions and national borders"
+    },
+    {
+      "id": "berner_alpen_3000",
+      "kind": "region_altitude",
+      "label": "Berner Alpen",
+      "altitude_m": 3000,
+      "bbox": [
+        7.3,
+        46.4,
+        8.4,
+        46.8
+      ],
+      "boundary_source": "Example rectangular selection; may overlap adjacent regions and national borders"
+    },
+    {
+      "id": "glarner_alpen_1000",
+      "kind": "region_altitude",
+      "label": "Glarner Alpen",
+      "altitude_m": 1000,
+      "bbox": [
+        8.7,
+        46.7,
+        9.3,
+        47.0
+      ],
+      "boundary_source": "Example rectangular selection; may overlap adjacent regions and national borders"
+    },
+    {
+      "id": "glarner_alpen_2000",
+      "kind": "region_altitude",
+      "label": "Glarner Alpen",
+      "altitude_m": 2000,
+      "bbox": [
+        8.7,
+        46.7,
+        9.3,
+        47.0
+      ],
+      "boundary_source": "Example rectangular selection; may overlap adjacent regions and national borders"
+    },
+    {
+      "id": "glarner_alpen_3000",
+      "kind": "region_altitude",
+      "label": "Glarner Alpen",
+      "altitude_m": 3000,
+      "bbox": [
+        8.7,
+        46.7,
+        9.3,
+        47.0
+      ],
+      "boundary_source": "Example rectangular selection; may overlap adjacent regions and national borders"
+    },
+    {
+      "id": "buendner_alpen_1000",
+      "kind": "region_altitude",
+      "label": "Bündner Alpen",
+      "altitude_m": 1000,
+      "bbox": [
+        9.3,
+        46.3,
+        10.5,
+        46.9
+      ],
+      "boundary_source": "Example rectangular selection; may overlap adjacent regions and national borders"
+    },
+    {
+      "id": "buendner_alpen_2000",
+      "kind": "region_altitude",
+      "label": "Bündner Alpen",
+      "altitude_m": 2000,
+      "bbox": [
+        9.3,
+        46.3,
+        10.5,
+        46.9
+      ],
+      "boundary_source": "Example rectangular selection; may overlap adjacent regions and national borders"
+    },
+    {
+      "id": "buendner_alpen_3000",
+      "kind": "region_altitude",
+      "label": "Bündner Alpen",
+      "altitude_m": 3000,
+      "bbox": [
+        9.3,
+        46.3,
+        10.5,
+        46.9
+      ],
+      "boundary_source": "Example rectangular selection; may overlap adjacent regions and national borders"
+    },
+    {
+      "id": "tessiner_alpen_1000",
+      "kind": "region_altitude",
+      "label": "Tessiner Alpen",
+      "altitude_m": 1000,
+      "bbox": [
+        8.4,
+        46.2,
+        9.1,
+        46.7
+      ],
+      "boundary_source": "Example rectangular selection; may overlap adjacent regions and national borders"
+    },
+    {
+      "id": "tessiner_alpen_2000",
+      "kind": "region_altitude",
+      "label": "Tessiner Alpen",
+      "altitude_m": 2000,
+      "bbox": [
+        8.4,
+        46.2,
+        9.1,
+        46.7
+      ],
+      "boundary_source": "Example rectangular selection; may overlap adjacent regions and national borders"
+    },
+    {
+      "id": "tessiner_alpen_3000",
+      "kind": "region_altitude",
+      "label": "Tessiner Alpen",
+      "altitude_m": 3000,
+      "bbox": [
+        8.4,
+        46.2,
+        9.1,
+        46.7
+      ],
+      "boundary_source": "Example rectangular selection; may overlap adjacent regions and national borders"
+    }
+  ]
+}

@@ -96,6 +96,10 @@ The [daily-products guide](docs/daily-products.md) explains custom catalogs,
 regional aggregation, freshness and missing-data handling. It also shows how
 to use twelve solar samples per hour when computing the input grid.
 
+The [MeteoSwiss map example](docs/meteoswiss-map.md) provides the 20 town locations
+and six mountain regions, including the Jura elevation exception, with a script
+that exports JSON and prints the values for both days.
+
 ## Calculate a point forecast
 
 Supply the point's coordinates, altitude, UV albedo and horizon:
