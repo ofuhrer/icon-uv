@@ -2,25 +2,35 @@
 
 Generate English UV forecasts for 30 towns and six mountain regions, then build
 a single HTML page with day selection, zoom, pan and sun-protection guidance.
-The page embeds the forecast, map library and swisstopo relief tiles, so it opens
-directly from disk and works offline.
+The page loads separate JSON files for locations, UV maps and swisstopo relief.
+It bundles the map library and needs only a static HTTP server; no backend or
+external map service is needed to view it.
 
 ## Open the included example
 
-Open [meteoswiss_map.html](../examples/meteoswiss_map.html) directly in a browser.
-It contains a dated forecast snapshot for **7–10 September 2026**, with 184 location entries
+From the repository root, start a local server:
+
+```sh
+python -m http.server 8769 --bind 127.0.0.1
+```
+
+Open [the example map](http://127.0.0.1:8769/examples/meteoswiss_map.html).
+Keep the server running while viewing the page. Opening the HTML directly with
+`file://` does not allow the browser to load the separate JSON files.
+
+The included data contains a dated forecast snapshot for **7–10 September 2026**, with 184 location entries
 from ICON 7 September 00 UTC and CAMS 6 September 12 UTC. The corresponding
-[sample JSON](../examples/meteoswiss_map.sample.json) retains source times, hashes
+[location JSON](../examples/meteoswiss_map.locations.json) retains source times, hashes
 and availability details; the field JSON contains all four pairs of gridded layers.
 This is a fixed example, not an automatically refreshed page.
 
-Day selection updates the map and the complete values list. Labels are thinned
-when they would overlap, giving the main cities priority and revealing more
-locations as you zoom in. Zoom-out stops at the overview of Switzerland; the
-home control restores that view. Zoom transitions are animated, with smaller
-wheel and button steps; the browser’s reduced-motion preference is respected. Select a marker for its unrounded UV Index and
-availability details. The expandable list keeps all towns and elevations accessible
-at every zoom level. Small screens also have a mountain-elevation table.
+Day selection updates the map. Labels are thinned when they would overlap,
+giving the Valais and Grisons Alps and the main cities priority; zoom in to
+reveal more locations. Zoom-out stops at the overview of Switzerland, and the
+home control restores that view. Wheel and button zoom use short animated
+transitions and respect the browser’s reduced-motion preference. Select a
+marker for its unrounded UV Index and availability details. Small screens
+also have a mountain-elevation table. The cog above Home opens map settings.
 
 ## Prepare a four-day forecast
 
@@ -61,23 +71,30 @@ Replays use their original issuance, which controls local dates and source-age c
 ```sh
 uv run --no-sync python examples/meteoswiss_map.py \
   --grid work/uv.nc --issued-at "YYYY-MM-DDT06:00:00Z" \
-  --output work/meteoswiss-map.json
+  --output work/meteoswiss-map.locations.json
 
 uv run --no-sync python examples/meteoswiss_fields.py \
   --grid work/uv.nc --issued-at "YYYY-MM-DDT06:00:00Z" \
   --output work/meteoswiss-map.fields.json
 
 uv run --no-sync python examples/render_meteoswiss_map.py \
-  --input work/meteoswiss-map.json --fields work/meteoswiss-map.fields.json \
+  --input work/meteoswiss-map.locations.json --fields work/meteoswiss-map.fields.json \
   --output work/meteoswiss-map.html
 ```
 
-Open `work/meteoswiss-map.html` in a browser. Omitting `--input` rebuilds the
-bundled example snapshot. Edit `examples/meteoswiss_map.template.html` to change
-the page layout; `examples/meteoswiss_map.html` is the ready-to-open generated page.
-Omit `--fields` with a custom location JSON to build a location-only page.
-The renderer checks that location and field products share the same grid hash,
-issuance, radiation table, dates and peak definition.
+With the local server above running, open
+[the generated map](http://127.0.0.1:8769/work/meteoswiss-map.html).
+The renderer writes four sibling files: `.html`, `.locations.json`, `.fields.json`
+and `.basemap.json`. Keep these files together when copying or serving the map.
+Omitting `--input` rebuilds the bundled example snapshot. Omit `--fields` with
+a custom location JSON to build a location-only page.
+
+Forecasts can be refreshed by replacing the location and field JSON files at
+the same paths; the HTML stays unchanged. The page loads them afresh on reload.
+Both the renderer and browser check that the products share the same grid hash,
+issuance, radiation table, dates and peak definition. Publish matching location
+and field files together. Edit `examples/meteoswiss_map.template.html` and rerun
+the renderer when changing the page itself.
 
 The exporter produces four local dates (`daily-uv-v2`), with 46 entries per day:
 30 towns, three elevation bands for each of five Alpine regions, and one band
@@ -90,18 +107,19 @@ defines rounding, categories, coverage rules and schema. The CLI equivalent is:
 ```sh
 uv run --no-sync icon-uv daily --days 4 \
   --grid work/uv.nc --catalog examples/meteoswiss_map_locations.json \
-  --issued-at "YYYY-MM-DDT06:00:00Z" --output work/meteoswiss-map.json
+  --issued-at "YYYY-MM-DDT06:00:00Z" --output work/meteoswiss-map.locations.json
 ```
 
 The HTML renderer downloads relief tiles once to `work/swisstopo-relief-tiles/`;
 `--cache PATH` chooses another cache. Reusing it allows offline rebuilding.
-Use a new cache directory to refresh the basemap. Tiles are embedded at zoom 9;
-higher zoom magnifies that fixed resolution. The curated location JSON, field JSON and HTML
-are checked in; new forecasts and tile caches stay local under `work/`.
+Use a new cache directory to refresh the basemap. Tiles are stored in the basemap JSON at zoom 9;
+higher zoom magnifies that fixed resolution. The curated location, field and
+basemap JSON files and HTML are checked in; new forecasts and tile caches stay local under `work/`.
 
 ## Map layers
 
-Toggle **Locations** and **Map** independently above the map. Both start enabled:
+Open the **cog above Home** to toggle **Locations** and **Map** independently.
+Both start enabled:
 UV shading sits behind the location badges. Turn either layer off to view the
 other alone, or turn both off to explore the terrain relief. The **Map values**
 selector switches between **Forecast** and **Clear sky**, keeping that choice
@@ -112,7 +130,8 @@ Both gridded products show the maximum reconstructed 30-minute mean over the sel
 local day, matching the temporal definition of the location product. Clear sky
 removes cloud optical depth and cloud scaling while retaining ozone, aerosol,
 pressure and surface albedo. Select a field position to inspect its UV Index;
-the **Map opacity** control adjusts the strength of the colour. The colours use
+the **Map opacity** control in settings adjusts the strength of the colour
+from 0 to 100%, starting at **100%**. The colours use
 multiplicative blending over a contrast-enhanced relief, preserving ridges and
 valleys even when the UV shading is prominent. Relief brightness indicates terrain
 shading; the UV category is carried by the colour.

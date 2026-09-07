@@ -98,9 +98,10 @@ to use twelve solar samples per hour when computing the input grid.
 
 The [MeteoSwiss map example](docs/meteoswiss-map.md) provides 30 town locations
 and six mountain regions, including the Jura elevation exception, with a script
-that exports four days and builds a self-contained English HTML map with offline
-zoom, pan, day selection and forecast/clear-sky field views. A [ready-to-open example](examples/meteoswiss_map.html)
-and its source JSON files are included. It uses the ICON control member; ensemble
+that exports four days and builds an English HTML map with
+zoom, pan, day selection and forecast/clear-sky shading. The [example page](examples/meteoswiss_map.html)
+and its separate JSON data files are included; serve them with a local HTTP server
+as described in the guide. It uses the ICON control member; ensemble
 spread and probabilities are not calculated.
 
 ## Calculate a point forecast

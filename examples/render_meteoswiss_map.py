@@ -1,4 +1,4 @@
-"""Build one offline HTML page from the map example's JSON output."""
+"""Build a static UV map page with separate, refreshable JSON data files."""
 
 import argparse
 import base64
@@ -50,8 +50,8 @@ def basemap(cache):
     return dict(zoom=zoom, bounds=[[south, west], [north, east]], images=images)
 
 
-def render(payload, tiles, fields=None):
-    """Return a standalone document; dependencies and forecast data are inline."""
+def validate_products(payload, fields=None):
+    """Reject mixed source products before publishing a map bundle."""
     if payload.get('schema_version') not in ('daily-uv-v1', 'daily-uv-v2') or not payload.get('entries'):
         raise ValueError('Expected a nonempty daily UV product')
     if fields is not None:
@@ -65,40 +65,65 @@ def render(payload, tiles, fields=None):
             raise ValueError('Field/location issuance mismatch')
         if [d['valid_date'] for d in fields['days']] != sorted({r['valid_date'] for r in payload['entries']})[:4]:
             raise ValueError('Field/location dates mismatch')
+
+
+def render(data_urls):
+    """Return static HTML containing data URLs, never forecast values."""
     here = Path(__file__).parent
     template = (here / 'meteoswiss_map.template.html').read_text(encoding='utf-8')
     replacements = {
         '__LEAFLET_CSS__': (here / 'vendor/leaflet-1.9.4.css').read_text(),
         '__LEAFLET_JS__': (here / 'vendor/leaflet-1.9.4.js').read_text().split('//# sourceMappingURL=')[0],
         '__LEAFLET_LICENSE__': (here / 'vendor/leaflet-LICENSE').read_text(),
-        '__FORECAST_JSON__': script_json(payload),
-        '__TILES_JSON__': script_json(tiles),
-        '__FIELDS_JSON__': script_json(fields),
+        '__DATA_URLS__': script_json(data_urls),
     }
     # One pass prevents replacement tokens in catalog text from becoming markup.
     import re
     return re.sub('|'.join(map(re.escape, replacements)), lambda m: replacements[m[0]], template)
 
 
+def write_bundle(input_path, fields_path, output, cache):
+    """Place the page and its data side by side for any static HTTP server."""
+    from urllib.parse import quote
+
+    if output.resolve() in {p.resolve() for p in (input_path, fields_path) if p is not None}:
+        raise ValueError('Input JSON and output HTML must differ')
+    payload = json.loads(input_path.read_text(encoding='utf-8'))
+    fields = json.loads(fields_path.read_text(encoding='utf-8')) if fields_path else None
+    validate_products(payload, fields)
+    tiles = basemap(cache)
+    output.parent.mkdir(parents=True, exist_ok=True)
+    urls = {}
+    for kind, data in [('locations', payload), ('fields', fields), ('basemap', tiles)]:
+        if data is None:
+            urls[kind] = None
+            continue
+        target = output.with_name(output.stem+'.'+kind+'.json')
+        urls[kind] = quote(target.name)
+        content = json.dumps(data, indent=2, sort_keys=True, allow_nan=False)+'\n'
+        if not target.exists() or target.read_text(encoding='utf-8') != content:
+            target.write_text(content, encoding='utf-8')
+    document = render(urls)
+    if not output.exists() or output.read_text(encoding='utf-8') != document:
+        output.write_text(document, encoding='utf-8')
+    return urls
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--input', type=Path, default=Path(__file__).with_name('meteoswiss_map.sample.json'),
+    parser.add_argument('--input', type=Path, default=Path(__file__).with_name('meteoswiss_map.locations.json'),
                         help='Daily UV JSON (default: bundled example snapshot)')
     parser.add_argument('--output', type=Path, default=Path('work/meteoswiss-map.html'))
     parser.add_argument('--fields', type=Path, help='Daily field JSON from meteoswiss_fields.py')
     parser.add_argument('--cache', type=Path, default=Path('work/swisstopo-relief-tiles'))
     args = parser.parse_args()
-    if args.input.resolve() == args.output.resolve():
-        parser.error('Input JSON and output HTML must differ')
-    payload = json.loads(args.input.read_text(encoding='utf-8'))
     field_path = args.fields
-    if field_path is None and args.input.resolve() == Path(__file__).with_name('meteoswiss_map.sample.json').resolve():
+    if field_path is None and args.input.resolve() == Path(__file__).with_name('meteoswiss_map.locations.json').resolve():
         field_path = Path(__file__).with_name('meteoswiss_map.fields.json')
-    fields = json.loads(field_path.read_text()) if field_path else None
-    document = render(payload, basemap(args.cache), fields)
-    args.output.parent.mkdir(parents=True, exist_ok=True)
-    args.output.write_text(document, encoding='utf-8')
-    print(f'{args.output} ({len(document.encode()) / 1024 / 1024:.2f} MiB, self-contained)')
+    urls = write_bundle(args.input, field_path, args.output, args.cache)
+    print(f'{args.output} ({args.output.stat().st_size / 1024:.0f} KiB HTML)')
+    print('Data: '+', '.join(url for url in urls.values() if url))
+    print('Serve the output directory over HTTP to view the page.')
 
 
 if __name__ == '__main__':
