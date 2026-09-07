@@ -12,7 +12,7 @@ and the surrounding area, producing:
 Calculations run locally using a bundled radiation lookup table. An external
 radiative-transfer solver is only needed when rebuilding that table.
 
-[![Swiss UV forecast map with town values, Alpine elevation bands and sun-protection guidance](docs/images/uv-map.png)](docs/meteoswiss-map.md)
+[![Animated Swiss UV forecast map showing zoom, day selection, town values and Alpine elevation bands](docs/images/uv-map.gif)](docs/meteoswiss-map.md)
 
 ## Installation
 
