@@ -25,8 +25,6 @@ cams = ["cdsapi>=0.7"]
 
 [dependency-groups]
 dev = ["pytest>=8", "jsonschema>=4.23"]
-analysis = ["pandas>=2.2", "matplotlib>=3.8", "nbformat>=5.10"]
-notebooks = [{include-group = "analysis"}, "nbclient>=0.10", "ipykernel>=6.29"]
 
 [project.scripts]
 icon-uv = "icon_uv.cli:main"

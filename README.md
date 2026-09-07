@@ -83,7 +83,7 @@ replays reproducible. Set it to your intended issuance on the ICON cycle's date:
 ISSUED_AT="YYYY-MM-DDT06:00:00Z"
 
 uv run --no-sync icon-uv daily \
-  --grid work/uv.nc --catalog analysis/product_locations.example.json \
+  --grid work/uv.nc --catalog examples/product_locations.json \
   --issued-at "$ISSUED_AT" --output work/daily-uv.json
 ```
 
@@ -139,7 +139,7 @@ spatial matching and the distinction between ambient and terrain-screened UV.
 
 The table was generated with libRadtran using plane-parallel DISORT. The
 [method description](docs/method.md) covers the physical assumptions, table
-ranges and interpolation. [Validation results](VALIDATION.md) summarize
+ranges and interpolation. [Validation results](docs/validation.md) summarize
 measurement comparisons and numerical accuracy. Developer setup and table
 rebuilding are documented in [CONTRIBUTING.md](CONTRIBUTING.md).
 

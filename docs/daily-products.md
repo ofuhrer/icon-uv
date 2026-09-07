@@ -55,7 +55,7 @@ Save a JSON object with an `entries` list. Each entry needs a unique `id`, a
 
 Coordinates are WGS84 degrees and elevations are metres above sea level.
 Bounding boxes use `[west, south, east, north]`. The full
-[example catalog](../analysis/product_locations.example.json) has Swiss towns
+[example catalog](../examples/product_locations.json) has Swiss towns
 and mountain regions; adapt its locations and boundaries to your product.
 
 | Kind | Native-cell selection | Reported value |

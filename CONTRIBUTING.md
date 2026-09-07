@@ -3,16 +3,15 @@
 ## Set up and test
 
 ```sh
-uv sync --locked --extra cams --group analysis
+uv sync --locked --extra cams
 uv run --no-sync pytest -q
 uv run --no-sync icon-uv --help
 uv build --out-dir work/dist
 ```
 
 The normal tests use synthetic fixtures and temporary files; they require no
-DWH/ADS credentials or downloaded measurement archive. Add `--group notebooks`
-when executing analysis notebooks. `uv.lock` records resolved dependencies;
-analysis and notebook packages are separate from the forecast runtime.
+DWH/ADS credentials or downloaded measurement archive. `uv.lock` records resolved
+dependencies, including the development tools used for these checks.
 
 ## Project layout
 
@@ -26,26 +25,23 @@ analysis and notebook packages are separate from the forecast runtime.
 | `icon_uv/build_table.py`, `icon_uv/validate.py` | Table generation and numerical reference checks |
 | `icon_uv/data/` | Bundled lookup table and daily JSON Schema |
 | `docs/` | Usage, field reference and method documentation |
-| `analysis/` | Research acquisition, scoring, verification and reporting tools |
+| `examples/` | Point geometry and daily-product location catalogs |
 | `tests/` | Input, numerical, calendar, output and regression checks |
 
 ## Data and generated files
 
-Keep source, tests, examples, schemas, campaign definitions and reviewed findings
-in Git. The small radiation table is also versioned because it is needed at
-runtime. Downloaded forecasts, observations, detailed source metadata, generated
-score tables, plots, reports, notebooks and logs belong under `work/<study>/`.
-That directory is ignored by Git and excluded from distributions.
+Keep source, tests, examples, schemas, user documentation and the bundled
+radiation table in Git. Research tools, campaign definitions, downloaded data,
+notebooks and generated results stay local. Use `work/<study>/` for new study
+inputs and outputs; it is ignored by Git and excluded from distributions.
 
-Preserve the local inputs and hashes needed to reproduce a study, especially
-forecasts that expire from the public archive. A clone supplies code and sample
-definitions; its data archives must be restored or retrieved separately. New
-inputs or methods should produce a new run identity rather than overwrite an
-existing frozen identity. Credentials use the normal external client setup.
+Preserve local inputs, environment locks and source hashes when retaining a
+study, especially forecasts that expire from the public archive. Summarize
+relevant methods, results and sample coverage in [validation](docs/validation.md).
+Credentials use the normal external client setup.
 
 The wheel contains the runtime package, table, schema and license. The source
-distribution additionally contains documentation, tests and analysis methods.
-Report generators write local results; reviewed findings are edited separately.
+distribution additionally contains documentation, tests and examples.
 
 ## Change the radiation table
 
@@ -59,13 +55,18 @@ uv run --no-sync python -m icon_uv.validate --table work/candidate_rt.npz \
   --output work/candidate_rt_validation.json
 ```
 
-The reference cache identifies the solver executable, its data, reference code
-and numerical settings by content hashes. See [the table record](analysis/TABLE_PROVENANCE.md).
-When updating the bundled table, retain the new reference results and update
-that record. Recompute saved grids before using them with a different table;
-point and daily APIs check the table identity.
+The bundled `icon_uv/data/rt.npz` contains 10,368 reference columns and embeds
+its physical configuration, described in the [calculation method](docs/method.md).
+Its SHA-256 is
+`a33db2d4b2806f216eef356c761460383bb4a9fca53e3b958715bc12e6d6dcba`.
 
-For scientific comparisons and archived runs, see [analysis tools](analysis/README.md).
+The reference cache identifies the solver executable, its data, reference code
+and numerical settings by content hashes. When updating the bundled table,
+retain the candidate configuration and reference results locally, update this
+identity and summarize the checks in the validation documentation. Recompute
+saved grids before using them with a different table; point and daily APIs
+check the table identity.
+
 For output-format changes, update the schema, field documentation and relevant
 tests together. Run `git diff --check` and inspect package contents before release.
 

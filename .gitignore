@@ -26,3 +26,6 @@ work/
 /observation_day_grid_check.json
 /observation_quality.json
 /observation_quality.ipynb
+
+# Local research tools, campaign definitions and scientific study records.
+/analysis/
