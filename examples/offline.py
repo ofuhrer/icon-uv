@@ -6,15 +6,13 @@ or a scientific validation case. Run from the repository with:
 """
 
 import argparse
-import hashlib
 from pathlib import Path
 
 import numpy as np
 import xarray as xr
 
-from icon_uv.daily import export_daily, write_json_atomic
+from icon_uv import PointLocation, compute_grid, compute_points, export_daily_file
 from icon_uv.data import load_cams, write_netcdf
-from icon_uv.products import POI, compute_grid, compute_pois
 from icon_uv.radiation import solar_geometry
 
 
@@ -68,19 +66,13 @@ def run(output_dir):
     grid.attrs["title"] = "SYNTHETIC UV demonstration; not a forecast"
     grid_path = output_dir / "uv.nc"
     write_netcdf(grid, grid_path)
-    site = POI(name="synthetic-bern", latitude=46.95, longitude=7.44,
-               altitude_m=540, uv_albedo=.05, horizon_degrees=(0.,) * 36)
+    locations = [PointLocation("synthetic-bern", 46.95, 7.44, 540,
+                               label="SYNTHETIC Bern example")]
     with xr.open_dataset(grid_path) as saved_grid:
-        points = compute_pois(saved_grid.load(), [site])
-        catalog = {"catalog_version": 1, "entries": [{"id": "synthetic-bern", "kind": "town",
-                    "label": "SYNTHETIC Bern example", "latitude": 46.95,
-                    "longitude": 7.44, "altitude_m": 540}]}
-        with grid_path.open("rb") as stream:
-            digest = hashlib.file_digest(stream, "sha256").hexdigest()
-        payload = export_daily(saved_grid, catalog, issued_at="2026-09-07T06:00:00Z",
-                               input_sha256=digest)
+        points = compute_points(saved_grid, locations)
     write_netcdf(points, output_dir / "points.nc")
-    write_json_atomic(payload, output_dir / "daily.json")
+    payload = export_daily_file(grid_path, locations, issued_at="2026-09-07T06:00:00Z",
+                                output=output_dir / "daily.json")
     return payload
 
 

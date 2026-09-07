@@ -761,8 +761,8 @@ function colourTile(node,value){const step=uviStep(value);node.dataset.uvi=Strin
 document.querySelectorAll('.legend [data-uvi]').forEach(node=>colourTile(node,Number(node.dataset.uvi)));
 async function loadJSON(url){const response=await fetch(url,{cache:'no-store'});if(!response.ok)throw new Error('Could not load '+url+' ('+response.status+').');return response.json();}
 function validateProducts(forecast,fields){
-  if(!['daily-uv-v1','daily-uv-v2','daily-uv-v3','daily-uv-v4'].includes(forecast.schema_version)||!forecast.entries?.length)throw new Error('Invalid location forecast.');
-  const geometry=forecast.uv_geometry??(forecast.schema_version==='daily-uv-v4'?null:'ambient_horizontal');
+  if(!['daily-uv-v1','daily-uv-v2','daily-uv-v3','daily-uv-v4','daily-uv-v5'].includes(forecast.schema_version)||!forecast.entries?.length)throw new Error('Invalid location forecast.');
+  const geometry=forecast.uv_geometry??(['daily-uv-v1','daily-uv-v2','daily-uv-v3'].includes(forecast.schema_version)?'ambient_horizontal':null);
   if(!['ambient_horizontal','terrain_screened'].includes(geometry))throw new Error('Invalid location UV geometry.');
   if(!fields)return;
   if((fields.uv_geometry??'ambient_horizontal')!==geometry)throw new Error('Location and map UV geometry differ. Terrain-screened locations require a location-only map.');
@@ -806,11 +806,13 @@ function details(rows,forecast){
   d.append(element('h3','',locationLabel(loc)));
   d.append(element('p','',dateLabel(rows[0].valid_date)+' · Swiss local time'));
   if(!region){
-    const model=rows[0].source_point?.altitude_m;
-    d.append(element('p','',`Elevation: ${Math.round(loc.altitude_m)} m`+(Number.isFinite(model)?` · model: ${Math.round(model/10)*10} m`:'')));
+    d.append(element('p','',`Elevation: ${Math.round(loc.altitude_m)} m`));
   }
   if(forecast.uv_geometry==='terrain_screened')d.append(element('p','',!region&&loc.treatment==='adjusted'?'Terrain-screened point UV · horizon screening proxy.':'Native model surface · open horizon.'));
-  else if(loc.treatment==='adjusted')d.append(element('p','','Adjusted point · ambient horizontal UV.'));
+  else if(loc.treatment==='adjusted'){
+    d.append(element('p','','Ambient horizontal UV · no additional local horizon screening.'));
+    d.append(element('p','','For surrounding mountains, use the regional elevation bands.'));
+  }
   for(const row of rows){
     if(region)d.append(element('strong','',row.location.altitude_m+' m'));
     if(row.display_uvi===null){

@@ -4,22 +4,18 @@
     {
       "id": "bern",
       "kind": "point",
-      "label": "Bern, native model surface",
+      "label": "Bern",
       "latitude": 46.95,
       "longitude": 7.44,
-      "altitude_m": 540,
-      "treatment": "native"
+      "altitude_m": 540
     },
     {
-      "id": "bern-site",
+      "id": "zermatt",
       "kind": "point",
-      "label": "Bern example site, explicit surface",
-      "latitude": 46.95,
-      "longitude": 7.44,
-      "altitude_m": 560,
-      "treatment": "adjusted",
-      "uv_albedo": 0.05,
-      "horizon_degrees": [0, 0, 0, 0]
+      "label": "Zermatt",
+      "latitude": 46.017536,
+      "longitude": 7.746568,
+      "altitude_m": 1617
     },
     {
       "id": "bernese-2000",

@@ -7,260 +7,156 @@
 [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue)](https://github.com/ofuhrer/icon-uv/blob/main/pyproject.toml)
 [![License: BSD-3-Clause](https://img.shields.io/badge/license-BSD--3--Clause-blue)](https://github.com/ofuhrer/icon-uv/blob/main/LICENSE)
 
-**icon-uv calculates the UV Index from ICON weather forecasts and CAMS atmospheric
-composition.** It provides a Python API and command-line tools for Switzerland
-and the surrounding area, producing:
+**Calculate the UV Index from ICON weather forecasts and CAMS atmospheric
+composition.** icon-uv provides hourly grid and point forecasts and daily JSON
+for towns and mountain regions, using a bundled radiation lookup table.
 
-- Hourly UV Index, clear-sky UV and direct/diffuse irradiance on the native ICON grid.
-- Point forecasts using a supplied elevation, surface albedo and terrain horizon.
-- Daily JSON data for town and mountain-elevation maps, including rounded values,
-  categories, source timestamps and data-quality information.
+Point forecasts need only coordinates and elevation. They use nearby ICON cloud
+and snow conditions, with optional UV albedo and horizon overrides for a specific
+site. Hourly and daily products share the same location definitions.
 
-Calculations run locally using a bundled radiation lookup table. An external
-radiative-transfer solver is only needed when rebuilding that table.
-
-[![Animated Swiss UV forecast map showing zoom, day selection, town values and Alpine elevation bands](https://raw.githubusercontent.com/ofuhrer/icon-uv/main/docs/images/uv-map.gif)](https://ofuhrer.github.io/icon-uv/meteoswiss-map/)
-
-Read the **[documentation](https://ofuhrer.github.io/icon-uv/)** for installation,
-the location API, daily products and the calculation method.
+[![Animated Swiss UV forecast map](https://raw.githubusercontent.com/ofuhrer/icon-uv/main/docs/images/uv-map.gif)](https://ofuhrer.github.io/icon-uv/meteoswiss-map/)
 
 ## Installation
 
-Install the **0.1.0 release** into a Python 3.11+ environment:
+Install the released package with Python 3.11 or newer:
 
 ```sh
-pip install 'icon-uv[cams]==0.1.0'
+pip install 'icon-uv[cams]'
 icon-uv --help
 ```
 
-The wheel includes the radiation table and JSON schemas. To get the example
-scripts and develop from source, use the repository setup below. For release and
-publishing steps, see the [release guide](https://ofuhrer.github.io/icon-uv/releasing/).
-
-Python 3.11 or newer and [uv](https://docs.astral.sh/uv/) are required for the
-following setup:
+This README tracks `main`, including changes after release 0.1.0. To use the API
+shown below and run the examples, install from the repository with
+[uv](https://docs.astral.sh/uv/):
 
 ```sh
 git clone https://github.com/ofuhrer/icon-uv.git
 cd icon-uv
 uv sync --locked --extra cams
-uv run --no-sync icon-uv --help
 ```
 
-The `cams` extra installs the ADS download client. Configure an ADS account and
-accept the dataset terms using the [CAMS API setup instructions](https://ads.atmosphere.copernicus.eu/how-to-api).
-ICON downloads use the public MeteoSwiss STAC service without an account.
-To install into an existing Python environment, use `pip install '.[cams]'`
-from the repository directory. Omit `[cams]` when working only with saved inputs.
+The `cams` extra adds the ADS download client. CAMS requires an ADS account and
+accepted dataset terms; follow the [CAMS API setup](https://ads.atmosphere.copernicus.eu/how-to-api).
+ICON downloads are public. Omit `[cams]` when installing for saved inputs only.
 
-## Try a calculation without credentials
+## Try it without credentials
 
 ```sh
 uv run --no-sync python examples/offline.py --output-dir work/offline
 ```
 
-This small example creates **synthetic** ICON/CAMS inputs, saves and reopens them,
-and uses the real bundled radiation table to write hourly grid and point NetCDF
-and daily JSON. It needs no network access or credentials after installation.
-Its two September 2026 days illustrate the formats; they are not a weather forecast.
+This creates **synthetic** ICON/CAMS inputs and writes hourly grid/point NetCDF
+and daily JSON through the real radiation table. After installation it needs no
+network or credentials. The output illustrates the formats, not a weather forecast.
 
 ## Calculate UV fields
 
 Choose an available **00 UTC ICON cycle** and the **preceding day's 12 UTC CAMS
-cycle**. Replace the date placeholders below; published ICON files have limited
-retention. This example retrieves enough hours for two Swiss local-day products.
+cycle**. Published ICON files have limited retention. Replace both date placeholders:
 
 ```sh
 ICON_REFERENCE="YYYY-MM-DDT00:00:00Z"
-CAMS_REFERENCE="YYYY-MM-DDT12:00:00Z"  # preceding calendar day
+CAMS_REFERENCE="PREVIOUS-YYYY-MM-DDT12:00:00Z"
 
 uv run --no-sync icon-uv fetch-icon \
   --reference "$ICON_REFERENCE" --first-lead 1 --last-lead 48 \
   --output work/icon.nc
-
 uv run --no-sync icon-uv fetch-cams \
   --reference "$CAMS_REFERENCE" --first-lead 12 --last-lead 60 \
   --output work/cams.nc
-
 uv run --no-sync icon-uv run \
-  --icon work/icon.nc --cams work/cams.nc --output work/uv.nc
+  --icon work/icon.nc --cams work/cams.nc --samples 12 --output work/uv.nc
 ```
 
-Leads are interval boundaries in hours after initialization: ICON leads 1–48
-produce 47 hourly intervals. `--bbox W S E N` selects a geographic subset during
-download; the default is 5.3–11.2°E, 45.2–48.4°N. CAMS coverage must enclose the
-ICON cells and bracket their interval midpoints. Keep downloaded files to repeat
-a calculation offline.
+ICON leads are interval boundaries: 1–48 produces 47 hourly intervals, covering
+two Swiss daylight dates. `--bbox W S E N` selects a subset; the default covers
+Switzerland and its surroundings. Keep the downloaded NetCDF inputs for offline
+recalculation. Downloads use all 21 ICON members; add `--control` to `fetch-icon`
+for CTRL only. Outputs retain member-specific cloud and surface conditions.
 
-The ICON and CAMS input filters each write normalized NetCDF, which `run`
-consumes to compute UVI products. CAMS contains ozone in Dobson units and AOD550,
-with source metadata embedded in the file.
-
-Read the result with xarray:
+## One catalog for hourly and daily forecasts
 
 ```python
 import xarray as xr
-
-with xr.open_dataset("work/uv.nc") as grid:
-    print(grid[["uvi", "clear_sky_uvi", "quality_flag"]])
-    hourly_uvi = grid.uvi.isel(cell=0).load()
-```
-
-`uvi(member, time, cell)` contains hourly means; CTRL-only output omits `member`.
-`time` is the UTC interval midpoint;
-`time_bounds` gives its start and end. Native cell IDs, coordinates, elevations
-and input-source identities accompany the fields. See the
-[output reference](https://ofuhrer.github.io/icon-uv/outputs/) for variables, units and quality flags.
-
-## Generate daily map data
-
-The `daily` command exports today's and tomorrow's values for a location catalog.
-The supplied issue time determines the local dates in Europe/Zurich, making
-replays reproducible. Set it to your intended issuance on the ICON cycle's date:
-
-```sh
-ISSUED_AT="YYYY-MM-DDT06:00:00Z"
-
-uv run --no-sync icon-uv daily \
-  --grid work/uv.nc --catalog examples/product_locations.json \
-  --issued-at "$ISSUED_AT" --output work/daily-uv.json
-```
-
-Each value is a daily maximum of a reconstructed 30-minute mean, evaluated every
-five minutes. Towns use a nearby native cell; mountain entries use native cells
-near 1000, 2000 or 3000 m within a region. The JSON includes raw UVI, its rounded
-display value, category and `ok`, `degraded` or `unavailable` status.
-
-The [daily-products guide](https://ofuhrer.github.io/icon-uv/daily-products/) explains custom catalogs,
-regional aggregation, freshness and missing-data handling. It also shows how
-to use twelve solar samples per hour when computing the input grid.
-
-The [examples overview](https://github.com/ofuhrer/icon-uv/blob/main/examples/README.md) covers the included inputs and scripts.
-The [MeteoSwiss map example](https://ofuhrer.github.io/icon-uv/meteoswiss-map/) provides 30 town locations
-and six mountain regions, including the Jura elevation exception, with a script
-that exports four days and builds an English HTML map with
-zoom, pan, day selection and forecast/clear-sky shading. The [example page](https://github.com/ofuhrer/icon-uv/blob/main/examples/map/index.html)
-and its separate JSON data files are included; serve them with a local HTTP server
-as described in the guide. New forecasts use all 21 ICON members by default; daily products report their
-median and uncertainty. The included dated map snapshot uses CTRL.
-
-## Ensemble and CTRL forecasts
-
-`fetch-icon` downloads **all 21 ICON-CH2-EPS members by default**. `run` and `poi`
-retain the member dimension and calculate UV independently for each member.
-`daily` reports the **median of the member daily products**, plus P10/P50/P90,
-individual member values and uncalibrated exceedance frequencies for UVI 3, 6,
-8 and 11. Regional aggregation is performed within each member first. Missing inputs are
-tracked; daily values need at least 90% of the requested members (19 of 21).
-`fetch-icon --minimum-member-fraction 0.8` changes the default coverage threshold.
-
-To use only the deterministic CTRL forecast, add `--control` when downloading:
-
-```sh
-uv run --no-sync icon-uv fetch-icon --control \
-  --reference "$ICON_REFERENCE" --first-lead 1 --last-lead 48 \
-  --output work/icon-control.nc
-uv run --no-sync icon-uv run --icon work/icon-control.nc --cams work/cams.nc \
-  --samples 12 --output work/uv-control.nc
-```
-
-Use that grid with `daily` or `poi`; no further CTRL option is needed.
-Python callers use `fetch_icon(..., ensemble=False)`. Ensemble data and UV
-calculations require roughly 21 times the member-dependent work of CTRL.
-See [ensemble products](https://ofuhrer.github.io/icon-uv/daily-products/#ensemble-products) for reduction
-choices, schema details and uncertainty limits.
-
-## Calculate a point forecast
-
-Supply the point's coordinates, altitude, UV albedo and horizon:
-
-```python
-import xarray as xr
-from icon_uv.products import POI, compute_pois
-
-site = POI(
-    name="my-site", latitude=46.8156, longitude=6.944, altitude_m=491,
-    uv_albedo=0.05,
-    horizon_degrees=(0.0,) * 36,  # open horizon, samples every 10° from north
+from icon_uv import (
+    PointLocation, RegionBand, load_locations,
+    compute_points, compute_daily, export_daily_file,
 )
+
+locations = load_locations([
+    PointLocation("zermatt", 46.017536, 7.746568, 1617, label="Zermatt"),
+    RegionBand("valais-3000", (7.0, 45.9, 8.4, 46.4), 3000),
+])
 with xr.open_dataset("work/uv.nc") as grid:
-    points = compute_pois(grid.load(), [site])
+    hourly = compute_points(grid, locations.points)
+    daily = compute_daily(grid, locations, dates=["2026-09-07", "2026-09-08"])
+
+# Publish with the saved grid's hash and issuance freshness checks.
+payload = export_daily_file(
+    "work/uv.nc", locations, issued_at="2026-09-07T06:00:00Z",
+    output="work/daily.json",
+)
 ```
 
-A JSON list of the same fields can be passed to the CLI:
+Use dates matching your saved forecast. Points calculate ambient horizontal UV at
+the requested coordinates and elevation. UV albedo defaults to the selected
+ICON cell's snow-derived estimate. Region bands report the spatial P90 of cell
+daily peaks near their elevation; ensemble products then take the member median.
+Daily peaks reconstruct a rolling 30-minute mean from the saved atmosphere and
+cloud state, rather than taking a maximum of hourly means.
 
-```sh
-uv run --no-sync icon-uv poi --grid work/uv.nc \
-  --locations examples/davos.json --output work/davos.nc
-```
-
-See [point forecasts](https://ofuhrer.github.io/icon-uv/outputs/#point-forecasts) for horizon conventions,
-spatial matching and the distinction between ambient and terrain-screened UV.
-
-## Use one location catalog for points and daily products
-
-The [shared catalog](https://github.com/ofuhrer/icon-uv/blob/main/examples/shared_locations.json) defines native points,
-adjusted points with explicit surface properties, and region elevation bands.
-Use it with both commands:
+The same [JSON catalog](https://github.com/ofuhrer/icon-uv/blob/main/examples/shared_locations.json)
+works with both commands:
 
 ```sh
 uv run --no-sync icon-uv points --grid work/uv.nc \
   --locations examples/shared_locations.json --output work/points.nc
 uv run --no-sync icon-uv daily --grid work/uv.nc \
-  --locations examples/shared_locations.json --days 3 \
-  --issued-at "$ISSUED_AT" --output work/daily.json
+  --locations examples/shared_locations.json --days 2 \
+  --issued-at "YYYY-MM-DDT06:00:00Z" --output work/daily.json
 ```
 
-Hourly output includes point entries. Daily output also includes regions. A native
-point retains model elevation and surface state; an adjusted point recalculates at
-the specified elevation, albedo and coordinates. Daily values reconstruct the
-30-minute peak from atmospheric/cloud state, rather than taking a maximum of
-hourly point means. Existing `POI`, `compute_pois`, and `--catalog` inputs remain
-supported. See the [shared Python API](https://ofuhrer.github.io/icon-uv/location-api/) for computation,
-publication, screening and preflight checks.
+See the [location API](https://ofuhrer.github.io/icon-uv/location-api/) for optional
+site inputs, native-cell treatment and compatibility. The
+[Davos example](https://github.com/ofuhrer/icon-uv/blob/main/examples/davos.json)
+shows one supplied terrain horizon and assumed local UV albedo. No horizon
+preprocessing or HORAYZON installation is required.
 
-## How it works
+## Documentation and examples
 
-1. **Recover hourly solar radiation.** ICON provides surface shortwave radiation
-   averaged since initialization. Differences between consecutive boundaries
-   recover hourly means; pressure, albedo and snow fraction use endpoint averages.
-2. **Add atmospheric composition.** CAMS supplies total-column ozone and aerosol
-   optical depth at 550 nm, interpolated to each cell and interval midpoint.
-3. **Infer cloud attenuation.** A radiation lookup table maps atmospheric state
-   and cloud optical thickness to shortwave and erythemal UV irradiance. The
-   calculation selects the effective cloud thickness matching ICON shortwave.
-4. **Calculate UV Index.** Solar geometry evolves within each hour. Erythemally
-   weighted irradiance is integrated and multiplied by 40 to obtain UVI; daily
-   and point products reuse the saved atmospheric and cloud state.
+- [Daily products](https://ofuhrer.github.io/icon-uv/daily-products/): peak definition,
+  ensemble uncertainty, missing data and JSON schemas.
+- [Output reference](https://ofuhrer.github.io/icon-uv/outputs/): NetCDF variables,
+  provenance and quality flags.
+- [Interactive map](https://ofuhrer.github.io/icon-uv/meteoswiss-map/): 30 towns and
+  six mountain regions, with a dated CTRL snapshot and export scripts.
+- [Calculation method](https://ofuhrer.github.io/icon-uv/method/) and
+  [validation](https://ofuhrer.github.io/icon-uv/validation/): physics, evidence and limits.
+- [Examples](https://github.com/ofuhrer/icon-uv/blob/main/examples/README.md),
+  [development](https://github.com/ofuhrer/icon-uv/blob/main/CONTRIBUTING.md) and
+  [releasing](https://ofuhrer.github.io/icon-uv/releasing/).
 
-The table was generated with libRadtran using plane-parallel DISORT. The
-[method description](https://ofuhrer.github.io/icon-uv/method/) covers the physical assumptions, table
-ranges and interpolation. [Validation results](https://ofuhrer.github.io/icon-uv/validation/) summarize
-measurement comparisons and numerical accuracy. Developer setup and table
-rebuilding are documented in [CONTRIBUTING.md](https://github.com/ofuhrer/icon-uv/blob/main/CONTRIBUTING.md).
+## Scope and limitations
 
-## Limitations
+The cloud fit uses ICON's downward shortwave flux **without orographic shading**
+(`ASOD_S`). Ambient forecasts do not apply a local terrain horizon. A town marker
+is an elevation-adjusted reference point; regional elevation bands provide context
+for surrounding mountains and cable-car trips. One marker cannot represent every
+slope, snow condition or cloud layer in a resort.
 
-- Cloud state is hourly; reconstructed subhourly UV follows solar geometry and
-  does not resolve rapid cloud changes or three-dimensional cloud effects.
-- Atmospheric profiles, water vapour and aerosol optical properties are fixed;
-  UV surface albedo is estimated from snow fraction.
-- Native-grid terrain can differ from a measurement or target location. Point
-  height adjustments and horizon screening approximate local conditions.
-- Low-sun accuracy depends on the plane-parallel approximation; twilight is
-  omitted. Inputs outside the lookup table's supported ranges are rejected.
-- Measurement coverage varies by site, season and weather regime; the reported
-  validation statistics describe those sampled conditions.
+Snow-derived UV albedo is an experimental approximation. Cloud state is hourly;
+subhourly products follow solar geometry and do not resolve rapid cloud changes.
+Point elevation adjustments retain the source cloud column. Fixed atmospheric
+profiles, plane-parallel radiation and approximate optional horizon screening
+also limit accuracy; see the method and validation guides before interpreting results.
 
-## Sources and attribution
+## Sources and license
 
-- [MeteoSwiss ICON documentation](https://opendatadocs.meteoswiss.ch/e-forecast-data/e2-e3-numerical-weather-forecasting-model)
-  and [STAC collection](https://data.geo.admin.ch/api/stac/v1/collections/ch.meteoschweiz.ogd-forecasting-icon-ch2).
-- [CAMS atmospheric composition forecasts](https://ads.atmosphere.copernicus.eu/datasets/cams-global-atmospheric-composition-forecasts),
-  produced by ECMWF for Copernicus.
-- [libRadtran](https://www.libradtran.org/), used to generate the radiation table.
-- Example Davos terrain geometry derives from
-  [swisstopo elevation profiles](https://api3.geo.admin.ch/rest/services/profile.json).
+- [MeteoSwiss ICON OGD](https://opendatadocs.meteoswiss.ch/e-forecast-data/e2-e3-numerical-weather-forecasting-model)
+- [CAMS atmospheric composition forecasts](https://ads.atmosphere.copernicus.eu/datasets/cams-global-atmospheric-composition-forecasts), produced by ECMWF for Copernicus
+- [libRadtran](https://www.libradtran.org/), used to generate the radiation table
+- [swisstopo elevation profiles](https://api3.geo.admin.ch/rest/services/profile.json), used for the supplied Davos horizon
 
-icon-uv is licensed under the [BSD 3-Clause License](https://github.com/ofuhrer/icon-uv/blob/main/LICENSE). Input datasets and
-third-party dependencies retain their own licenses and attribution requirements.
+Licensed under [BSD 3-Clause](https://github.com/ofuhrer/icon-uv/blob/main/LICENSE).
+Input datasets and dependencies retain their own licenses and attribution requirements.

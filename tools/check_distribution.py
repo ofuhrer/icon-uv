@@ -46,7 +46,7 @@ def main():
         if args.tag and args.tag != f"v{metadata['Version']}":
             parser.error(f"Tag {args.tag!r} does not match package version {metadata['Version']}")
         assert "icon_uv/data/rt.npz" in names
-        assert all(f"icon_uv/data/daily-uv-v{version}.schema.json" in names for version in (1, 2, 3, 4))
+        assert all(f"icon_uv/data/daily-uv-v{version}.schema.json" in names for version in (1, 2, 3, 4, 5))
     with tarfile.open(sources[0]) as archive:
         project_path, = (name for name in archive.getnames() if name.endswith('/pyproject.toml'))
         with archive.extractfile(project_path) as stream:

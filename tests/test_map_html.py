@@ -30,7 +30,7 @@ def test_catalog_text_cannot_escape_data_script_or_expand_template_tokens():
 def test_bundled_snapshot_is_complete_and_page_matches_template_and_json():
     root = Path(__file__).resolve().parents[1]
     payload = json.loads((root / 'examples/map/index.locations.json').read_text())
-    schema = json.loads((root / 'icon_uv/data/daily-uv-v2.schema.json').read_text())
+    schema = json.loads((root / 'icon_uv/data/daily-uv-v5.schema.json').read_text())
     Draft202012Validator(schema, format_checker=FormatChecker()).validate(payload)
     assert payload['example_snapshot'] is True
     assert len(payload['valid_dates']) == 4
@@ -41,10 +41,14 @@ def test_bundled_snapshot_is_complete_and_page_matches_template_and_json():
         rows = [r for r in payload['entries'] if r['valid_date'] == date]
         assert len(rows) == len(ids) and {r['location']['id'] for r in rows} == ids
         assert all(r['day'] == day for r in rows)
-        assert all(r['status'] == 'ok' and r['display_uvi'] is not None for r in rows if r['location']['id'] != 'zermatt')
-        unavailable = [r for r in rows if r['location']['id'] == 'zermatt']
-        assert len(unavailable) == 1 and unavailable[0]['display_uvi'] is None
-        assert 'insufficient_native_support' in unavailable[0]['reasons']
+        assert all(r['status'] == 'ok' and r['display_uvi'] is not None for r in rows)
+        zermatt = next(r for r in rows if r['location']['id'] == 'zermatt')
+        assert zermatt['location']['treatment'] == 'adjusted'
+        assert 'horizon_degrees' not in zermatt['location']
+        assert 'uv_albedo' not in zermatt['location']
+        assert zermatt['source_point']['altitude_m'] > zermatt['location']['altitude_m'] + 300
+        assert zermatt['aggregation'] == 'adjusted_point_daily_maximum'
+
     html = (root / 'examples/map/index.html').read_text()
     urls = json.loads(re.search(r'id="data-urls">(.*?)</script>', html, re.S).group(1))
     assert urls == {kind: f'index.{kind}.json' for kind in ('locations', 'fields', 'basemap')}
@@ -183,11 +187,12 @@ console.log(JSON.stringify({
     assert result['single'] == {'uvi': 0, 'members': None}
 
 
-def test_map_v4_geometry_matches_fields_or_requires_location_only():
+@pytest.mark.parametrize('version', ['daily-uv-v4', 'daily-uv-v5'])
+def test_map_geometry_matches_fields_or_requires_location_only(version):
     root = Path(__file__).resolve().parents[1]
     payload = json.loads((root / 'examples/map/index.locations.json').read_text())
     fields = json.loads((root / 'examples/map/index.fields.json').read_text())
-    payload.update(schema_version='daily-uv-v4', uv_geometry='ambient_horizontal')
+    payload.update(schema_version=version, uv_geometry='ambient_horizontal')
     renderer.validate_products(payload, fields)
     payload['uv_geometry'] = 'terrain_screened'
     renderer.validate_products(payload)
@@ -200,7 +205,7 @@ def test_map_v4_geometry_matches_fields_or_requires_location_only():
 const f={schema_version:'daily-uv-v4',uv_geometry:'terrain_screened',entries:[{}]};
 validateProducts(f,null);
 try{validateProducts(f,{})}catch(error){console.log(JSON.stringify(error.message));}
-''')
+'''.replace('daily-uv-v4', version))
     assert 'UV geometry differ' in result
 
 
@@ -221,3 +226,16 @@ console.log(JSON.stringify({sizes:[...groups.values()].map(group=>group.length),
     assert '<safe id>' in result['text']
     assert 'Native model surface · open horizon.' in result['text']
     assert 'Terrain-screened point UV · horizon screening proxy.' in result['screened']
+
+
+def test_ambient_town_point_popup_explains_elevation_and_mountain_context():
+    result = run_map_helpers("""
+const row={location:{id:'zermatt',label:'Zermatt',kind:'point',treatment:'adjusted',altitude_m:1617},
+  source_point:{altitude_m:2278},valid_date:'2026-09-08',status:'ok',display_uvi:6,uvi:6.35,reasons:[]};
+console.log(JSON.stringify(details([row],{uv_geometry:'ambient_horizontal'}).textContent));
+""")
+    assert 'Elevation: 1617 m' in result
+    assert 'UV Index 6.3' in result
+    assert 'Ambient horizontal UV' in result
+    assert 'no additional local horizon screening' in result
+    assert 'For surrounding mountains, use the regional elevation bands.' in result

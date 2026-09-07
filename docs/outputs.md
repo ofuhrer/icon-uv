@@ -48,9 +48,10 @@ samples; several conditions can apply to the same value.
 | 16 | Atmospheric-column adjustment for a point's elevation |
 | 32 | Approximate terrain screening applied |
 | 64 | A daylight sample has solar zenith angle above 78° |
+| 128 | Missing required ICON input; affected UV values are NaN |
 
-These flags describe calculation conditions. Missing drivers, invalid units and
-out-of-range table inputs raise errors. Use `icon_uv.check_grid` to check saved
+These flags describe calculation conditions. Missing driver variables, invalid units and
+out-of-range table inputs raise errors; missing input samples remain NaN. Use `icon_uv.check_grid` to check saved
 fields and reconstruct their shortwave forcing:
 
 ```sh
@@ -60,28 +61,32 @@ uv run --no-sync python -m icon_uv.check_grid \
 
 ## Point forecasts
 
-`compute_pois(grid, pois)` returns a dataset indexed by `time, poi`.
-Each `POI` needs `name`, `latitude`, `longitude`, `altitude_m`, `uv_albedo` and
-`horizon_degrees`. Horizon samples are equally spaced from north clockwise;
-at least four are required, with elevations between 0° and 90°. All zeros
-specify an open horizon.
+`compute_points(grid, locations.points)` returns hourly data indexed by
+`time, poi`, with a `member` axis for ensembles. The [location API](location-api.md)
+defines point matching, default ICON-derived albedo and optional site overrides.
+Output retains target and source coordinates/elevations, source cell ID/distance,
+treatment, effective UV albedo and supplied horizon.
 
-The closest grid cell supplies cloud state, ozone and aerosol optical depth.
-The default maximum distance is 10 km, configurable through the Python API's
-`maximum_distance_km` argument. Pressure is adjusted using an 8434 m scale
-height, and UV is recomputed for the point's altitude, albedo and solar geometry.
-The supplied radiation table must match the source grid's table identity.
+Pressure is adjusted to target elevation using an 8434 m scale height. The source
+cell supplies cloud state, ozone and aerosol. The radiation table must match the
+source grid's table identity. Inherited albedo retains time/member variation;
+explicit fixed albedo is recorded with the point's effective surface state.
 
-`uvi` describes ambient horizontal UV. `terrain_screened_uvi` additionally
-blocks direct sunlight below the supplied horizon and scales diffuse irradiance
-by an isotropic sky-view factor. Terrain reflection and anisotropic diffuse
-radiation are omitted. The elevation adjustment retains the source cloud state;
-it does not infer a summit's position relative to cloud layers.
+`uvi` and `clear_sky_uvi` describe ambient horizontal UV. With a supplied horizon,
+`terrain_screened_uvi` blocks direct sunlight below the horizon and scales diffuse
+irradiance by the isotropic sky-view factor, `mean(cos(horizon)²)`. Without a
+horizon, the screened field is unavailable (NaN). Terrain reflection and
+anisotropic diffuse radiation are omitted. Elevation adjustment retains the
+source cloud column and does not infer whether a summit lies above clouds.
 
-The repository's [Davos example](https://github.com/ofuhrer/icon-uv/blob/main/examples/davos.json) supplies 72 horizon
-samples derived from swisstopo terrain profiles at 5° azimuth spacing, with a
-20 km radius and 401 samples per ray. Its 1588.2 m altitude and UV albedo 0.05
-are example point inputs, rather than an instrument calibration record.
+The [Davos example](https://github.com/ofuhrer/icon-uv/blob/main/examples/davos.json)
+is the supplied site example: 72 horizon samples at 5° azimuth spacing, extracted
+from [swisstopo terrain profiles](https://api3.geo.admin.ch/rest/services/profile.json)
+on 5 September 2026 using a 20 km radius and 401 samples per ray. Horizon angles
+are rounded to 0.01°; point altitude is 1588.2 m. UV albedo 0.05 is an explicit
+assumption. This is terrain-derived example geometry, not a surveyed instrument
+installation or measured albedo. `load_locations` accepts this legacy POI list
+for both hourly and daily calculations.
 
 ## Daily JSON
 
@@ -97,9 +102,6 @@ coordinates and identical hourly `time_bounds`. Observation data also need
 boolean `qc_good(time, poi)`. The caller supplies the instrument-specific unit,
 time-support and quality-control adaptation. Comparisons use shared times and
 points, excluding missing values and observations with `qc_good=False`.
-
-Missing ICON member inputs are marked with quality bit **128**; corresponding
-UV values are NaN, not zero.
 
 ## Ensemble dimensions
 

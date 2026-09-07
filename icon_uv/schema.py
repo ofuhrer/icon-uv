@@ -7,7 +7,7 @@ from datetime import datetime
 from importlib.resources import files
 
 
-SCHEMA_VERSIONS = ("daily-uv-v1", "daily-uv-v2", "daily-uv-v3", "daily-uv-v4")
+SCHEMA_VERSIONS = ("daily-uv-v1", "daily-uv-v2", "daily-uv-v3", "daily-uv-v4", "daily-uv-v5")
 
 
 def load_schema(version_or_payload):

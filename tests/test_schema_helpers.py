@@ -59,7 +59,7 @@ def test_offline_saved_input_example_uses_real_table(tmp_path):
 
 @pytest.mark.parametrize("ensemble", [False, True])
 def test_shared_point_publication_validates_with_v4(tmp_path, ensemble):
-    from icon_uv.daily import compute_daily, write_daily_json
+    from icon_uv.daily import compute_daily, daily_payload
     from icon_uv.locations import PointLocation, load_locations
     from icon_uv.products import compute_grid
 
@@ -69,13 +69,13 @@ def test_shared_point_publication_validates_with_v4(tmp_path, ensemble):
     if ensemble:
         grid = grid.expand_dims(member=[0, 1])
     locations = load_locations([
-        PointLocation("native", 46.95, 7.44, 540),
+        PointLocation("native", 46.95, 7.44, 540, treatment="native"),
         PointLocation("adjusted", 46.95, 7.44, 1000,
                       treatment="adjusted", uv_albedo=.05, horizon_degrees=(0.,) * 4),
     ])
     result = compute_daily(grid, locations, dates=["2026-09-07"])
-    payload = write_daily_json(result, tmp_path / "v4.json", issued_at="2026-09-07T06:00:00Z",
-                               input_sha256="0" * 64)
+    payload = daily_payload(result, issued_at="2026-09-07T06:00:00Z",
+                               input_sha256="0" * 64, schema_version="daily-uv-v4")
     assert payload["schema_version"] == "daily-uv-v4"
     assert all(entry["uvi"] > 0 for entry in payload["entries"])
     assert all("support_uvi_range" in entry and "support_uvi_median" in entry
@@ -97,3 +97,26 @@ def test_shared_point_publication_validates_with_v4(tmp_path, ensemble):
         default = export_daily(grid, legacy, issued_at="2026-09-07T06:00:00Z", input_sha256="0" * 64)
         assert default["schema_version"] == "daily-uv-v3"
         validate_daily(default)
+
+
+def test_v5_accepts_inherited_albedo_without_loosening_published_v4(tmp_path):
+    from icon_uv.daily import compute_daily, daily_payload, write_daily_json
+    from icon_uv.locations import PointLocation
+    from icon_uv.products import compute_grid
+
+    example = load_script(ROOT / "examples/offline.py")
+    icon, cams = example.synthetic_inputs()
+    result = compute_daily(compute_grid(icon, cams), [PointLocation("bern", 46.95, 7.44, 540)],
+                           dates=["2026-09-07"])
+    payload = write_daily_json(result, tmp_path / "v5.json", issued_at="2026-09-07T06:00:00Z",
+                               input_sha256="0" * 64)
+    assert payload["schema_version"] == "daily-uv-v5"
+    assert "uv_albedo" not in payload["entries"][0]["location"]
+    validate_daily(payload)
+    old = json.loads(json.dumps(payload))
+    old.update(schema_version="daily-uv-v4", contract_sha256=load_schema("daily-uv-v4")["properties"]["contract_sha256"]["const"])
+    with pytest.raises(jsonschema.ValidationError):
+        validate_daily(old)
+    with pytest.raises(ValueError, match="albedo"):
+        daily_payload(result, issued_at="2026-09-07T06:00:00Z",
+                      input_sha256="0" * 64, schema_version="daily-uv-v4")

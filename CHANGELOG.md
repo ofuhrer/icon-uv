@@ -1,5 +1,17 @@
 # Changelog
 
+## Unreleased
+
+- Point locations default to forecasts at their requested coordinates and elevation,
+  using the same ICON snow-derived UV albedo as regional products unless overridden.
+- Hourly and daily calculations share these surface defaults. Local horizon
+  screening is optional and demonstrated for one site; town map values remain ambient.
+- Schema v5 supports inherited point albedo while preserving schemas v1–v4.
+- Fix misleading terrain-screened output for points without a horizon and mixed
+  daily catalogs. Update the map example to provide a Zermatt forecast.
+- Document the use of ICON's base shortwave flux, separately from its orographically
+  shaded radiation diagnostics.
+
 ## 0.1.0 — 2026-09-07
 
 First public release of icon-uv, a Python package and CLI for calculating UV

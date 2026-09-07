@@ -1,0 +1,811 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Daily UV location product v5",
+  "description": "Adjusted points inherit the model UV albedo unless explicitly overridden. Horizon screening is optional; default products represent ambient horizontal UV. Native and regional support and ensemble reductions match v4.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "contract_sha256",
+    "issued_at",
+    "timezone",
+    "peak_definition",
+    "category_basis",
+    "catalog_sha256",
+    "input_sha256",
+    "radiation_table_sha256",
+    "sources",
+    "qualification",
+    "assumptions",
+    "temporal_limitation",
+    "entries",
+    "valid_dates",
+    "uv_geometry"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "daily-uv-v5"
+    },
+    "contract_sha256": {
+      "const": "7a8f7cff08d2a57ee43fba2bac40b6e06b62cc4df573e01a3662520812e69585"
+    },
+    "issued_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "timezone": {
+      "const": "Europe/Zurich"
+    },
+    "peak_definition": {
+      "const": "maximum_30min_mean_on_5min_grid_hourly_cloud_reconstruction"
+    },
+    "category_basis": {
+      "const": "rounded_integer_half_up"
+    },
+    "catalog_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "input_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "radiation_table_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "sources": {
+      "type": "object",
+      "required": [
+        "icon",
+        "cams"
+      ],
+      "properties": {
+        "icon": {
+          "type": "object",
+          "required": [
+            "reference_time",
+            "age_hours"
+          ],
+          "properties": {
+            "reference_time": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "age_hours": {
+              "type": "number",
+              "minimum": 0
+            }
+          }
+        },
+        "cams": {
+          "type": "object",
+          "required": [
+            "reference_time",
+            "age_hours"
+          ],
+          "properties": {
+            "reference_time": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "age_hours": {
+              "type": "number",
+              "minimum": 0
+            }
+          }
+        }
+      }
+    },
+    "qualification": {
+      "type": "string",
+      "minLength": 1
+    },
+    "assumptions": {
+      "type": "string",
+      "minLength": 1
+    },
+    "temporal_limitation": {
+      "type": "string",
+      "minLength": 1
+    },
+    "entries": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/entry"
+      }
+    },
+    "valid_dates": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "format": "date"
+      }
+    },
+    "ensemble": {
+      "type": "object",
+      "required": [
+        "member_ids",
+        "member_count",
+        "deterministic_quantile",
+        "reduction",
+        "quantile_method",
+        "uncertainty_scope",
+        "requested_member_ids",
+        "minimum_member_fraction",
+        "required_member_count"
+      ],
+      "properties": {
+        "member_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 20
+          }
+        },
+        "member_count": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 21
+        },
+        "deterministic_quantile": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "reduction": {
+          "const": "quantile_of_member_daily_products"
+        },
+        "quantile_method": {
+          "const": "linear"
+        },
+        "uncertainty_scope": {
+          "type": "string"
+        },
+        "requested_member_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 20
+          }
+        },
+        "minimum_member_fraction": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 1
+        },
+        "required_member_count": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 21
+        }
+      }
+    },
+    "uv_geometry": {
+      "enum": [
+        "ambient_horizontal",
+        "terrain_screened"
+      ]
+    }
+  },
+  "$defs": {
+    "entry": {
+      "type": "object",
+      "required": [
+        "location",
+        "valid_date",
+        "day",
+        "status",
+        "reasons",
+        "selected_cells",
+        "valid_cells",
+        "uvi",
+        "display_uvi",
+        "category"
+      ],
+      "properties": {
+        "location": {
+          "type": "object",
+          "required": [
+            "id",
+            "kind",
+            "altitude_m"
+          ],
+          "properties": {
+            "id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "kind": {
+              "enum": [
+                "town",
+                "region_altitude",
+                "point"
+              ]
+            },
+            "altitude_m": {
+              "type": "number"
+            },
+            "latitude": {
+              "type": "number",
+              "minimum": -90,
+              "maximum": 90
+            },
+            "longitude": {
+              "type": "number",
+              "minimum": -180,
+              "maximum": 180
+            },
+            "bbox": {
+              "type": "array",
+              "items": {
+                "type": "number"
+              },
+              "minItems": 4,
+              "maxItems": 4
+            },
+            "treatment": {
+              "enum": [
+                "native",
+                "adjusted"
+              ]
+            },
+            "uv_albedo": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 0.85
+            },
+            "horizon_degrees": {
+              "type": "array",
+              "minItems": 4,
+              "items": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 90
+              }
+            },
+            "maximum_distance_km": {
+              "type": "number",
+              "exclusiveMinimum": 0
+            }
+          },
+          "allOf": [
+            {
+              "if": {
+                "properties": {
+                  "kind": {
+                    "const": "town"
+                  }
+                }
+              },
+              "then": {
+                "required": [
+                  "latitude",
+                  "longitude"
+                ]
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "kind": {
+                    "const": "region_altitude"
+                  }
+                }
+              },
+              "then": {
+                "required": [
+                  "bbox"
+                ],
+                "properties": {
+                  "altitude_m": {
+                    "enum": [
+                      1000,
+                      2000,
+                      3000
+                    ]
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "kind": {
+                    "const": "point"
+                  }
+                }
+              },
+              "then": {
+                "required": [
+                  "latitude",
+                  "longitude",
+                  "treatment"
+                ]
+              }
+            }
+          ]
+        },
+        "valid_date": {
+          "type": "string",
+          "format": "date"
+        },
+        "day": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "status": {
+          "enum": [
+            "ok",
+            "degraded",
+            "unavailable"
+          ]
+        },
+        "reasons": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        },
+        "selected_cells": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "valid_cells": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "uvi": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "display_uvi": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "category": {
+          "enum": [
+            "low",
+            "moderate",
+            "high",
+            "very_high",
+            "extreme",
+            null
+          ]
+        },
+        "aggregation": {
+          "enum": [
+            "p90_of_native_cell_daily_maxima",
+            "nearest_suitable_native_cell",
+            "adjusted_point_daily_maximum"
+          ]
+        },
+        "source_cells": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "support_uvi_range": {
+          "type": "array",
+          "items": {
+            "type": "number",
+            "minimum": 0
+          },
+          "minItems": 2,
+          "maxItems": 2
+        },
+        "support_uvi_median": {
+          "type": "number",
+          "minimum": 0
+        },
+        "quality_flag": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 65535
+        },
+        "peak_window_start_range_utc": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "minItems": 2,
+          "maxItems": 2
+        },
+        "peak_window_start_utc": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "source_point": {
+          "type": "object",
+          "required": [
+            "latitude",
+            "longitude",
+            "altitude_m",
+            "cell",
+            "altitude_difference_m"
+          ],
+          "properties": {
+            "latitude": {
+              "type": "number",
+              "minimum": -90,
+              "maximum": 90
+            },
+            "longitude": {
+              "type": "number",
+              "minimum": -180,
+              "maximum": 180
+            },
+            "altitude_m": {
+              "type": "number"
+            },
+            "altitude_difference_m": {
+              "type": "number"
+            },
+            "cell": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        },
+        "ensemble": {
+          "type": "object",
+          "required": [
+            "member_uvi",
+            "p10",
+            "p50",
+            "p90",
+            "probability_uvi_ge",
+            "valid_member_count"
+          ],
+          "properties": {
+            "member_uvi": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 21,
+              "items": {
+                "type": [
+                  "number",
+                  "null"
+                ],
+                "minimum": 0
+              }
+            },
+            "p10": {
+              "type": "number",
+              "minimum": 0
+            },
+            "p50": {
+              "type": "number",
+              "minimum": 0
+            },
+            "p90": {
+              "type": "number",
+              "minimum": 0
+            },
+            "probability_uvi_ge": {
+              "type": "object",
+              "required": [
+                "3",
+                "6",
+                "8",
+                "11"
+              ],
+              "properties": {
+                "3": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                },
+                "6": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                },
+                "8": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                },
+                "11": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                }
+              }
+            },
+            "valid_member_count": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 21
+            },
+            "member_valid_cells": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 21,
+              "items": {
+                "type": "integer",
+                "minimum": 0
+              }
+            }
+          }
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "unavailable"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "uvi": {
+                "type": "null"
+              },
+              "display_uvi": {
+                "type": "null"
+              },
+              "category": {
+                "type": "null"
+              },
+              "reasons": {
+                "minItems": 1
+              }
+            }
+          },
+          "else": {
+            "required": [
+              "aggregation",
+              "source_cells",
+              "support_uvi_range",
+              "support_uvi_median",
+              "quality_flag",
+              "peak_window_start_range_utc"
+            ],
+            "properties": {
+              "uvi": {
+                "type": "number",
+                "minimum": 0
+              },
+              "display_uvi": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "category": {
+                "type": "string"
+              },
+              "valid_cells": {
+                "minimum": 1
+              }
+            },
+            "allOf": [
+              {
+                "if": {
+                  "properties": {
+                    "location": {
+                      "properties": {
+                        "kind": {
+                          "enum": [
+                            "town",
+                            "point"
+                          ]
+                        }
+                      }
+                    }
+                  }
+                },
+                "then": {
+                  "required": [
+                    "source_point"
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "ok"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "reasons": {
+                "maxItems": 0
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "degraded"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "reasons": {
+                "minItems": 1
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "category": {
+                "const": "low"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "display_uvi": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 2
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "category": {
+                "const": "moderate"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "display_uvi": {
+                "type": "integer",
+                "minimum": 3,
+                "maximum": 5
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "category": {
+                "const": "high"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "display_uvi": {
+                "type": "integer",
+                "minimum": 6,
+                "maximum": 7
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "category": {
+                "const": "very_high"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "display_uvi": {
+                "type": "integer",
+                "minimum": 8,
+                "maximum": 10
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "category": {
+                "const": "extreme"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "display_uvi": {
+                "type": "integer",
+                "minimum": 11
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "location": {
+                "properties": {
+                  "kind": {
+                    "const": "town"
+                  }
+                }
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "source_point": {
+                "properties": {
+                  "altitude_difference_m": {
+                    "type": "number",
+                    "minimum": -300,
+                    "maximum": 300
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "required": [
+          "ensemble"
+        ]
+      },
+      "then": {
+        "properties": {
+          "entries": {
+            "items": {
+              "if": {
+                "properties": {
+                  "status": {
+                    "enum": [
+                      "ok",
+                      "degraded"
+                    ]
+                  }
+                }
+              },
+              "then": {
+                "required": [
+                  "ensemble"
+                ]
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}

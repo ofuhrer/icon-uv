@@ -201,7 +201,8 @@ def compute_points(grid, locations, table=None):
     """Hourly native or adjusted point forecasts from the shared location model.
 
     Native points retain source-cell geometry and surface. Adjusted points use
-    explicit local elevation and albedo; terrain UV requires an explicit horizon.
+    local elevation and inherit model UV albedo unless explicitly overridden;
+    terrain UV requires an explicit horizon.
     The member axis is retained without averaging atmospheric inputs.
     """
     catalog = load_locations(locations)
@@ -243,7 +244,7 @@ def _compute_points_member(grid, *, plans, table):
             mean = components[:, 0].mean(axis=0)
             variables['uvi'][i, j] = 40*mean.sum()
             variables['clear_sky_uvi'][i, j] = 40*clear[:, 0].sum(axis=-1).mean()
-            if point.treatment == 'native' or point.horizon_degrees is not None:
+            if point.horizon_degrees is not None:
                 variables['terrain_screened_uvi'][i, j] = screened[:, 0].mean()
             variables['erythemal_direct'][i, j] = mean[0]
             variables['erythemal_diffuse'][i, j] = mean[1]
@@ -257,7 +258,7 @@ def _compute_points_member(grid, *, plans, table):
     result.quality_flag.attrs = grid.quality_flag.attrs.copy()
     for name in ('latitude', 'longitude', 'altitude_m'):
         result[name] = ('poi', [getattr(p, name) for p in points])
-    if all(p.treatment == 'adjusted' for p in points):
+    if all(p.uv_albedo is not None for p in points):
         result['uv_albedo'] = ('poi', [p.uv_albedo for p in points])
     else:
         result['uv_albedo'] = (('time', 'poi'), albedo)
@@ -273,7 +274,7 @@ def _compute_points_member(grid, *, plans, table):
         result[name].attrs['units'] = units
     for name in variables:
         result[name].attrs = {'units': 'W m-2' if name.startswith('erythemal') else 'Pa' if name == 'pressure_pa' else '1', 'cell_methods': 'time: mean'}
-    result.terrain_screened_uvi.attrs['comment'] = 'NaN for adjusted points without explicit horizon geometry'
+    result.terrain_screened_uvi.attrs['comment'] = 'NaN without explicit horizon geometry'
     result.attrs = {k: v for k, v in grid.attrs.items() if k not in ('icon_sources', 'compute_seconds')}
     result.attrs.update(title='Location UV diagnostic', geometry='explicit native or adjusted point treatment',
                         local_limitations='fixed-scale pressure adjustment; unchanged ozone/AOD/cloud column; no above-cloud inference; no anisotropic diffuse or terrain reflection')

@@ -76,7 +76,7 @@ def _main():
     daily.add_argument("--grid", type=Path, required=True)
     daily.add_argument("--locations", "--catalog", dest="catalog", type=Path, required=True)
     _date_arguments(daily)
-    daily.add_argument('--terrain-screened', action='store_true', help='Use explicit adjusted-point horizons; schema v4')
+    daily.add_argument('--terrain-screened', action='store_true', help='Use explicit horizons for a catalog of points; schema v5')
     daily.add_argument("--issued-at", required=True, help="Timezone-aware issuance timestamp; also fixes replay dates")
     daily.add_argument('--ensemble-quantile', type=float, default=.5, help='Quantile of member daily products (default: 0.5, median)')
     daily.add_argument("--table", type=Path, default=DEFAULT_TABLE)

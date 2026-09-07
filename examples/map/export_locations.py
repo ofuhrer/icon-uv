@@ -1,13 +1,9 @@
 """Export the MeteoSwiss map locations from a saved UV grid and print their values."""
 
 import argparse
-import hashlib
-import json
 from pathlib import Path
 
-import xarray as xr
-
-from icon_uv.daily import export_daily, write_json_atomic
+from icon_uv.daily import export_daily_file
 
 
 def main():
@@ -19,14 +15,10 @@ def main():
     args = parser.parse_args()
 
     catalog_path = Path(__file__).with_name("locations.json")
-    catalog = json.loads(catalog_path.read_text(encoding="utf-8"))
-    with args.grid.open("rb") as stream:
-        input_sha256 = hashlib.file_digest(stream, "sha256").hexdigest()
-    with xr.open_dataset(args.grid) as grid:
-        payload = export_daily(
-            grid.load(), catalog, args.issued_at, input_sha256=input_sha256, days=4, ensemble_quantile=args.ensemble_quantile,
-        )
-    write_json_atomic(payload, args.output)
+    payload = export_daily_file(
+        args.grid, catalog_path, args.issued_at, output=args.output,
+        days=4, ensemble_quantile=args.ensemble_quantile,
+    )
 
     for day in range(len(payload['valid_dates'])):
         rows = [row for row in payload["entries"] if row["day"] == day]

@@ -27,6 +27,10 @@ FORECAST_CONTRACT_SHA256 = hashlib.sha256(
 ).hexdigest()
 ENSEMBLE_CONTRACT_VERSION = 'daily-uv-v3'
 ENSEMBLE_CONTRACT_SHA256 = hashlib.sha256(b'daily-uv-v3: memberwise daily/spatial products, then ensemble quantile; uncalibrated uncertainty').hexdigest()
+LOCATION_CONTRACT_VERSION = 'daily-uv-v5'
+LOCATION_CONTRACT_SHA256 = hashlib.sha256(
+    b'daily-uv-v5: adjusted points default to inherited model UV albedo; optional explicit horizon; ambient horizontal UV'
+).hexdigest()
 CATEGORIES = ('low', 'moderate', 'high', 'very_high', 'extreme')
 PEAK_DEFINITION = 'maximum_30min_mean_on_5min_grid_hourly_cloud_reconstruction'
 
@@ -305,8 +309,8 @@ def compute_daily(grid, locations, dates, table=None, *, ensemble_quantile=.5, t
     catalog = load_locations(locations)
     dates = _dates(dates)
     plans = [plan_support(grid, p) for p in catalog.locations]
-    if terrain_screened and any(isinstance(p, PointLocation) and p.treatment == 'adjusted' and p.horizon_degrees is None for p in catalog.locations):
-        raise ValueError('Terrain screening requires an explicit horizon for every adjusted point')
+    if terrain_screened and any(not isinstance(p, PointLocation) or p.horizon_degrees is None for p in catalog.locations):
+        raise ValueError('Terrain screening requires an explicit horizon for every location; regions and native points use ambient UV')
     native = [p.indices for p in plans if not (isinstance(p.location, PointLocation) and p.location.treatment == 'adjusted')]
     union = np.unique(np.concatenate(native)) if native else np.array([], dtype=int)
     selected = grid.isel(cell=union)
@@ -346,23 +350,30 @@ def _sources(attrs, issue):
     return sources, reasons
 
 
-def daily_payload(result, issued_at, *, input_sha256, schema_version='daily-uv-v4'):
+def daily_payload(result, issued_at, *, input_sha256, schema_version=LOCATION_CONTRACT_VERSION):
     """Apply publication freshness, provenance and schema policy to calculated rows."""
     if not isinstance(input_sha256, str) or len(input_sha256) != 64 or any(c not in '0123456789abcdef' for c in input_sha256):
         raise ValueError('Source file SHA-256 is required')
     hashes = {CONTRACT_VERSION: CONTRACT_SHA256, FORECAST_CONTRACT_VERSION: FORECAST_CONTRACT_SHA256,
               ENSEMBLE_CONTRACT_VERSION: ENSEMBLE_CONTRACT_SHA256,
-              'daily-uv-v4': hashlib.sha256(b'daily-uv-v4: explicit location treatment; memberwise spatial support; arbitrary dates; ambient or terrain-screened UV').hexdigest()}
+              'daily-uv-v4': hashlib.sha256(b'daily-uv-v4: explicit location treatment; memberwise spatial support; arbitrary dates; ambient or terrain-screened UV').hexdigest(),
+              LOCATION_CONTRACT_VERSION: LOCATION_CONTRACT_SHA256}
     if schema_version not in hashes:
         raise ValueError('Unsupported daily schema version')
-    if schema_version != 'daily-uv-v4' and any(e['location'].get('kind') not in ('town', 'region_altitude') for e in result.entries):
-        raise ValueError('Shared point locations require schema v4')
+    shared = schema_version in ('daily-uv-v4', LOCATION_CONTRACT_VERSION)
+    if not shared and any(e['location'].get('kind') not in ('town', 'region_altitude') for e in result.entries):
+        raise ValueError('Shared point locations require schema v4 or v5')
+    if schema_version == 'daily-uv-v4' and any(
+        e['location'].get('treatment') == 'adjusted' and e['location'].get('uv_albedo') is None
+        for e in result.entries
+    ):
+        raise ValueError('Inherited point UV albedo requires schema v5')
     if schema_version == ENSEMBLE_CONTRACT_VERSION and result.ensemble is None:
         raise ValueError('Schema v3 requires ensemble data')
     if schema_version in (CONTRACT_VERSION, FORECAST_CONTRACT_VERSION) and result.ensemble is not None:
-        raise ValueError('Ensemble data require schema v3 or v4')
-    if result.uv_geometry != 'ambient_horizontal' and schema_version != 'daily-uv-v4':
-        raise ValueError('Terrain-screened daily output requires schema v4')
+        raise ValueError('Ensemble data require schema v3 or later')
+    if result.uv_geometry != 'ambient_horizontal' and not shared:
+        raise ValueError('Terrain-screened daily output requires schema v4 or v5')
     issue = utc_instant(issued_at)
     first = issue.astimezone(ZoneInfo('Europe/Zurich')).date()
     if date.fromisoformat(result.valid_dates[0]) < first:
@@ -373,7 +384,7 @@ def daily_payload(result, issued_at, *, input_sha256, schema_version='daily-uv-v
     rows = deepcopy(result.entries)
     for row in rows:
         row['day'] = (date.fromisoformat(row['valid_date'])-first).days
-        if schema_version != 'daily-uv-v4':
+        if not shared:
             for name in ('uvi_range', 'uvi_median'):
                 if 'support_'+name in row:
                     row['native_'+name] = row.pop('support_'+name)
@@ -399,13 +410,13 @@ def daily_payload(result, issued_at, *, input_sha256, schema_version='daily-uv-v
         payload['valid_dates'] = result.valid_dates
     if result.ensemble is not None:
         payload['ensemble'] = result.ensemble
-    if schema_version == 'daily-uv-v4':
+    if shared:
         payload['uv_geometry'] = result.uv_geometry
     return payload
 
 
 def write_daily_json(result, path, issued_at, *, input_sha256):
-    """Publish calculated shared-location products as schema v4 atomically."""
+    """Publish calculated shared-location products as schema v5 atomically."""
     payload = daily_payload(result, issued_at, input_sha256=input_sha256)
     write_json_atomic(payload, path)
     return payload
@@ -421,7 +432,7 @@ def export_daily(grid, catalog, issued_at, *, input_sha256, table=None, days=2,
     result = compute_daily(grid, locations, resolved, table, ensemble_quantile=ensemble_quantile,
                            terrain_screened=terrain_screened)
     shared = any(e.get('kind') not in ('town', 'region_altitude') for e in locations.catalog['entries'])
-    version = ('daily-uv-v4' if shared or terrain_screened else ENSEMBLE_CONTRACT_VERSION if result.ensemble else
+    version = (LOCATION_CONTRACT_VERSION if shared or terrain_screened else ENSEMBLE_CONTRACT_VERSION if result.ensemble else
                CONTRACT_VERSION if days == 2 and dates is None else FORECAST_CONTRACT_VERSION)
     return daily_payload(result, issued_at, input_sha256=input_sha256, schema_version=version)
 

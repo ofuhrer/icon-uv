@@ -141,6 +141,8 @@ def fetch_icon(reference, first_lead, last_lead, bbox=BBOX, workers=3, *, ensemb
     manifest = [{"source": f"{STAC}/collections/{COLLECTION}/assets",
                  "asset": asset["id"], "sha256": hashlib.sha256(raw).hexdigest()}]
     leads = list(range(first_lead, last_lead+1))
+    # Base downward flux: the separate *_OS diagnostics include terrain shading.
+    # Cloud inversion needs the ambient horizontal flux, before local screening.
     variables = ("ASOD_S", "PS", "ALB_RAD", "SNOWC")
 
     def fetch(job):
@@ -248,7 +250,8 @@ def fetch_icon(reference, first_lead, last_lead, bbox=BBOX, workers=3, *, ensemb
                         "longitude": "degrees_east", "altitude_m": "m"}.items():
         ds[name].attrs["units"] = units
     ds.time.attrs["bounds"] = "time_bounds"
-    ds.sw_down.attrs["cell_methods"] = "time: mean"
+    ds.sw_down.attrs.update(cell_methods="time: mean", source_variable="ASOD_S",
+                           radiation_geometry="horizontal_without_orographic_shading")
     return ds
 
 

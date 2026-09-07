@@ -1,193 +1,71 @@
 # Daily map products
 
-`icon-uv daily` turns a saved UV grid and a location catalog into JSON for today
-and tomorrow in Europe/Zurich. The output contains raw UVI, rounded display
-values, categories and the source/support information needed by a renderer.
-Use `--days N` for any positive number of local dates, `--days all` for every
-supplied forecast daylight date, or `--dates YYYY-MM-DD YYYY-MM-DD` for explicit
-local dates. Ensemble inputs use v3; legacy CTRL catalogs keep v1 for the default
-two dates and v2 for other date selections. Shared point catalogs use v4.
+Daily products turn a saved UV grid and a [shared location catalog](location-api.md)
+into JSON with daily peaks, rounded values, categories and source/support details.
+Points use the same elevation, albedo and horizon choices as hourly forecasts;
+regions summarize native cells in an elevation band. Ambient horizontal UV is
+the default.
 
 ## Prepare the grid
 
-Use the [README download workflow](https://github.com/ofuhrer/icon-uv/blob/main/README.md#calculate-uv-fields) to obtain
-ICON and CAMS inputs covering daylight on the requested dates. `run` defaults to
-four solar samples per hour. Use the CLI for twelve samples:
+Follow the [download workflow](https://github.com/ofuhrer/icon-uv#calculate-uv-fields)
+with input coverage for every requested daylight period. Twelve solar samples
+per hour align cloud fitting with daily five-minute reconstruction:
 
 ```sh
 uv run --no-sync icon-uv run --icon work/icon.nc --cams work/cams.nc \
   --samples 12 --output work/uv.nc
 ```
 
-The daily calculation reconstructs UV at five-minute midpoints from the saved
-hourly cloud state. Either input-grid sampling choice is accepted; twelve
-samples also evaluates the cloud fit on that five-minute spacing.
-
-## Define locations
-
-For a catalog shared with hourly point forecasts, use
-[the location API](location-api.md) and [shared example](https://github.com/ofuhrer/icon-uv/blob/main/examples/shared_locations.json).
-It adds explicit native or adjusted point treatment and writes schema v4.
-The legacy native town/region format below remains supported.
-
-Save a JSON object with an `entries` list. Each entry needs a unique `id`, a
-`label`, a `kind` and the geometry for that kind:
-
-```json
-{
-  "catalog_version": 1,
-  "entries": [
-    {
-      "id": "bern",
-      "kind": "town",
-      "label": "Bern",
-      "latitude": 46.95,
-      "longitude": 7.44,
-      "altitude_m": 540
-    },
-    {
-      "id": "bernese-2000",
-      "kind": "region_altitude",
-      "label": "Bernese Alps, 2000 m",
-      "bbox": [7.3, 46.4, 8.5, 46.9],
-      "altitude_m": 2000
-    }
-  ]
-}
-```
-
-Coordinates are WGS84 degrees and elevations are metres above sea level.
-Bounding boxes use `[west, south, east, north]`. The full
-[example catalog](https://github.com/ofuhrer/icon-uv/blob/main/examples/product_locations.json) has Swiss towns
-and mountain regions; adapt its locations and boundaries to your product.
-For the 30-town and six-region map layout, use the
-[MeteoSwiss map example](meteoswiss-map.md).
-
-| Kind | Native-cell selection | Reported value |
-|---|---|---|
-| `town` | Nearest cell within 5 km and 300 m of target elevation | That cell's daily peak |
-| `region_altitude` | Cells inside the box and within ±200 m of 1000, 2000 or 3000 m | 90th percentile of cell daily peaks |
-
-A region requires at least five selected cells, with at least 95% providing
-complete daylight coverage. Each cell keeps its own cloud, pressure and surface
-state. Regional cells may peak at different times; the aggregate represents a
-spatial percentile of their individual daily maxima.
+Grids calculated with the default four samples per hour also work. The daily
+calculation always reconstructs five-minute solar geometry from saved hourly
+cloud state.
 
 ## Export
 
-Set `ISSUED_AT` to the intended timezone-aware issuance timestamp, for example
-06 UTC on the chosen ICON cycle's date:
+Use an issuance timestamp with a timezone, normally the morning of the ICON cycle:
 
 ```sh
-ISSUED_AT="YYYY-MM-DDT06:00:00Z"
-uv run --no-sync icon-uv daily \
-  --grid work/uv.nc --catalog my-locations.json \
-  --issued-at "$ISSUED_AT" --output work/daily-uv.json
+uv run --no-sync icon-uv daily --grid work/uv.nc \
+  --locations examples/shared_locations.json --days 4 \
+  --issued-at "YYYY-MM-DDT06:00:00Z" --output work/daily.json
 ```
 
-The timestamp controls both local valid dates and source-age checks. Reusing it
-with the same inputs and catalog produces the same payload. ICON may be at most
-24 hours old and CAMS at most 48 hours old at issuance. Future cycles raise an
-error; stale cycles yield unavailable entries.
+Issuance determines local dates and source-age checks. ICON may be at most
+24 hours old and CAMS at most 48 hours old. Future cycles raise an error; stale
+cycles produce unavailable entries. Reusing the same inputs, catalog and
+issuance produces the same payload. [Python publication](location-api.md#calculate-and-publish)
+provides the same checks with a source file hash.
 
-With `--days all`, dates begin on the issuance date and end on the last supplied
-daylight date. A trailing night-only date is omitted. Incomplete daylight on the
-first or last date produces unavailable values, as do gaps on intermediate days.
-For CTRL inputs, the v2 payload adds `valid_dates`, and `day` is the zero-based offset from issuance's
-local date. Use `--days 4` for exactly four dates from issuance, retaining unavailable
-values if coverage is short. Python accepts `export_daily(..., days=4)` or
-`export_daily(..., days='all')`; arbitrary positive day counts and explicit
-`dates=['2026-09-07', '2026-09-09']` are also supported. Explicit date selections
-are preserved in `valid_dates`, while `day` remains the offset from issuance.
-Legacy CTRL catalogs use v2 except for the default two-day product (v1).
+Date choices are:
 
-For native-terrain clear-sky peaks, Python also provides
-`daily_cells(grid, valid_date, clear_sky=True)`. It uses the same temporal
-coverage checks and peak definition, with cloud optical depth set to zero and
-cloud scaling set to one. The [map example](meteoswiss-map.md#map-layers) exports
-both gridded peak products.
+- Default: today and tomorrow in Europe/Zurich.
+- `--days N`: exactly N dates starting on the issuance date.
+- `--days all`: through the last supplied daylight date; omit a trailing night-only date.
+- `--dates YYYY-MM-DD YYYY-MM-DD`: an explicit list, including gaps if needed.
 
-## Ensemble products
-
-The default `fetch-icon` download contains CTRL (member 0) and perturbed members
-1–20. `run` retains `member` alongside `time` and `cell`; it inverts shortwave
-and calculates UV independently for every member. CAMS composition and the
-radiation table are common to all members. `poi` also preserves the member axis.
-To compute CTRL only, download with `fetch-icon --control` and pass that file
-through the same commands. Python uses `fetch_icon(..., ensemble=False)`.
-
-Daily ensemble products use **daily-uv-v3**, with an explicit `valid_dates` list
-for any supported date selection. CTRL inputs without a member dimension keep the v1/v2 contracts.
-The reduction order is:
-
-1. Reconstruct each native cell's 30-minute daily peak for each member.
-2. Select the town's suitable cell, or compute the regional spatial P90, within
-   each member.
-3. Take the **ensemble median (P50)** of those unrounded member products.
-4. Round the resulting value once for display and category assignment.
-
-This produces a central estimate of the daily peak. Averaging shortwave inputs
-before UV inversion, or taking the maximum of an hourly ensemble median, would
-produce different quantities. The regional spatial P90 and ensemble P50 are
-separate operations; their order matters.
-
-`--ensemble-quantile 0.75` on `daily` chooses P75 instead of the default P50.
-Python accepts `export_daily(..., ensemble_quantile=.75)` and
-`daily_cells(..., ensemble_quantile=.75)`. An upper quantile gives greater weight
-to sunnier member outcomes; choose and validate it against the cost of
-underprediction for the intended product, rather than assuming it improves accuracy.
-
-The top-level `ensemble` object records member IDs, count, deterministic quantile
-and reduction method. Each available entry adds:
-
-- `ensemble.member_uvi`: member products in the top-level member-ID order.
-- `ensemble.p10`, `p50`, `p90`: linearly interpolated ensemble quantiles.
-- `ensemble.probability_uvi_ge`: fractions of members with **unrounded** UVI at
-  least 3, 6, 8 and 11. These differ from probabilities of rounded categories.
-
-Native UVI range/median and peak-window time range span the supporting cells
-and members. There is no single peak time for the ensemble aggregate, so v3
-omits `peak_window_start_utc`. Existing spatial and daylight coverage requirements
-apply within every contributing member.
-
-### Missing members and fields
-
-By default **90% must be present**. `fetch-icon` retains unavailable field samples
-as NaN and records per-field coverage and missing assets. It stops if the fraction
-of usable member × time × cell × required-field samples falls below 90%; a missing
-accumulation boundary can invalidate both adjacent radiation intervals.
-Set `fetch-icon --minimum-member-fraction 0.8` to choose a different threshold.
-The threshold is recorded in the NetCDF and used by downstream daily products.
-
-Daily values need at least `ceil(fraction × requested members)` complete member
-products: **19 of 21** by default. A member with missing daylight input is excluded
-for the affected location and day; it does not poison other members or days.
-With fewer contributors the value is unavailable. A supported result with missing
-members is `degraded`, with reason `partial_ensemble_support`; it includes
-`ensemble.valid_member_count` and nulls for missing entries in `member_uvi`.
-P10/P50/P90 and exceedance frequencies use the available complete members only.
-Coverage is checked locally, so global download coverage does not guarantee that
-every location/day can be published. Incomplete members are not treated as zero.
-Common metadata, geometry and units must still be valid to interpret an input.
-
-These are uncalibrated member frequencies, not validated confidence intervals.
-They sample ICON weather uncertainty, including cloudiness, but not all ozone,
-aerosol, radiative-transfer, terrain or station-representativeness errors. The
-[validation summary](validation.md) distinguishes the earlier CTRL measurement
-campaign from ensemble verification; ensemble skill needs its own paired evaluation.
+`--days` and `--dates` are mutually exclusive. In JSON, `day` is the offset from
+the local issuance date; `valid_dates` lists the requested dates. Short input
+coverage produces unavailable values, never a partial-day maximum.
 
 ## Peak, rounding and categories
 
-The daily peak is the maximum reconstructed 30-minute mean, evaluated at
-five-minute window starts within the local day. A window averages six
-five-minute midpoint samples. Day boundaries account for daylight saving time.
-All hourly intervals intersecting daylight at a cell must be present; missing
-night-only intervals do not make that cell unavailable.
+The daily peak is the maximum 30-minute mean over a Swiss local day, evaluated
+at five-minute window starts. Each window averages six five-minute midpoint
+samples. Day boundaries account for daylight saving time. All hourly intervals
+intersecting daylight must be present; missing night-only intervals are harmless.
 
-Round after temporal and spatial aggregation with `floor(UVI + 0.5)`.
-Category is based on that displayed integer:
+For a point, evaluate UV at its target coordinates/elevation using the selected
+cell's cloud and surface state. For a region, first find each native cell's daily
+peak, then take their **spatial P90**. Region bands use cells inside the box and
+within ±200 m of the requested elevation. At least five cells and 95% complete
+spatial coverage are required within each contributing member. Cells may peak at
+different times: the regional value is a percentile of their individual maxima.
 
-| Display UVI | Category string |
+Round only after all temporal, spatial and ensemble reductions, using
+`floor(UVI + 0.5)`. Category follows the displayed integer:
+
+| Display UVI | Category |
 |---|---|
 | 0–2 | `low` |
 | 3–5 | `moderate` |
@@ -195,57 +73,91 @@ Category is based on that displayed integer:
 | 8–10 | `very_high` |
 | 11 and above | `extreme` |
 
-Values above 11 retain their numerical value. Missing values use JSON `null`,
-which is distinct from a valid UVI of zero.
+Values above 11 retain their number. Missing values use `null`, distinct from zero.
+For native-grid clear-sky peaks, `daily_cells(grid, date, clear_sky=True)` uses
+the same timing and coverage checks with cloud optical depth zero and scaling one.
+The [map example](meteoswiss-map.md#map-layers) exports both gridded quantities.
+
+## Ensemble products
+
+`fetch-icon` defaults to CTRL and 20 perturbed members. UV is calculated
+independently for each member, preserving its cloud and surface conditions.
+CAMS composition and the radiation table are shared. The daily reduction order is:
+
+1. Calculate each point's or native cell's daily peak within each member.
+2. For a region, take the spatial P90 within that member.
+3. Take the ensemble median (P50) of the unrounded member products.
+4. Round once for display.
+
+`--ensemble-quantile 0.75` selects P75 instead; Python accepts
+`ensemble_quantile=.75`. Averaging the atmospheric inputs or taking a maximum
+of hourly ensemble medians would produce a different quantity.
+
+The top-level `ensemble` object records requested member IDs, count, quantile
+and reduction method. Available rows include member values in that order,
+P10/P50/P90 and the member fractions with **unrounded** UVI at least 3, 6, 8 or 11.
+These are uncalibrated frequencies, not confidence intervals: they do not include
+all composition, radiation, terrain or representativeness errors. See
+[validation](validation.md) for the scope of existing CTRL measurement comparisons.
+
+By default, 90% of requested members must contribute complete products: **19 of 21**.
+Incomplete members remain null and are excluded locally for that location/day.
+Accepted missing members produce `degraded` status and `partial_ensemble_support`;
+too few produce `unavailable`. Region spatial coverage is checked within each
+member before counting it. No missing value is treated as zero.
+
+`fetch-icon --minimum-member-fraction 0.8` changes the coverage threshold, which
+is saved for downstream products. Download coverage counts usable
+member × time × cell × required-field samples; a missing accumulated-radiation
+boundary can invalidate both adjacent intervals. Global download coverage does
+not guarantee local product coverage.
+
+Use `fetch-icon --control` (Python: `fetch_icon(..., ensemble=False)`) for CTRL
+only. All downstream commands detect the input's member layout automatically.
 
 ## Reading the payload
 
-Top-level fields include schema/contract versions, `issued_at`, `timezone`,
-`peak_definition`, `category_basis`, source reference times and ages, input/
-catalog/table hashes, model-scope metadata and `entries`.
+New shared catalogs use **daily-uv-v5**. Top-level metadata includes issuance,
+timezone, valid dates, peak definition, source cycle ages, grid/catalog/table
+hashes, UV geometry and optional ensemble information. Each row records its
+location, date, day offset, status/reasons, selected/valid support counts,
+raw UVI, display UVI and category.
 
-Each entry includes its catalog location, `valid_date`, `day` (the zero-based
-offset from issuance's local date), `status`,
-`reasons`, selected/valid cell counts, `uvi`, `display_uvi` and `category`.
-Available entries also include the aggregation method, contributing cell IDs,
-UVI range/median, combined quality flags and the range of peak-window starts.
-Town entries include the selected source point, height difference and peak time.
+Available rows also report aggregation, source cell IDs, quality flags,
+`support_uvi_range`, `support_uvi_median` and peak-window time range. Point rows
+include source coordinates/elevation and the height difference from the target.
+CTRL points have a single peak time; regional and ensemble products report ranges.
+The support UVI summaries describe contributing values after the selected point
+treatment, including its elevation and albedo choices.
 
 | Status | Meaning |
 |---|---|
-| `ok` | Every requested member product has complete selected spatial support |
-| `degraded` | Accepted partial spatial and/or ensemble support |
-| `unavailable` | Data age, coverage or native support rules fail; UV fields are null |
+| `ok` | Complete selected spatial support for every requested member product |
+| `degraded` | Accepted partial spatial or ensemble support |
+| `unavailable` | Data age, daylight coverage or location support rules fail |
 
-Use these states and reasons when rendering. Global input errors leave an
-existing output file unchanged; consumers can use its issuance timestamp to
-identify an older result. JSON replacement is atomic and excludes NaN/Infinity.
-
-Select the packaged schema from the payload's version. This also works for the
-default ensemble workflow and for shared-location v4 output:
+Keep status and reasons visible in renderers. Global input errors leave an
+existing output file unchanged; consumers should check its issuance. JSON writes
+are atomic and exclude NaN/Infinity.
 
 ```python
 import json
 from icon_uv.schema import load_schema, validate_daily
 
-with open("work/daily-uv.json") as stream:
+with open("work/daily.json") as stream:
     payload = json.load(stream)
-schema = load_schema(payload)  # daily-uv-v1, v2, v3 or v4
-validate_daily(payload)        # requires optional jsonschema, included in dev setup
+schema = load_schema(payload)
+validate_daily(payload)  # requires jsonschema, included in the dev setup
 ```
 
-`load_schema` requires no validator dependency. `validate_daily` checks structure
-and supported date/time formats; unknown version strings fail clearly.
+`load_schema` needs no validator dependency. `validate_daily` checks structure
+and date/time formats. Exporter checks additionally enforce semantic rules such
+as freshness, date pairing, rounding and support counts.
 
-Schema validation checks structure. Calendar pairing, freshness at consumption,
-rounding consistency and support-count relationships also have semantic rules
-implemented by the exporter and covered by the test suite.
-
-Published schemas [v1](https://github.com/ofuhrer/icon-uv/blob/main/icon_uv/data/daily-uv-v1.schema.json),
-[v2](https://github.com/ofuhrer/icon-uv/blob/main/icon_uv/data/daily-uv-v2.schema.json) and [v3](https://github.com/ofuhrer/icon-uv/blob/main/icon_uv/data/daily-uv-v3.schema.json)
-retain their existing contracts. [v4](https://github.com/ofuhrer/icon-uv/blob/main/icon_uv/data/daily-uv-v4.schema.json) adds
-explicit point treatment and UV geometry, with optional ensemble metadata.
-V4 names the contributing-value summaries `support_uvi_range` and
-`support_uvi_median`, covering both native and adjusted point treatment.
-The existing v1–v3 summaries keep their `native_uvi_range` and
-`native_uvi_median` field names.
+Published v1–v4 contracts remain unchanged. Legacy `kind: "town"` catalogs keep
+native matching: their export uses v1 for two CTRL dates, v2 for other CTRL date
+selections and v3 for ensembles. V4 introduced shared points and `uv_geometry`
+with required adjusted-point albedo; v5 permits inherited albedo. V4/v5 use
+`support_uvi_range` and `support_uvi_median`; v1–v3 retain the original
+`native_uvi_range` and `native_uvi_median` names. The package ships every supported
+[schema](https://github.com/ofuhrer/icon-uv/tree/main/icon_uv/data).

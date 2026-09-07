@@ -30,8 +30,8 @@ giving the Valais and Grisons Alps and the main cities priority; zoom in to
 reveal more locations. Zoom-out stops at the overview of Switzerland, and the
 home control restores that view. Wheel and button zoom use short animated
 transitions and respect the browser’s reduced-motion preference. Select a
-marker for approximate peak times in Swiss local time and the model elevation
-used for towns. Peak times are rounded to 15 minutes; ranges describe variation
+marker for approximate peak times in Swiss local time and the town's reference
+elevation. Source-model elevation remains in the JSON. Peak times are rounded to 15 minutes; ranges describe variation
 across regional cells or ensemble members. Small screens also have a
 mountain-elevation table. The cog above Home opens map settings.
 
@@ -53,19 +53,12 @@ uv run --no-sync icon-uv fetch-cams \
   --reference "$CAMS_REFERENCE" --first-lead 12 --last-lead 108 --output work/cams.nc
 ```
 
-Compute the full downloaded grid, using twelve solar samples per hour. Both the
-location export and the field export below use this same grid:
+Compute the grid with twelve solar samples per hour. Both export scripts use
+this same file:
 
-```python
-import xarray as xr
-from icon_uv.data import load_cams, write_netcdf
-from icon_uv.products import compute_grid
-
-cams = load_cams("work/cams.nc")
-with xr.open_dataset("work/icon.nc") as source:
-    icon = source.load()
-grid = compute_grid(icon, cams, samples=12)
-write_netcdf(grid, "work/uv.nc")
+```sh
+uv run --no-sync icon-uv run --icon work/icon.nc --cams work/cams.nc \
+  --samples 12 --output work/uv.nc
 ```
 
 ## Generate JSON and HTML
@@ -101,7 +94,7 @@ issuance, radiation table, dates and peak definition. Publish matching location
 and field files together. Edit `examples/map/template.html` and rerun
 the renderer when changing the page itself.
 
-The exporter produces four local dates (`daily-uv-v3` for ensembles, `daily-uv-v2` for CTRL), with 46 entries per day:
+The exporter produces four local dates in `daily-uv-v5` for CTRL or ensembles, with 46 entries per day:
 30 towns, three elevation bands for each of five Alpine regions, and one band
 for Jura. Mountain bands appear in 3000 / 2000 / 1000 m order. The renderer also
 limits longer input products to their first four dates. Partial daylight dates
@@ -111,7 +104,7 @@ defines rounding, categories, coverage rules and schema. The CLI equivalent is:
 
 ```sh
 uv run --no-sync icon-uv daily --days 4 \
-  --grid work/uv.nc --catalog examples/map/locations.json \
+  --grid work/uv.nc --locations examples/map/locations.json \
   --issued-at "YYYY-MM-DDT06:00:00Z" --output work/meteoswiss-map.locations.json
 ```
 
@@ -153,10 +146,11 @@ on small screens. Keep these indications visible when embedding the map.
 Fields use native model terrain and an open horizon. They do not represent a
 fixed altitude or the regional 90th-percentile elevation-band values. Each map
 pixel takes the geographically nearest native cell within 3 km; gaps remain
-transparent. Town markers additionally match terrain height, so they can use a
-different cell. The map clips the overlay to the swisstopo relief footprint.
+transparent. Town markers use the nearest cell within 10 km, then recompute UV
+at the settlement's reference coordinates/elevation, retaining the source cloud
+and snow state. Thus a marker and the native-grid shading can differ. The map clips the overlay to the swisstopo relief footprint.
 
-Shared point products from schema v4 are supported, and stable point IDs keep
+Shared point products from schemas v4 and v5 are supported, and stable point IDs keep
 sites distinct even when their labels match. A location-only map of screened
 points explicitly identifies its terrain-screened geometry. Such locations cannot
 be paired with ambient gridded fields; the map rejects that inconsistent pairing.
@@ -196,11 +190,17 @@ Scuol, Locarno, Interlaken, Grindelwald, Zermatt, Brig, Andermatt, Engelberg,
 Lugano, Bellinzona, Appenzell and La Chaux-de-Fonds. IDs remain stable independently
 of the English display names.
 
-The added towns cover the Bernese Oberland, Upper Valais, central Alpine valleys,
-Ticino, Appenzell and the higher Jura. The six regional elevation-band summaries
-provide the broader mountain context. Individual summits would need explicit
-point-elevation and horizon treatment. In the bundled snapshot, Zermatt has no
-native cell within the existing 5 km / 300 m matching limits and is unavailable.
+Town markers use the [shared point defaults](location-api.md#location-defaults):
+ambient horizontal UV at the reference elevation and ICON-derived UV albedo.
+They do not apply a valley-floor horizon. For Zermatt this gives a reference
+forecast at **1617 m**, even though nearby model terrain is higher; the former
+native-only height filter rejected all nearby cells.
+
+A destination such as Zermatt also includes higher cable-car stations and slopes.
+Its single town value is not a resort-wide maximum or a guarantee of conditions
+at every elevation. The six regional elevation-band summaries provide mountain
+context, using each native cell's cloud and snow conditions. A specific summit
+can be added as a point at its elevation; a supplied horizon is optional.
 
 Town coordinates are settlement reference points from the
 [swisstopo location search](https://docs.geo.admin.ch/access-data/search.html).

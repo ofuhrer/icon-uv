@@ -1,4 +1,4 @@
-"""Generate v2/v3/v4 from the published v1 base; preserve public contracts.
+"""Generate v2/v3/v4/v5 from the published v1 base; preserve public contracts.
 
 Run ``uv run python tools/generate_schemas.py --check`` in CI, or omit --check
 after deliberately changing a contract. Runtime consumers load standalone JSON.
@@ -120,7 +120,14 @@ def generate_schemas():
     v4["allOf"] = [{"if": {"required": ["ensemble"]}, "then": {"properties": {
         "entries": {"items": {"if": {"properties": {"status": {"enum": ["ok", "degraded"]}}},
                               "then": {"required": ["ensemble"]}}}}}}]
-    return {"daily-uv-v1": base, "daily-uv-v2": v2, "daily-uv-v3": v3, "daily-uv-v4": v4}
+    v5 = deepcopy(v4)
+    v5["title"] = "Daily UV location product v5"
+    v5["description"] = "Adjusted points inherit the model UV albedo unless explicitly overridden. Horizon screening is optional; default products represent ambient horizontal UV. Native and regional support and ensemble reductions match v4."
+    v5["properties"]["schema_version"]["const"] = "daily-uv-v5"
+    v5["properties"]["contract_sha256"]["const"] = hashlib.sha256(b"daily-uv-v5: adjusted points default to inherited model UV albedo; optional explicit horizon; ambient horizontal UV").hexdigest()
+    # Keep the published v4 explicit-albedo requirement intact.
+    v5["$defs"]["entry"]["properties"]["location"]["allOf"].pop()
+    return {"daily-uv-v1": base, "daily-uv-v2": v2, "daily-uv-v3": v3, "daily-uv-v4": v4, "daily-uv-v5": v5}
 
 
 def main():

@@ -71,6 +71,9 @@ def icon_service(monkeypatch):
 def test_fetch_default_joins_all_21_members_by_id(icon_service):
     ds=data.fetch_icon('2026-09-07T00:00:00Z',1,3)
     assert ds.sw_down.dims==('member','time','cell')
+    assert ds.sw_down.attrs['source_variable']=='ASOD_S'
+    assert ds.sw_down.attrs['radiation_geometry']=='horizontal_without_orographic_shading'
+    assert {c['forecast:variable'] for c in icon_service[0]}=={'ASOD_S','PS','ALB_RAD','SNOWC'}
     assert ds.member.values.tolist()==list(range(21))
     np.testing.assert_array_equal(ds.sw_down[:,0,0],np.arange(21)+100)
     assert ds.time_bounds.dims==('time','bounds')

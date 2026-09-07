@@ -6,7 +6,21 @@ table at runtime, then derives hourly fields, point forecasts and daily peaks.
 
 ## ICON and CAMS inputs
 
-ICON `ASOD_S` is the mean downward shortwave flux since forecast initialization.
+The cloud fit uses ICON **`ASOD_S`**, downward shortwave flux on a horizontal
+surface **without orographic shading**, averaged since forecast initialization.
+The [MeteoSwiss OGD parameter lists](https://opendatadocs.meteoswiss.ch/e-forecast-data/e2-e3-numerical-weather-forecasting-model)
+for both ICON-CH1/2-EPS also expose shaded diagnostics: `ASWDIR_S_OS`,
+`ASWDIFU_S_OS` and `ASOB_S_OS`. These include orographic shading and are not
+interchangeable with total downward `ASOD_S` (the latter two shaded quantities
+are diffuse upward and net flux, respectively). The
+[ICON radiation documentation](https://docs.icon-model.org/documentation/atmosphere/radiation/ecrad_overview.html)
+distinguishes unshaded, shaded (`_OS`) and terrain-tangential (`_TAN_OS`) diagnostics.
+Using unshaded forcing avoids fitting terrain shadow as cloud attenuation and
+then applying a supplied local horizon a second time.
+
+ICON's weather and cloud state still depend on the model terrain. Ambient UV
+means no local horizon correction to the radiation quantity; it does not mean
+the atmospheric forecast is independent of topography.
 For consecutive forecast leads `t₀` and `t₁`, hourly flux is recovered as:
 
 ```text
@@ -68,9 +82,12 @@ finds an effective cloud optical thickness whose table shortwave flux matches
 the ICON hourly mean. Four samples per hour are the default; `compute_grid`
 accepts a `samples` argument, with twelve useful for daily five-minute sampling.
 
-Broadband albedo is used for the shortwave fit. UV is then evaluated with
-`uv_albedo = 0.05 + 0.75 × snow_fraction`. Point calculations can instead supply
-an explicit UV albedo. If the cloud response is nonmonotonic, inversion chooses
+ICON broadband `ALB_RAD` is used only for the shortwave fit. UV is evaluated
+with `uv_albedo = 0.05 + 0.75 × snow_fraction`, where snow fraction comes from
+`SNOWC` and is converted from percent. Points inherit the selected cell's saved
+UV albedo, retaining hourly and member variation, unless the caller supplies a
+constant override. Regions retain each cell's own estimate. The snow rule is an
+experimental proxy; broadband albedo is not a replacement for UV albedo. If the cloud response is nonmonotonic, inversion chooses
 the earliest bracketing branch. Shortwave above clear sky or below the minimum
 cloud response uses a scalar extension and sets a quality flag.
 

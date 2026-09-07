@@ -6,9 +6,9 @@ Run the commands below from the repository root after following the
 | Example | Contents and use |
 |---|---|
 | [offline.py](offline.py) | Credential-free synthetic saved-input calculation using the real radiation table; writes grid, point and daily outputs. |
-| [shared_locations.json](shared_locations.json) | Native/adjusted points and a region in one catalog, accepted by `points` and `daily --locations`. |
-| [davos.json](davos.json) | One point with altitude, UV albedo and a terrain horizon, for `icon-uv poi --locations`. |
-| [product_locations.json](product_locations.json) | Towns and regional elevation bands, for `icon-uv daily --catalog`. |
+| [shared_locations.json](shared_locations.json) | Ambient points with ICON-derived albedo and a region, accepted by `points` and `daily --locations`. |
+| [davos.json](davos.json) | One site with assumed UV albedo and a supplied swisstopo horizon, for hourly or screened daily output. |
+| [product_locations.json](product_locations.json) | Legacy native-town catalog retained for compatibility; new products use shared locations. |
 | [map/](map/) | An English, four-day Swiss UV map with saved example data, generation scripts and browser assets. |
 
 ## Point and daily forecasts
@@ -24,22 +24,22 @@ formats, not an actual forecast. It produces two days of hourly grid/point
 NetCDF and daily JSON through the bundled radiation table. For shared location
 definitions, see the [location API](../docs/location-api.md).
 
-With a computed hourly UV grid:
+With a computed UV grid, use the same catalog for both products:
 
 ```sh
-uv run --no-sync icon-uv poi --grid work/uv.nc \
-  --locations examples/davos.json --output work/davos.nc
-```
-
-For daily values, set issuance to the forecast's intended release time:
-
-```sh
+uv run --no-sync icon-uv points --grid work/uv.nc \
+  --locations examples/shared_locations.json --output work/points.nc
 uv run --no-sync icon-uv daily --days 4 --grid work/uv.nc \
-  --catalog examples/product_locations.json \
+  --locations examples/shared_locations.json \
   --issued-at "YYYY-MM-DDT06:00:00Z" --output work/daily.json
 ```
 
-See [daily products](../docs/daily-products.md) for grid preparation and custom catalogs.
+Replace issuance with the intended release time of your forecast. See
+[daily products](../docs/daily-products.md) for input coverage and peak definitions.
+To try explicit site screening, use `examples/davos.json` with `points` or with
+`daily --terrain-screened`. Davos albedo 0.05 is an assumption; its horizon is
+terrain-derived, not instrument-site calibration data. No terrain preprocessing
+or HORAYZON dependency is needed.
 
 ## View the map
 

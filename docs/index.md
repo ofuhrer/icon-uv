@@ -3,6 +3,8 @@
 **Calculate the UV Index from ICON weather forecasts and CAMS atmospheric
 composition.** icon-uv provides a Python API and command-line tools for hourly
 grid and point forecasts, plus daily JSON products for towns and mountain regions.
+Point and daily products share one location catalog: coordinates and elevation
+are enough, with ICON-derived albedo and ambient horizontal UV by default.
 Calculations run locally using a bundled radiation lookup table.
 
 [![Animated Swiss UV forecast map](images/uv-map.gif)](meteoswiss-map.md)
@@ -58,5 +60,6 @@ Development instructions are in
 See [Releasing](releasing.md) for package publishing. Report problems through
 [GitHub issues](https://github.com/ofuhrer/icon-uv/issues).
 
-This site tracks the `main` branch. For version-specific source and documentation,
-see the [GitHub releases](https://github.com/ofuhrer/icon-uv/releases).
+This site tracks `main`, including API changes after release 0.1.0. Use the
+repository installation above for these changes. Version-specific source and
+documentation are available in [GitHub releases](https://github.com/ofuhrer/icon-uv/releases).

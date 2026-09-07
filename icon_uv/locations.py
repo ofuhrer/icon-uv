@@ -30,7 +30,7 @@ class PointLocation:
     longitude: float
     altitude_m: float
     label: str | None = None
-    treatment: str = 'native'
+    treatment: str = 'adjusted'
     uv_albedo: float | None = None
     horizon_degrees: tuple[float, ...] | None = None
     maximum_distance_km: float | None = None
@@ -52,8 +52,10 @@ class PointLocation:
         if distance is not None:
             object.__setattr__(self, 'maximum_distance_km', positive_distance(distance))
         if self.treatment == 'adjusted':
-            if not -100 <= self.altitude_m <= 5000 or self.uv_albedo is None or not np.isfinite(self.uv_albedo) or not 0 <= self.uv_albedo <= .85:
-                raise ValueError('Adjusted point requires altitude -100..5000 m and explicit UV albedo 0..0.85')
+            if not -100 <= self.altitude_m <= 5000:
+                raise ValueError('Adjusted point requires altitude -100..5000 m')
+            if self.uv_albedo is not None and not 0 <= self.uv_albedo <= .85:
+                raise ValueError('UV albedo must be in 0..0.85')
         elif self.uv_albedo is not None or self.horizon_degrees is not None:
             raise ValueError('Native points retain model surface; use adjusted treatment for local surface/horizon')
         if self.horizon_degrees is not None:
@@ -122,7 +124,7 @@ def location_from_entry(entry):
         return PointLocation(
             entry['name'] if legacy_poi else entry['id'], entry['latitude'], entry['longitude'],
             entry['altitude_m'], entry.get('label'),
-            entry.get('treatment', 'adjusted' if legacy_poi else 'native'),
+            entry.get('treatment', 'native' if kind == 'town' else 'adjusted'),
             entry.get('uv_albedo'), entry.get('horizon_degrees'), entry.get('maximum_distance_km'))
     except (KeyError, TypeError) as exc:
         raise ValueError(f'Invalid location entry: {exc}') from exc
@@ -203,8 +205,9 @@ def prepare_point(grid, plan):
         pressure_attrs = local.pressure_pa.attrs.copy()
         local['pressure_pa'] = local.pressure_pa*np.exp(-(point.altitude_m-float(local.altitude_m.values[0]))/8434)
         local.pressure_pa.attrs = pressure_attrs
-        local['uv_albedo'] = local.pressure_pa*0 + point.uv_albedo
-        local.uv_albedo.attrs = {'units': '1'}
+        if point.uv_albedo is not None:
+            local['uv_albedo'] = local.pressure_pa*0 + point.uv_albedo
+            local.uv_albedo.attrs = {'units': '1'}
         for name in ('latitude', 'longitude', 'altitude_m'):
             local[name] = ('cell', [getattr(point, name)])
         local['quality_flag'] = local.quality_flag.astype('uint16') | 16 | (32 if point.horizon_degrees is not None else 0)

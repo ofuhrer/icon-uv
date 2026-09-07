@@ -1,7 +1,7 @@
 {
-  "catalog_version": 1,
+  "catalog_version": 2,
   "name": "MeteoSwiss map locations",
-  "geometry_description": "Town settlement points and example regional bounding boxes; Jura has a single 1000 m entry.",
+  "geometry_description": "Town reference points with pressure adjusted to their settlement elevation and ICON-derived UV albedo. Regional elevation bands provide context for surrounding mountains; no additional local horizon screening is applied.",
   "coordinate_sources": {
     "search": "https://docs.geo.admin.ch/access-data/search.html",
     "height": "https://docs.geo.admin.ch/access-data/get-point-height.html",
@@ -10,273 +10,303 @@
   "entries": [
     {
       "id": "genf",
-      "kind": "town",
+      "kind": "point",
       "label": "Geneva",
       "latitude": 46.205872,
       "longitude": 6.142105,
       "altitude_m": 376,
-      "coordinate_source": "swisstopo SearchServer, gazetteer settlement 55354 (Genève); height service at the same point"
+      "coordinate_source": "swisstopo SearchServer, gazetteer settlement 55354 (Genève); height service at the same point",
+      "treatment": "adjusted"
     },
     {
       "id": "neuenburg",
-      "kind": "town",
+      "kind": "point",
       "label": "Neuchâtel",
       "latitude": 46.995129,
       "longitude": 6.929543,
       "altitude_m": 481,
-      "coordinate_source": "swisstopo SearchServer, gazetteer settlement 413966 (Neuchâtel); height service at the same point"
+      "coordinate_source": "swisstopo SearchServer, gazetteer settlement 413966 (Neuchâtel); height service at the same point",
+      "treatment": "adjusted"
     },
     {
       "id": "lausanne",
-      "kind": "town",
+      "kind": "point",
       "label": "Lausanne",
       "latitude": 46.524818,
       "longitude": 6.626175,
       "altitude_m": 503,
-      "coordinate_source": "swisstopo SearchServer, gazetteer settlement 83101 (Lausanne); height service at the same point"
+      "coordinate_source": "swisstopo SearchServer, gazetteer settlement 83101 (Lausanne); height service at the same point",
+      "treatment": "adjusted"
     },
     {
       "id": "sion",
-      "kind": "town",
+      "kind": "point",
       "label": "Sion",
       "latitude": 46.226589,
       "longitude": 7.353846,
       "altitude_m": 484,
-      "coordinate_source": "swisstopo SearchServer, gazetteer settlement 26682 (Sion); height service at the same point"
+      "coordinate_source": "swisstopo SearchServer, gazetteer settlement 26682 (Sion); height service at the same point",
+      "treatment": "adjusted"
     },
     {
       "id": "bern",
-      "kind": "town",
+      "kind": "point",
       "label": "Bern",
       "latitude": 46.948997,
       "longitude": 7.437128,
       "altitude_m": 541,
-      "coordinate_source": "swisstopo SearchServer, gazetteer settlement 248095 (Bern); height service at the same point"
+      "coordinate_source": "swisstopo SearchServer, gazetteer settlement 248095 (Bern); height service at the same point",
+      "treatment": "adjusted"
     },
     {
       "id": "freiburg",
-      "kind": "town",
+      "kind": "point",
       "label": "Fribourg",
       "latitude": 46.805546,
       "longitude": 7.157557,
       "altitude_m": 614,
-      "coordinate_source": "swisstopo SearchServer, gazetteer settlement 165087 (Fribourg); height service at the same point"
+      "coordinate_source": "swisstopo SearchServer, gazetteer settlement 165087 (Fribourg); height service at the same point",
+      "treatment": "adjusted"
     },
     {
       "id": "delemont",
-      "kind": "town",
+      "kind": "point",
       "label": "Delémont",
       "latitude": 47.363548,
       "longitude": 7.346996,
       "altitude_m": 413,
-      "coordinate_source": "swisstopo SearchServer, gazetteer settlement 331923 (Delémont); height service at the same point"
+      "coordinate_source": "swisstopo SearchServer, gazetteer settlement 331923 (Delémont); height service at the same point",
+      "treatment": "adjusted"
     },
     {
       "id": "basel",
-      "kind": "town",
+      "kind": "point",
       "label": "Basel",
       "latitude": 47.557598,
       "longitude": 7.592385,
       "altitude_m": 245,
-      "coordinate_source": "swisstopo SearchServer, gazetteer settlement 275727 (Basel); height service at the same point"
+      "coordinate_source": "swisstopo SearchServer, gazetteer settlement 275727 (Basel); height service at the same point",
+      "treatment": "adjusted"
     },
     {
       "id": "aarau",
-      "kind": "town",
+      "kind": "point",
       "label": "Aarau",
       "latitude": 47.391338,
       "longitude": 8.049969,
       "altitude_m": 384,
-      "coordinate_source": "swisstopo SearchServer, gazetteer settlement 191770 (Aarau); height service at the same point"
+      "coordinate_source": "swisstopo SearchServer, gazetteer settlement 191770 (Aarau); height service at the same point",
+      "treatment": "adjusted"
     },
     {
       "id": "luzern",
-      "kind": "town",
+      "kind": "point",
       "label": "Lucerne",
       "latitude": 47.051125,
       "longitude": 8.305033,
       "altitude_m": 433,
-      "coordinate_source": "swisstopo SearchServer, gazetteer settlement 413052 (Luzern); height service at the same point"
+      "coordinate_source": "swisstopo SearchServer, gazetteer settlement 413052 (Luzern); height service at the same point",
+      "treatment": "adjusted"
     },
     {
       "id": "zuerich",
-      "kind": "town",
+      "kind": "point",
       "label": "Zurich",
       "latitude": 47.383949,
       "longitude": 8.530146,
       "altitude_m": 405,
-      "coordinate_source": "swisstopo SearchServer, gazetteer settlement 413178 (Zürich); height service at the same point"
+      "coordinate_source": "swisstopo SearchServer, gazetteer settlement 413178 (Zürich); height service at the same point",
+      "treatment": "adjusted"
     },
     {
       "id": "schaffhausen",
-      "kind": "town",
+      "kind": "point",
       "label": "Schaffhausen",
       "latitude": 47.707722,
       "longitude": 8.642185,
       "altitude_m": 435,
-      "coordinate_source": "swisstopo SearchServer, gazetteer settlement 386634 (Schaffhausen); height service at the same point"
+      "coordinate_source": "swisstopo SearchServer, gazetteer settlement 386634 (Schaffhausen); height service at the same point",
+      "treatment": "adjusted"
     },
     {
       "id": "st_gallen",
-      "kind": "town",
+      "kind": "point",
       "label": "St. Gallen",
       "latitude": 47.423393,
       "longitude": 9.366549,
       "altitude_m": 678,
-      "coordinate_source": "swisstopo SearchServer, gazetteer settlement 193236 (St. Gallen); height service at the same point"
+      "coordinate_source": "swisstopo SearchServer, gazetteer settlement 193236 (St. Gallen); height service at the same point",
+      "treatment": "adjusted"
     },
     {
       "id": "vaduz",
-      "kind": "town",
+      "kind": "point",
       "label": "Vaduz",
       "latitude": 47.141922,
       "longitude": 9.519542,
       "altitude_m": 463,
-      "coordinate_source": "swisstopo SearchServer, gazetteer settlement 165717 (Vaduz); height service at the same point"
+      "coordinate_source": "swisstopo SearchServer, gazetteer settlement 165717 (Vaduz); height service at the same point",
+      "treatment": "adjusted"
     },
     {
       "id": "glarus",
-      "kind": "town",
+      "kind": "point",
       "label": "Glarus",
       "latitude": 47.042381,
       "longitude": 9.064495,
       "altitude_m": 479,
-      "coordinate_source": "swisstopo SearchServer, gazetteer settlement 137142 (Glarus); height service at the same point"
+      "coordinate_source": "swisstopo SearchServer, gazetteer settlement 137142 (Glarus); height service at the same point",
+      "treatment": "adjusted"
     },
     {
       "id": "chur",
-      "kind": "town",
+      "kind": "point",
       "label": "Chur",
       "latitude": 46.855785,
       "longitude": 9.524787,
       "altitude_m": 582,
-      "coordinate_source": "swisstopo SearchServer, gazetteer settlement 303999 (Chur); height service at the same point"
+      "coordinate_source": "swisstopo SearchServer, gazetteer settlement 303999 (Chur); height service at the same point",
+      "treatment": "adjusted"
     },
     {
       "id": "davos",
-      "kind": "town",
+      "kind": "point",
       "label": "Davos",
       "latitude": 46.792931,
       "longitude": 9.820781,
       "altitude_m": 1557,
-      "coordinate_source": "swisstopo SearchServer, gazetteer settlement 165726 (Davos Platz); height service at the same point"
+      "coordinate_source": "swisstopo SearchServer, gazetteer settlement 165726 (Davos Platz); height service at the same point",
+      "treatment": "adjusted"
     },
     {
       "id": "st_moritz",
-      "kind": "town",
+      "kind": "point",
       "label": "St. Moritz",
       "latitude": 46.488785,
       "longitude": 9.835339,
       "altitude_m": 1775,
-      "coordinate_source": "swisstopo SearchServer, gazetteer settlement 136258 (St. Moritz); height service at the same point"
+      "coordinate_source": "swisstopo SearchServer, gazetteer settlement 136258 (St. Moritz); height service at the same point",
+      "treatment": "adjusted"
     },
     {
       "id": "scuol",
-      "kind": "town",
+      "kind": "point",
       "label": "Scuol",
       "latitude": 46.797653,
       "longitude": 10.297831,
       "altitude_m": 1258,
-      "coordinate_source": "swisstopo SearchServer, gazetteer settlement 329112 (Scuol); height service at the same point"
+      "coordinate_source": "swisstopo SearchServer, gazetteer settlement 329112 (Scuol); height service at the same point",
+      "treatment": "adjusted"
     },
     {
       "id": "locarno",
-      "kind": "town",
+      "kind": "point",
       "label": "Locarno",
       "latitude": 46.166874,
       "longitude": 8.79277,
       "altitude_m": 197,
-      "coordinate_source": "swisstopo SearchServer, gazetteer settlement 303555 (Locarno); height service at the same point"
+      "coordinate_source": "swisstopo SearchServer, gazetteer settlement 303555 (Locarno); height service at the same point",
+      "treatment": "adjusted"
     },
     {
       "id": "interlaken",
-      "kind": "town",
+      "kind": "point",
       "label": "Interlaken",
       "latitude": 46.686874,
       "longitude": 7.864446,
       "altitude_m": 568,
-      "coordinate_source": "swisstopo SearchServer, gazetteer settlement 55309 (Interlaken); height service at the same point"
+      "coordinate_source": "swisstopo SearchServer, gazetteer settlement 55309 (Interlaken); height service at the same point",
+      "treatment": "adjusted"
     },
     {
       "id": "grindelwald",
-      "kind": "town",
+      "kind": "point",
       "label": "Grindelwald",
       "latitude": 46.624756,
       "longitude": 8.028841,
       "altitude_m": 1000,
-      "coordinate_source": "swisstopo SearchServer, gazetteer settlement 248561 (Grindelwald); height service at the same point"
+      "coordinate_source": "swisstopo SearchServer, gazetteer settlement 248561 (Grindelwald); height service at the same point",
+      "treatment": "adjusted"
     },
     {
       "id": "zermatt",
-      "kind": "town",
+      "kind": "point",
       "label": "Zermatt",
       "latitude": 46.017536,
       "longitude": 7.746568,
       "altitude_m": 1617,
-      "coordinate_source": "swisstopo SearchServer, gazetteer settlement 413112 (Zermatt); height service at the same point"
+      "coordinate_source": "swisstopo SearchServer, gazetteer settlement 413112 (Zermatt); height service at the same point",
+      "treatment": "adjusted"
     },
     {
       "id": "brig",
-      "kind": "town",
+      "kind": "point",
       "label": "Brig",
       "latitude": 46.317009,
       "longitude": 7.994198,
       "altitude_m": 721,
-      "coordinate_source": "swisstopo SearchServer, gazetteer settlement 138131 (Brig); height service at the same point"
+      "coordinate_source": "swisstopo SearchServer, gazetteer settlement 138131 (Brig); height service at the same point",
+      "treatment": "adjusted"
     },
     {
       "id": "andermatt",
-      "kind": "town",
+      "kind": "point",
       "label": "Andermatt",
       "latitude": 46.635929,
       "longitude": 8.593595,
       "altitude_m": 1438,
-      "coordinate_source": "swisstopo SearchServer, gazetteer settlement 80835 (Andermatt); height service at the same point"
+      "coordinate_source": "swisstopo SearchServer, gazetteer settlement 80835 (Andermatt); height service at the same point",
+      "treatment": "adjusted"
     },
     {
       "id": "engelberg",
-      "kind": "town",
+      "kind": "point",
       "label": "Engelberg",
       "latitude": 46.821465,
       "longitude": 8.405006,
       "altitude_m": 1009,
-      "coordinate_source": "swisstopo SearchServer, gazetteer settlement 303450 (Engelberg); height service at the same point"
+      "coordinate_source": "swisstopo SearchServer, gazetteer settlement 303450 (Engelberg); height service at the same point",
+      "treatment": "adjusted"
     },
     {
       "id": "lugano",
-      "kind": "town",
+      "kind": "point",
       "label": "Lugano",
       "latitude": 46.00806,
       "longitude": 8.952294,
       "altitude_m": 277,
-      "coordinate_source": "swisstopo SearchServer, gazetteer settlement 110544 (Lugano); height service at the same point"
+      "coordinate_source": "swisstopo SearchServer, gazetteer settlement 110544 (Lugano); height service at the same point",
+      "treatment": "adjusted"
     },
     {
       "id": "bellinzona",
-      "kind": "town",
+      "kind": "point",
       "label": "Bellinzona",
       "latitude": 46.194931,
       "longitude": 9.024765,
       "altitude_m": 227,
-      "coordinate_source": "swisstopo SearchServer, gazetteer settlement 109745 (Bellinzona); height service at the same point"
+      "coordinate_source": "swisstopo SearchServer, gazetteer settlement 109745 (Bellinzona); height service at the same point",
+      "treatment": "adjusted"
     },
     {
       "id": "appenzell",
-      "kind": "town",
+      "kind": "point",
       "label": "Appenzell",
       "latitude": 47.331543,
       "longitude": 9.408989,
       "altitude_m": 778,
-      "coordinate_source": "swisstopo SearchServer, gazetteer settlement 165051 (Appenzell); height service at the same point"
+      "coordinate_source": "swisstopo SearchServer, gazetteer settlement 165051 (Appenzell); height service at the same point",
+      "treatment": "adjusted"
     },
     {
       "id": "la_chaux_de_fonds",
-      "kind": "town",
+      "kind": "point",
       "label": "La Chaux-de-Fonds",
       "latitude": 47.098457,
       "longitude": 6.82432,
       "altitude_m": 992,
-      "coordinate_source": "swisstopo SearchServer, gazetteer settlement 303471 (La Chaux-de-Fonds); height service at the same point"
+      "coordinate_source": "swisstopo SearchServer, gazetteer settlement 303471 (La Chaux-de-Fonds); height service at the same point",
+      "treatment": "adjusted"
     },
     {
       "id": "jura_1000",

@@ -1,104 +1,123 @@
 # One location catalog for hourly and daily forecasts
 
-Use `PointLocation` for individual sites and `RegionBand` for regional elevation
-products. Stable `id` values identify the same location in hourly and daily
-outputs; `label` controls display text. A location explicitly selects its physical
-treatment:
+Define a `PointLocation` with coordinates and elevation, or a `RegionBand` for a
+regional elevation summary. Both hourly and daily calculations use these same
+location definitions and surface defaults. Stable `id` values identify locations;
+`label` supplies display text.
 
-| Location | Support and calculation |
-|---|---|
-| Native point | Nearest suitable cell within 5 km and 300 m; retain its coordinates, elevation, pressure and surface |
-| Adjusted point | Nearest cell within 10 km; retain atmosphere/cloud state, adjust pressure to target altitude, use explicit target coordinates and UV albedo |
-| Region band | Native cells within the bounding box and ±200 m of 1000, 2000 or 3000 m; spatial P90 within each member |
+This guide describes `main`, including defaults added after PyPI release 0.1.0.
+Use the [repository installation](index.md#try-it-without-credentials) for these examples.
 
-`maximum_distance_km` can override a point's distance limit. An adjusted point
-requires `uv_albedo` between 0 and 0.85. A supplied horizon contains at least four
-equally spaced elevation angles, starting at north and increasing clockwise.
-Native points retain the model surface, so use adjusted treatment for a local
-albedo or horizon. Regions require at least five selected cells and 95% spatial
-coverage within each contributing member.
-
-## Compute from a saved grid
+## Calculate and publish
 
 ```python
 import xarray as xr
-from icon_uv.locations import PointLocation, RegionBand, load_locations
-from icon_uv.products import compute_points
-from icon_uv.daily import compute_daily
+from icon_uv import (
+    PointLocation, RegionBand, load_locations,
+    compute_points, compute_daily, export_daily_file,
+)
 
 locations = load_locations([
-    PointLocation("bern", 46.95, 7.44, 540, label="Bern"),
-    PointLocation("bern-site", 46.95, 7.44, 560, treatment="adjusted",
-                  uv_albedo=0.05, horizon_degrees=(0.,) * 36),
-    RegionBand("bernese-2000", (7.3, 46.4, 8.5, 46.9), 2000),
+    PointLocation("zermatt", 46.017536, 7.746568, 1617, label="Zermatt"),
+    RegionBand("valais-3000", (7.0, 45.9, 8.4, 46.4), 3000),
 ])
-# Alternatively: load_locations("examples/shared_locations.json")
+# Or: locations = load_locations("examples/shared_locations.json")
 with xr.open_dataset("work/uv.nc") as grid:
     hourly = compute_points(grid, locations.points)
-    daily = compute_daily(grid, locations, dates=["2026-09-07", "2026-09-09"])
-```
-
-Hourly point output is an xarray Dataset and preserves the ensemble member axis.
-`compute_daily` returns a `DailyResult` for the specified local dates in
-Europe/Zurich. It reconstructs five-minute midpoint samples before finding the
-maximum 30-minute mean. Taking a maximum over hourly means would lose this
-temporal information and produce a different value.
-
-Daily products are ambient horizontal UVI by default. Set `terrain_screened=True`
-to request screened daily point values with explicit horizons. Keep that geometry
-visible to consumers: v4 records `uv_geometry` as `ambient_horizontal` or
-`terrain_screened`. Native points and regions describe the open model surface.
-
-## Publish with source provenance
-
-The calculation API does not require an issuance time or a made-up file hash.
-For a saved grid, use the file wrapper to stream its SHA-256, attach provenance
-and apply issuance freshness checks:
-
-```python
-from icon_uv.daily import export_daily_file
+    daily = compute_daily(grid, locations, dates=["2026-09-07", "2026-09-08"])
 
 payload = export_daily_file(
     "work/uv.nc", locations, issued_at="2026-09-07T06:00:00Z",
-    dates=["2026-09-07", "2026-09-09"], output="work/daily.json",
+    dates=["2026-09-07", "2026-09-08"], output="work/daily.json",
 )
 ```
 
-To publish an already calculated result, call
-`write_daily_json(daily, "work/daily.json", issued_at=..., input_sha256=...)`
-with the actual source-grid SHA-256. JSON replacement is atomic. Issuance and
-source age rules are described in [daily products](daily-products.md#export).
+Choose dates matching your forecast. `compute_points` returns hourly means in an
+xarray Dataset and retains ensemble members. `compute_daily` returns a
+`DailyResult`: it reconstructs five-minute samples and finds the maximum
+30-minute mean for each Swiss local date. It also includes regional products.
+Hourly means cannot recover this daily peak exactly.
 
-The shared API writes schema v4, adding point treatment and UV geometry while
-supporting CTRL and ensemble inputs. `load_schema(payload)` selects the correct
-packaged schema. Available rows report `support_uvi_range` and `support_uvi_median`
-across contributing values, including adjusted-point values when applicable.
-Legacy v1–v3 retain the original `native_uvi_range` and `native_uvi_median` names.
-Legacy town catalogs through `export_daily` retain published
-v1/v2/v3 formats; legacy `POI` and `compute_pois` also remain supported. Legacy
-town entries use native-point treatment and keep their `town` output kind.
-Legacy POI lists acquire canonical point IDs and explicit adjusted treatment.
+Calculation does not require an issuance time or file hash. `export_daily_file`
+adds the saved grid's SHA-256 and freshness checks, and optionally writes JSON.
+For an existing result, use `write_daily_json(daily, output_path,
+issued_at=..., input_sha256=...)` with the actual source-grid hash.
+Publication replaces JSON atomically; see [daily products](daily-products.md#export).
 
-## Check inputs before calculating products
+## Location defaults
 
-```sh
-uv run --no-sync icon-uv preflight --grid work/uv.nc \
-  --locations examples/shared_locations.json \
-  --issued-at "2026-09-07T06:00:00Z" --days 3
+| Location | Calculation |
+|---|---|
+| Point (default `treatment="adjusted"`) | Nearest cell within 10 km supplies cloud, ozone, aerosol and surface state; recompute solar geometry and pressure at the requested coordinates/elevation |
+| Region band | Native cells inside the box and within ±200 m of 1000, 2000 or 3000 m; daily spatial P90 within each member |
+| Point with `treatment="native"` | Nearest cell within 5 km and 300 m of the target; retain that cell's coordinates, elevation and surface |
+
+Coordinates are WGS84 degrees, elevations are metres above sea level and boxes
+use `(west, south, east, north)`. `maximum_distance_km` overrides a point's distance
+limit. Region bands need at least five selected cells and 95% spatial coverage
+within each contributing member.
+
+An omitted `uv_albedo` inherits the selected cell's saved UV albedo, retaining its
+time and ensemble variation. Grids made by `compute_grid` estimate it as
+`0.05 + 0.75 × ICON snow_fraction`, from `SNOWC`. This is an experimental snow
+proxy, not a measured UV albedo. It is distinct from broadband `ALB_RAD`, used
+only for fitting the shortwave cloud response. Missing source values remain
+missing. For a specific site, `uv_albedo=...` overrides the estimate with a finite
+constant between 0 and 0.85.
+
+Points and regions default to **ambient horizontal UV**: no local horizon is
+applied. A town reference point therefore does not impose valley-floor shade on
+a surrounding mountain destination. It still has one target elevation and one
+source cloud/snow column; regional elevation bands supply broader mountain context.
+Elevation correction does not locate the point above or below a cloud layer.
+
+## One example with a supplied horizon
+
+The [Davos catalog](https://github.com/ofuhrer/icon-uv/blob/main/examples/davos.json)
+contains the project's explicit site example. Its 72 horizon angles derive from
+swisstopo terrain profiles; UV albedo 0.05 is an assumption, not a measurement.
+See [point outputs](outputs.md#point-forecasts) for provenance and limitations.
+
+```python
+site = load_locations("examples/davos.json")
+with xr.open_dataset("work/uv.nc") as grid:
+    hourly = compute_points(grid, site.points)
+    screened_daily = compute_daily(
+        grid, site, dates=["2026-09-07"], terrain_screened=True,
+    )
 ```
 
-Preflight checks saved-grid contracts, source freshness, location support and
-temporal input coverage without running the UV calculation. It reports which
-locations lack suitable cells or enough daylight input. These checks help catch
-an incompatible saved forecast before product generation; they do not establish
-scientific forecast skill or contact download services.
-The command prints JSON by default; `--output work/preflight.json` also saves it.
-Exit status is zero when ready and one when coverage/support is insufficient.
+`horizon_degrees` contains at least four equally spaced elevation angles from
+north clockwise, between 0° and 90°. With a horizon, hourly output includes
+`terrain_screened_uvi` alongside ambient `uvi`; without one, the screened field
+is unavailable. Screened daily output requires a catalog containing only adjusted
+points with explicit horizons. `uv_geometry` identifies the chosen daily geometry.
+The package accepts supplied horizon arrays and does not generate them or depend
+on HORAYZON.
 
-`points` aliases `poi`, and `--locations` aliases `--catalog` for daily output.
-Choose a positive `--days N`, `--days all`, or an explicit list such as
-`--dates 2026-09-07 2026-09-09`. Date lists and `--days` are mutually exclusive.
-The `day` field remains the offset from issuance's local date, even for a list
-with gaps. Ordinary CLI errors are concise; put `--debug` before the command
-(for example, `icon-uv --debug daily ...`) for a traceback. Daily CLI screening
-is requested with `--terrain-screened`.
+## CLI and compatibility
+
+```sh
+uv run --no-sync icon-uv points --grid work/uv.nc \
+  --locations examples/shared_locations.json --output work/points.nc
+uv run --no-sync icon-uv daily --grid work/uv.nc \
+  --locations examples/shared_locations.json --days 3 \
+  --issued-at "YYYY-MM-DDT06:00:00Z" --output work/daily.json
+```
+
+The shared catalog uses `catalog_version: 2`, `kind: "point"` or
+`kind: "region_altitude"`, and the same field names as Python. New point entries
+may omit `treatment`, albedo and horizon. Set `treatment: "native"` explicitly to
+retain native-cell matching. Native points do not accept local surface overrides.
+
+New shared products use **daily-uv-v5**, allowing inherited point albedo.
+Published v1–v4 schemas remain unchanged. Legacy `kind: "town"` catalogs retain
+native matching and their existing v1/v2/v3 export formats. `POI`, `compute_pois`,
+legacy POI JSON lists, `poi` and `--catalog` remain compatibility entry points.
+See [JSON contracts](daily-products.md#reading-the-payload) for version selection.
+
+`daily` accepts positive `--days N`, `--days all`, or explicit `--dates` (mutually
+exclusive with `--days`). `--terrain-screened` selects screened daily output.
+`preflight` accepts the same grid, locations, issuance and date selection to check
+support and coverage before calculation; it prints JSON and exits one when not
+ready. Put `--debug` before a command for a traceback.
