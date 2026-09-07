@@ -54,7 +54,7 @@ def render(payload, tiles):
     if payload.get('schema_version') not in ('daily-uv-v1', 'daily-uv-v2') or not payload.get('entries'):
         raise ValueError('Expected a nonempty daily UV product')
     here = Path(__file__).parent
-    template = (here / 'meteoswiss_map.html').read_text(encoding='utf-8')
+    template = (here / 'meteoswiss_map.template.html').read_text(encoding='utf-8')
     replacements = {
         '__LEAFLET_CSS__': (here / 'vendor/leaflet-1.9.4.css').read_text(),
         '__LEAFLET_JS__': (here / 'vendor/leaflet-1.9.4.js').read_text().split('//# sourceMappingURL=')[0],
@@ -69,7 +69,8 @@ def render(payload, tiles):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--input', type=Path, required=True, help='Generated daily UV JSON')
+    parser.add_argument('--input', type=Path, default=Path(__file__).with_name('meteoswiss_map.sample.json'),
+                        help='Daily UV JSON (default: bundled example snapshot)')
     parser.add_argument('--output', type=Path, default=Path('work/meteoswiss-map.html'))
     parser.add_argument('--cache', type=Path, default=Path('work/swisstopo-relief-tiles'))
     args = parser.parse_args()

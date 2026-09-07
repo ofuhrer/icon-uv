@@ -5,33 +5,38 @@ a single HTML page with day selection, zoom, pan and sun-protection guidance.
 The page embeds the forecast, map library and swisstopo relief tiles, so it opens
 directly from disk and works offline.
 
-## Prepare the forecast
+## Open the included example
 
-[ICON-CH2-EPS provides 120 forecast hours](https://opendatadocs.meteoswiss.ch/e-forecast-data).
-For five full daylight dates, choose a published 00 UTC ICON cycle and the same
-00 UTC CAMS cycle. Follow the [installation instructions](../README.md#installation),
-then replace the date below:
+Open [meteoswiss_map.html](../examples/meteoswiss_map.html) directly in a browser.
+It contains a dated forecast snapshot for **7–10 September 2026**, with 144 values
+from ICON 7 September 00 UTC and CAMS 6 September 12 UTC. The corresponding
+[sample JSON](../examples/meteoswiss_map.sample.json) retains source times, hashes
+and availability details. This is a fixed example, not an automatically refreshed page.
+
+Day selection updates the map and the complete values list. Labels are thinned
+when they would overlap, giving the main cities priority and revealing more
+locations as you zoom in. Zoom-out stops at the overview of Switzerland; the
+home control restores that view. Select a marker for its unrounded UV Index and
+availability details. The expandable list keeps all towns and elevations accessible
+at every zoom level. Small screens also have a mountain-elevation table.
+
+## Prepare a four-day forecast
+
+Use a published 00 UTC ICON cycle with the **previous day's 12 UTC CAMS cycle**.
+This avoids waiting for the matching 00 UTC CAMS forecast, typically available
+around 10 UTC. The earlier CAMS cycle covers four complete daylight dates.
+Follow the [installation instructions](../README.md#installation), then set both dates:
 
 ```sh
-REFERENCE="YYYY-MM-DDT00:00:00Z"
+ICON_REFERENCE="YYYY-MM-DDT00:00:00Z"
+CAMS_REFERENCE="PREVIOUS-YYYY-MM-DDT12:00:00Z"
 uv run --no-sync icon-uv fetch-icon \
-  --reference "$REFERENCE" --first-lead 1 --last-lead 120 --output work/icon.nc
+  --reference "$ICON_REFERENCE" --first-lead 1 --last-lead 96 --output work/icon.nc
 uv run --no-sync icon-uv fetch-cams \
-  --reference "$REFERENCE" --first-lead 0 --last-lead 120 --output work/cams.grib
-uv run --no-sync icon-uv run \
-  --icon work/icon.nc --cams work/cams.grib --output work/uv.nc
+  --reference "$CAMS_REFERENCE" --first-lead 12 --last-lead 108 --output work/cams.grib
 ```
 
-CAMS also covers [five days](https://ads.atmosphere.copernicus.eu/datasets/cams-global-atmospheric-composition-forecasts),
-but its publication can lag ICON. Select a cycle published by both providers;
-the public ICON archive has limited retention. The previous day's 12 UTC CAMS
-run ends twelve hours earlier than the matching 00 UTC run and cannot cover the
-entire ICON range. The grid calculation requires CAMS to bracket every interval
-midpoint and does not extrapolate composition beyond its forecast.
-
-To use an earlier CAMS cycle while retaining all available hours, replace the
-`run` command with this explicit coverage selection. It also computes only the
-native cells needed by the catalog and uses twelve solar samples per hour:
+Compute the native cells needed by the catalog, using twelve solar samples per hour:
 
 ```python
 import json
@@ -46,51 +51,48 @@ catalog = json.loads(Path("examples/meteoswiss_map_locations.json").read_text())
 cams = load_cams("work/cams.grib")
 with xr.open_dataset("work/icon.nc") as source:
     cells = np.unique(np.concatenate([select_support(source, e) for e in catalog["entries"]]))
-    covered = (source.time >= cams.time.min()) & (source.time <= cams.time.max())
-    icon = source.isel(cell=cells, time=np.flatnonzero(covered.values)).load()
+    icon = source.isel(cell=cells).load()
 grid = compute_grid(icon, cams, samples=12)
 write_netcdf(grid, "work/uv.nc")
 ```
 
 ## Generate JSON and HTML
 
-Set issuance to the intended time on the ICON initialization date. Replays use
-their original issuance, which controls local dates and source-age checks.
+Set issuance to the intended morning time on the ICON initialization date.
+Replays use their original issuance, which controls local dates and source-age checks.
 
 ```sh
 uv run --no-sync python examples/meteoswiss_map.py \
-  --grid work/uv.nc --issued-at "YYYY-MM-DDT10:00:00Z" \
+  --grid work/uv.nc --issued-at "YYYY-MM-DDT06:00:00Z" \
   --output work/meteoswiss-map.json
 
 uv run --no-sync python examples/render_meteoswiss_map.py \
   --input work/meteoswiss-map.json --output work/meteoswiss-map.html
 ```
 
-Open `work/meteoswiss-map.html` in a browser. Each day has 36 values: 20 towns,
-three elevation bands for each of five Alpine regions, and one band for Jura.
-Five complete days produce 180 values. Day selection updates all markers;
-mountain bands appear together in 3000 / 2000 / 1000 m order. Select a marker for
-its unrounded UVI and availability details. Zoom in to reveal town labels on
-small screens, where a separate table keeps all mountain elevations readable.
-The home control restores the full view.
+Open `work/meteoswiss-map.html` in a browser. Omitting `--input` rebuilds the
+bundled example snapshot. Edit `examples/meteoswiss_map.template.html` to change
+the page layout; `examples/meteoswiss_map.html` is the ready-to-open generated page.
 
-The exporter uses all supplied forecast daylight dates (`daily-uv-v2`), omitting
-a trailing night-only date. Partial daylight dates stay visible with unavailable
-values rather than partial daily maxima. `null` is shown as `—`, distinct from
-zero. The [daily-product reference](daily-products.md) defines the rounding,
-categories, coverage rules and schema. The CLI equivalent is:
+The exporter produces four local dates (`daily-uv-v2`), with 36 values per day:
+20 towns, three elevation bands for each of five Alpine regions, and one band
+for Jura. Mountain bands appear in 3000 / 2000 / 1000 m order. The renderer also
+limits longer input products to their first four dates. Partial daylight dates
+remain unavailable rather than becoming partial daily maxima. `null` is shown
+as `—`, distinct from zero. The [daily-product reference](daily-products.md)
+defines rounding, categories, coverage rules and schema. The CLI equivalent is:
 
 ```sh
-uv run --no-sync icon-uv daily --days all \
+uv run --no-sync icon-uv daily --days 4 \
   --grid work/uv.nc --catalog examples/meteoswiss_map_locations.json \
-  --issued-at "YYYY-MM-DDT10:00:00Z" --output work/meteoswiss-map.json
+  --issued-at "YYYY-MM-DDT06:00:00Z" --output work/meteoswiss-map.json
 ```
 
 The HTML renderer downloads relief tiles once to `work/swisstopo-relief-tiles/`;
 `--cache PATH` chooses another cache. Reusing it allows offline rebuilding.
 Use a new cache directory to refresh the basemap. Tiles are embedded at zoom 9;
-higher zoom magnifies that fixed resolution. Generated forecasts, pages and
-tile caches remain local under `work/`.
+higher zoom magnifies that fixed resolution. The curated sample JSON and HTML
+are checked in; new forecasts and tile caches stay local under `work/`.
 
 ## Locations and regions
 

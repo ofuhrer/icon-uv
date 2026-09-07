@@ -4,6 +4,8 @@ import json
 from pathlib import Path
 import re
 
+from jsonschema import Draft202012Validator, FormatChecker
+
 
 spec = importlib.util.spec_from_file_location(
     'map_renderer', Path(__file__).resolve().parents[1] / 'examples/render_meteoswiss_map.py')
@@ -22,3 +24,23 @@ def test_catalog_text_cannot_escape_data_script_or_expand_template_tokens():
     assert '__LEAFLET_JS__' in embedded
     assert not re.search(r'<script[^>]+src=', html)
     assert 'sourceMappingURL=' not in html
+
+
+def test_bundled_snapshot_is_complete_and_page_matches_template_and_json():
+    root = Path(__file__).resolve().parents[1]
+    payload = json.loads((root / 'examples/meteoswiss_map.sample.json').read_text())
+    schema = json.loads((root / 'icon_uv/data/daily-uv-v2.schema.json').read_text())
+    Draft202012Validator(schema, format_checker=FormatChecker()).validate(payload)
+    assert payload['example_snapshot'] is True
+    assert len(payload['valid_dates']) == 4
+    assert len(payload['entries']) == 144
+    for day, date in enumerate(payload['valid_dates']):
+        rows = [r for r in payload['entries'] if r['valid_date'] == date]
+        assert len(rows) == 36
+        assert all(r['day'] == day and r['status'] == 'ok' and r['display_uvi'] is not None for r in rows)
+    html = (root / 'examples/meteoswiss_map.html').read_text()
+    embedded = json.loads(re.search(r'id="forecast">(.*?)</script>', html, re.S).group(1))
+    tiles = json.loads(re.search(r'id="basemap">(.*?)</script>', html, re.S).group(1))
+    assert embedded == payload
+    assert tiles['images'] and all(s.startswith('data:image/png;base64,') for s in tiles['images'].values())
+    assert renderer.render(payload, tiles) == html

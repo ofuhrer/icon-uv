@@ -186,9 +186,9 @@ def forecast_dates(grid, first):
 
 
 def export_daily(grid, catalog, issued_at, *, input_sha256, table=None, days=2):
-    """Export two days (v1), or all supplied forecast daylight dates (v2)."""
-    if days != 2 and days != 'all':
-        raise ValueError("days must be 2 or 'all'")
+    """Export two days (v1), four days or all supplied daylight dates (v2)."""
+    if days not in (2, 4, 'all'):
+        raise ValueError("days must be 2, 4 or 'all'")
     issue = utc_instant(issued_at)
     if not isinstance(input_sha256, str) or len(input_sha256) != 64 or any(c not in '0123456789abcdef' for c in input_sha256):
         raise ValueError('Source file SHA-256 is required')
@@ -215,7 +215,7 @@ def export_daily(grid, catalog, issued_at, *, input_sha256, table=None, days=2):
     by_index = {int(cell): i for i, cell in enumerate(union)}
     first = issue.astimezone(ZoneInfo('Europe/Zurich')).date()
     dates = (forecast_dates(grid, first) if days == 'all' else
-             [str(first + timedelta(days=d)) for d in (0, 1)])
+             [str(first + timedelta(days=d)) for d in range(days)])
     rows = []
     for day, valid in enumerate(dates):
         daily = daily_cells(selected, valid, table) if len(union) and not source_reasons else None
@@ -260,7 +260,7 @@ def export_daily(grid, catalog, issued_at, *, input_sha256, table=None, days=2):
                 assumptions=grid.attrs.get('assumptions', 'source assumptions not supplied'),
                 temporal_limitation='hourly cloud state; solar evolution reconstructed at five-minute midpoints',
                 entries=rows)
-    if days == 'all':
+    if days != 2:
         payload.update(schema_version=FORECAST_CONTRACT_VERSION,
                        contract_sha256=FORECAST_CONTRACT_SHA256, valid_dates=dates)
     return payload

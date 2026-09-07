@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "Daily UV forecast product v2",
-  "description": "All forecast daylight dates. Per-entry support, rounding and missing-value rules match v1. Date offsets and pairing require semantic checks.",
+  "description": "Four local dates or all forecast daylight dates. Per-entry support, rounding and missing-value rules match v1. Date offsets and pairing require semantic checks.",
   "type": "object",
   "required": [
     "schema_version",

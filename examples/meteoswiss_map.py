@@ -23,7 +23,7 @@ def main():
         input_sha256 = hashlib.file_digest(stream, "sha256").hexdigest()
     with xr.open_dataset(args.grid) as grid:
         payload = export_daily(
-            grid.load(), catalog, args.issued_at, input_sha256=input_sha256, days='all',
+            grid.load(), catalog, args.issued_at, input_sha256=input_sha256, days=4,
         )
     write_json_atomic(payload, args.output)
 

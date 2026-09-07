@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>UV Index · Switzerland</title>
+<link rel="icon" href="data:,">
+<style>__LEAFLET_CSS__</style>
+<style>
+:root{--page:#1b2b36;--panel:#243746;--ink:#f6f8fa;--muted:#bbcad4;--low:#278600;--moderate:#fff000;--high:#ff7900;--very-high:#d31220;--extreme:#7144c9}
+*{box-sizing:border-box}body{margin:0;background:var(--page);color:var(--ink);font:16px/1.5 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+main{max-width:1560px;margin:auto;padding:28px 32px 20px}header{margin-bottom:24px}h1{font-size:clamp(32px,4vw,48px);letter-spacing:-1.5px;line-height:1.12;margin:0 0 12px;font-weight:700}header p{max-width:820px;color:var(--muted);margin:0;font-size:17px}
+button{font:inherit;color:inherit;cursor:pointer}button:focus-visible,a:focus-visible{outline:3px solid #97d8ff;outline-offset:4px}a{color:inherit}.layout{display:grid;grid-template-columns:minmax(0,1fr) 270px;gap:20px}.map-column{min-width:0}.days{display:flex;gap:8px;margin-bottom:14px;overflow:auto;padding:4px 2px 6px}.day{flex:1;min-width:104px;border:1px solid #4d626f;background:transparent;border-radius:5px;padding:9px 10px;text-align:left;line-height:1.35}.day strong,.day small{display:block}.day small{font-size:12px;color:var(--muted);margin-top:3px}.day[aria-pressed=true]{background:#f6f8fa;color:#1b2b36;border-color:#f6f8fa}.day[aria-pressed=true] small{color:#425463}.day:hover{border-color:#fff}.map-wrap{position:relative}#map{height:clamp(490px,65vh,760px);background:#20313d;outline:none;border-radius:5px}.notice{min-height:26px;margin:10px 0 0;color:var(--muted);font-size:13px}.legend{background:var(--panel);padding:22px;border-radius:5px;align-self:start;margin-top:4px}h2{font-size:18px;margin:0 0 18px}.level{margin-bottom:24px}.level:last-child{margin-bottom:0}.level-head{display:flex;align-items:center;gap:10px;margin-bottom:6px}.range{display:flex;gap:3px;flex-shrink:0}.tile{display:inline-flex;align-items:center;justify-content:center;background:var(--moderate);color:#152630;font-weight:750;font-size:20px;width:30px;height:32px;line-height:1;border:0;padding:0;border-radius:0}.tile.low{background:var(--low);color:white}.tile.moderate{background:var(--moderate)}.tile.high{background:var(--high)}.tile.very_high{background:var(--very-high);color:white}.tile.extreme{background:var(--extreme);color:white}.tile.missing{background:#617582;color:white}.level b{display:block;font-size:14px;margin:5px 0}.level p{margin:0;font-size:14px;color:var(--muted)}.level-head>span{font-size:15px}.extreme-label{width:38px;font-size:17px}footer{font-size:12px;color:var(--muted);margin-top:12px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px 18px}
+.leaflet-container{font-family:inherit}.leaflet-image-layer{filter:grayscale(1)}.leaflet-control-attribution{background:#20313de8!important;color:#dbe4eb!important;font-size:10px!important}.leaflet-control-attribution a{color:inherit!important}.leaflet-bar a,.home-button{background:var(--panel)!important;color:white!important;border-color:#50616d!important}.leaflet-bar{border:1px solid #60717c!important;box-shadow:none!important}.home-button{font-size:14px!important;width:34px!important;height:34px!important;line-height:34px!important;border:0;display:block;text-align:center}.leaflet-control-zoom a{width:34px!important;height:34px!important;line-height:34px!important}.leaflet-tooltip{font:13px/1.4 system-ui;color:#1b2b36;max-width:250px;white-space:normal}.leaflet-popup-content{font-size:14px;line-height:1.5;color:#1b2b36}.leaflet-popup-content h3{margin:0 0 5px;font-size:16px}.leaflet-popup-content p{margin:4px 0}
+.map-label{background:transparent;border:0;text-align:center;width:100px!important;margin-left:-50px!important}.place{display:flex;align-items:center;flex-direction:column}.place-name{display:block;color:#1a2c39;font-size:12px;font-weight:750;line-height:1.1;white-space:nowrap;text-shadow:0 1px 2px white,0 -1px 2px white,1px 0 2px white,-1px 0 2px white;margin-top:3px}.town-tile{width:25px;height:27px;font-size:18px;box-shadow:0 0 0 1px #ffffff90}.region-label{width:126px!important;margin-left:-63px!important}.region-values{display:flex;gap:3px;justify-content:center}.region-values .tile{width:28px;height:30px;font-size:18px}.heights{font-size:10px;color:#1a2c39;font-weight:750;text-shadow:0 0 3px white,0 0 3px white;white-space:nowrap;margin-top:2px;line-height:1}.region-label .place-name{font-size:12px}.map-label:focus-visible{outline:3px solid #1473b6}.map-label.is-thinned{visibility:hidden;pointer-events:none}.compact .town-name{display:none}.mobile-day,.mobile-regions{display:none}
+@media(min-width:1350px){.place-name{font-size:13px}.region-label .place-name{font-size:13px}.town-tile{width:28px;height:30px;font-size:20px}}
+@media(max-width:850px){main{padding:20px 14px}.layout{grid-template-columns:1fr;gap:12px}.legend{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;padding:18px;margin:0}.legend h2{grid-column:1/-1;margin:0}.level{margin:0}.level-head{flex-wrap:wrap;gap:6px}.days{gap:6px}.day{min-width:98px}#map{height:560px}header{margin-bottom:18px}}
+@media(max-width:520px){.legend{grid-template-columns:1fr 1fr}.legend .tile{width:25px;height:28px;font-size:17px}.level p,.level b{font-size:13px}#map{height:500px}.region-values .tile{width:24px;height:26px;font-size:16px}.region-label .place-name{font-size:11px}.heights{font-size:9px}.region-label{width:108px!important;margin-left:-54px!important}}
+@media(max-width:650px){.days{display:none}.mobile-day{display:flex;align-items:center;gap:14px;margin-bottom:14px;font-size:14px;font-weight:600}.mobile-day select{flex:1;min-width:0;background:var(--panel);color:var(--ink);font:inherit;border:1px solid #60717c;border-radius:5px;padding:10px}#map{height:350px}.mobile-regions{display:block;margin:18px 0 6px}.mobile-regions h2{margin-bottom:10px}.mobile-regions table{width:100%;border-collapse:collapse;font-size:14px}.mobile-regions td,.mobile-regions th{padding:7px 2px;text-align:center;border-bottom:1px solid #3d505e}.mobile-regions td:first-child,.mobile-regions th:first-child{text-align:left}.mobile-regions th{font-size:12px;color:var(--muted);font-weight:500}.mobile-regions .tile{width:28px;height:30px;font-size:18px}.compact .town-tile{width:21px;height:23px;font-size:16px}}
+.all-values{margin-top:14px;font-size:14px}.all-values summary{cursor:pointer;font-weight:600}.all-values .table-scroll{overflow:auto;margin-top:10px}.all-values table{width:100%;border-collapse:collapse;text-align:left}.all-values th,.all-values td{padding:6px 10px;border-bottom:1px solid #3d505e;white-space:nowrap}.all-values th{color:var(--muted);font-weight:500}.all-values .tile{width:26px;height:28px;font-size:17px}.snapshot{display:block;color:var(--muted);font-size:13px;margin-bottom:10px}.snapshot:empty{display:none}.leaflet-control-zoom a.leaflet-disabled{color:#82939e!important;cursor:default}
+</style>
+<main>
+<header><span class="snapshot" id="snapshot"></span><h1>UV Index</h1><p>The UV Index indicates the intensity of ultraviolet radiation and whether additional sun protection is needed.</p></header>
+<div class="layout"><section class="map-column" aria-label="UV forecast map">
+<nav class="days" id="days" aria-label="Forecast day"></nav>
+<label class="mobile-day">Forecast day<select id="mobile-day" aria-label="Forecast day"></select></label>
+<div class="map-wrap"><div id="map" aria-label="Map of Switzerland. Zoom and pan to explore UV forecasts."></div></div>
+<p class="notice" id="notice" aria-live="polite"></p>
+<p class="notice" id="density" aria-live="polite"></p>
+<details class="all-values"><summary>All locations and elevations</summary><div class="table-scroll"><table><thead><tr><th>Location</th><th>Elevation</th><th>UV Index</th><th>Level</th></tr></thead><tbody id="all-rows"></tbody></table></div></details>
+<section class="mobile-regions" aria-label="Mountain UV forecasts"><h2>Mountain regions</h2><table><thead><tr><th>Region</th><th>3000 m</th><th>2000 m</th><th>1000 m</th></tr></thead><tbody id="region-rows"></tbody></table></section>
+</section>
+<aside class="legend" aria-label="UV Index legend"><h2>UV Index &amp; sun protection</h2>
+<section class="level"><div class="level-head"><span class="range"><span class="tile low">1</span><span class="tile low">2</span></span><span>Low</span></div><b>No protection required</b></section>
+<section class="level"><div class="level-head"><span class="range"><span class="tile moderate">3</span><span class="tile moderate">4</span><span class="tile moderate">5</span></span><span>Moderate</span></div><b>Protection required</b><p>Hat, T-shirt, sunglasses and sunscreen.</p></section>
+<section class="level"><div class="level-head"><span class="range"><span class="tile high">6</span><span class="tile high">7</span></span><span>High</span></div><b>Protection required</b><p>Hat, T-shirt, sunglasses and sunscreen.</p></section>
+<section class="level"><div class="level-head"><span class="range"><span class="tile very_high">8</span><span class="tile very_high">9</span><span class="tile very_high">10</span></span><span>Very high</span></div><b>Additional protection required</b><p>Avoid spending time outdoors as much as possible.</p></section>
+<section class="level"><div class="level-head"><span class="range"><span class="tile extreme extreme-label">11+</span></span><span>Extreme</span></div><b>Additional protection required</b><p>Avoid spending time outdoors as much as possible.</p></section>
+</aside></div>
+<footer><span id="issued"></span><span>ICON-CH2-EPS control member · CAMS composition</span></footer>
+</main>
+<script type="application/json" id="forecast">__FORECAST_JSON__</script>
+<script type="application/json" id="basemap">__TILES_JSON__</script>
+<!-- Leaflet 1.9.4 license:
+__LEAFLET_LICENSE__
+-->
+<script>__LEAFLET_JS__</script>
+<script>
+'use strict';
+const forecast=JSON.parse(document.getElementById('forecast').textContent);
+const basemap=JSON.parse(document.getElementById('basemap').textContent);
+const dates=[...new Set(forecast.entries.map(e=>e.valid_date))].sort().slice(0,4);
+const bounds=[[45.78,5.93],[47.82,10.53]];
+const map=L.map('map',{zoomControl:false,zoomAnimation:false,fadeAnimation:false,markerZoomAnimation:false,minZoom:0,maxZoom:11,maxBounds:basemap.bounds,maxBoundsViscosity:1,zoomSnap:.25});
+let overviewZoom;
+function overview(){map.stop();map.closePopup();map.setMinZoom(0);map.fitBounds(bounds,{padding:[30,32],animate:false});overviewZoom=map.getZoom();map.setMinZoom(overviewZoom);}
+overview();
+L.control.zoom({position:'bottomright'}).addTo(map);
+async function drawBasemap(){
+const keys=Object.keys(basemap.images).map(key=>key.split('/').map(Number)),xs=keys.map(k=>k[1]),ys=keys.map(k=>k[2]),x0=Math.min(...xs),x1=Math.max(...xs)+1,y0=Math.min(...ys),y1=Math.max(...ys)+1;
+const canvas=document.createElement('canvas');canvas.width=(x1-x0)*256;canvas.height=(y1-y0)*256;const context=canvas.getContext('2d');
+await Promise.all(Object.entries(basemap.images).map(([key,src])=>new Promise((resolve,reject)=>{const image=new Image();image.onload=()=>{const [,x,y]=key.split('/').map(Number);context.drawImage(image,(x-x0)*256,(y-y0)*256);resolve();};image.onerror=reject;image.src=src;})));
+const lon=x=>x/2**basemap.zoom*360-180,lat=y=>Math.atan(Math.sinh(Math.PI*(1-2*y/2**basemap.zoom)))*180/Math.PI;
+L.imageOverlay(canvas.toDataURL('image/png'),[[lat(y1),lon(x0)],[lat(y0),lon(x1)]],{alt:'Grey shaded relief of Switzerland',attribution:'© <a href="https://www.swisstopo.admin.ch/en" target="_blank" rel="noopener">swisstopo</a>'}).addTo(map);
+}
+drawBasemap().catch(()=>{document.getElementById('notice').textContent='The embedded basemap could not be loaded.';});
+map.attributionControl.setPrefix(false);
+const Home=L.Control.extend({options:{position:'bottomright'},onAdd(){const box=L.DomUtil.create('div','leaflet-bar');const b=document.createElement('button');b.type='button';b.className='home-button';b.textContent='⌂';b.title='Show all of Switzerland';b.setAttribute('aria-label',b.title);box.append(b);L.DomEvent.disableClickPropagation(box);b.onclick=overview;return box;}});new Home().addTo(map);
+const markers=L.layerGroup().addTo(map);
+const categoryNames={low:'Low',moderate:'Moderate',high:'High',very_high:'Very high',extreme:'Extreme'};
+const reasonNames={incomplete_daylight:'Full-day forecast coverage is incomplete.',insufficient_native_support:'No suitable model terrain is available.',stale_icon:'The weather forecast is too old.',stale_cams:'The atmospheric composition forecast is too old.',partial_spatial_support:'Some regional cells have missing data.'};
+function element(tag,cls,text){const e=document.createElement(tag);if(cls)e.className=cls;if(text!==undefined)e.textContent=text;return e;}
+function tile(row){return element('span','tile '+(row.display_uvi===null?'missing':row.category),row.display_uvi===null?'—':String(row.display_uvi));}
+function details(rows){const d=element('div');d.append(element('h3','',rows[0].location.label));for(const r of rows){const altitude=r.location.kind==='region_altitude'?`${r.location.altitude_m} m: `:'';d.append(element('p','',altitude+(r.display_uvi===null?'Not available':`UV Index ${r.display_uvi} · ${categoryNames[r.category]}`)));if(r.uvi!==null)d.append(element('p','',`Unrounded UV Index: ${r.uvi.toFixed(2)}`));if(r.reasons.length)d.append(element('p','',r.reasons.map(x=>reasonNames[x]||'Forecast data unavailable.').join(' ')));}return d;}
+function addMarker(rows){const loc=rows[0].location,region=loc.kind==='region_altitude';const box=element('div','place');if(region){rows.sort((a,b)=>b.location.altitude_m-a.location.altitude_m);const values=element('div','region-values');rows.forEach(r=>values.append(tile(r)));box.append(values);box.append(element('span','heights',rows.map(r=>r.location.altitude_m).join(' / ')+' m'));}else{const value=tile(rows[0]);value.classList.add('town-tile');box.append(value);}box.append(element('span','place-name '+(region?'':'town-name'),loc.label));const position=region?[loc.map_latitude??(loc.bbox[1]+loc.bbox[3])/2,loc.map_longitude??(loc.bbox[0]+loc.bbox[2])/2]:[loc.latitude,loc.longitude];const marker=L.marker(position,{icon:L.divIcon({html:box,className:'map-label '+(region?'region-label':''),iconSize:[100,56],iconAnchor:[50,14]}),keyboard:true,riseOnHover:true,title:loc.label,alt:loc.label}).bindPopup(details(rows));marker.addTo(markers);const node=marker.getElement();node.dataset.locationId=loc.id;node.dataset.label=loc.label;node.setAttribute('aria-label',loc.label+': '+rows.map(r=>(region?r.location.altitude_m+' metres, ':'')+(r.display_uvi===null?'not available':'UV Index '+r.display_uvi)).join('; '));}
+function dateLabel(value){return new Date(value+'T12:00:00Z').toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short',timeZone:'Europe/Zurich'});}
+function selectDay(date){markers.clearLayers();map.closePopup();const rows=forecast.entries.filter(e=>e.valid_date===date),groups=new Map();for(const row of rows){const key=row.location.kind==='town'?row.location.id:row.location.label;if(!groups.has(key))groups.set(key,[]);groups.get(key).push(row);}groups.forEach(addMarker);fillValues(rows);const body=document.getElementById('region-rows');body.replaceChildren();groups.forEach(group=>{if(group[0].location.kind!=='region_altitude')return;const tr=element('tr');tr.append(element('td','',group[0].location.label));for(const height of [3000,2000,1000]){const td=element('td'),r=group.find(r=>r.location.altitude_m===height);if(r){td.append(tile(r));td.setAttribute('aria-label',r.display_uvi===null?'Not available':'UV Index '+r.display_uvi);}else td.setAttribute('aria-label','Not applicable');tr.append(td);}body.append(tr);});document.getElementById('mobile-day').value=date;document.querySelectorAll('.day').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.date===date)));const missing=rows.filter(r=>r.display_uvi===null).length;document.getElementById('notice').textContent=missing===rows.length?'Full-day values are not available for this date.':missing?`${missing} of ${rows.length} values unavailable. Select a location for details.`:`${dateLabel(date)} · Daily maximum UV Index · Select a location for details.`;declutter();}
+const today=new Intl.DateTimeFormat('en-CA',{timeZone:'Europe/Zurich',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
+for(const date of dates){const button=element('button','day');button.type='button';button.dataset.date=date;button.setAttribute('aria-pressed','false');button.append(element('strong','',date===today?'Today':new Date(date+'T12:00Z').toLocaleDateString('en-GB',{weekday:'long',timeZone:'Europe/Zurich'})));button.append(element('small','',new Date(date+'T12:00Z').toLocaleDateString('en-GB',{day:'numeric',month:'short',timeZone:'Europe/Zurich'})));button.onclick=()=>selectDay(date);document.getElementById('days').append(button);const option=element('option','',dateLabel(date));option.value=date;document.getElementById('mobile-day').append(option);}
+document.getElementById('mobile-day').onchange=event=>selectDay(event.target.value);
+document.getElementById('issued').textContent='Forecast issued '+new Date(forecast.issued_at).toLocaleString('en-GB',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit',timeZone:'Europe/Zurich',timeZoneName:'short'});
+// Keep the main cities and geographic coverage first; smaller towns appear as space allows.
+const priority=['genf','zuerich','basel','bern','locarno','chur','lausanne','luzern','st_gallen','sion',
+  'Valais Alps','Bernese Alps','Grisons Alps','Glarus Alps','Ticino Alps','Jura',
+  'st_moritz','davos','scuol','neuenburg','schaffhausen','freiburg','delemont','aarau','vaduz','glarus'];
+function fillValues(rows){
+  const body=document.getElementById('all-rows');body.replaceChildren();
+  for(const row of rows){
+    const tr=element('tr');tr.append(element('td','',row.location.label),element('td','',row.location.altitude_m+' m'));
+    const value=element('td');value.append(tile(row));tr.append(value,element('td','',row.display_uvi===null?'Not available':categoryNames[row.category]));body.append(tr);
+  }
+}
+function markerRect(node){
+  // Measure visible content, not Leaflet's fixed-width icon anchor box.
+  const rects=[...node.querySelector('.place').children].map(e=>e.getBoundingClientRect()).filter(r=>r.width&&r.height);
+  return {left:Math.min(...rects.map(r=>r.left)),right:Math.max(...rects.map(r=>r.right)),top:Math.min(...rects.map(r=>r.top)),bottom:Math.max(...rects.map(r=>r.bottom))};
+}
+function declutter(){
+  const container=document.getElementById('map');
+  container.classList.toggle('compact',container.clientWidth<650&&map.getZoom()<8.15);
+  const viewport=container.getBoundingClientRect(),accepted=[];
+  const ordered=markers.getLayers().sort((a,b)=>rank(a)-rank(b));
+  function rank(marker){if(marker.isPopupOpen())return -1;const n=marker.getElement(),i=priority.indexOf(n.classList.contains('region-label')?n.dataset.label:n.dataset.locationId);return i<0?priority.length:i;}
+  let inView=0,shown=0;
+  for(const marker of ordered){
+    const node=marker.getElement(),r=markerRect(node);
+    const inside=r.left>=viewport.left+4&&r.right<=viewport.right-4&&r.top>=viewport.top+4&&r.bottom<=viewport.bottom-4;
+    const overlap=accepted.some(a=>r.left<a.right+6&&r.right>a.left-6&&r.top<a.bottom+6&&r.bottom>a.top-6);
+    const visible=inside&&!overlap;
+    node.classList.toggle('is-thinned',!visible);node.setAttribute('aria-hidden',String(!visible));node.tabIndex=visible?0:-1;
+    if(inside)inView++;
+    if(visible){accepted.push(r);shown++;}
+  }
+  document.getElementById('density').textContent=`${shown} of ${ordered.length} locations shown. `+(shown<inView?'Zoom in for more labels. ':'')+'All values are listed below.';
+}
+map.on('zoomend moveend popupopen popupclose',declutter);
+selectDay(dates[0]);
+if(forecast.example_snapshot)document.getElementById('snapshot').textContent='Example forecast · '+dateLabel(dates[0])+' – '+dateLabel(dates.at(-1))+' '+dates[0].slice(0,4);
+new ResizeObserver(()=>{map.invalidateSize();overview();declutter();}).observe(document.getElementById('map'));
+</script>
+</html>

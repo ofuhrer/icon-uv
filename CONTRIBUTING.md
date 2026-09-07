@@ -32,7 +32,10 @@ dependencies, including the development tools used for these checks.
 
 Keep source, tests, examples, schemas, user documentation and the bundled
 radiation table in Git. Research tools, campaign definitions, downloaded data,
-notebooks and generated results stay local. Use `work/<study>/` for new study
+notebooks and generated results stay local. The curated map snapshot
+(`examples/meteoswiss_map.sample.json` and `examples/meteoswiss_map.html`) is an
+exception: keep it checked in so the example works immediately. Edit the HTML
+template and regenerate the page when changing its presentation. Use `work/<study>/` for new study
 inputs and outputs; it is ignored by Git and excluded from distributions.
 
 Preserve local inputs, environment locks and source hashes when retaining a

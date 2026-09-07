@@ -3,7 +3,7 @@
 `icon-uv daily` turns a saved UV grid and a location catalog into JSON for today
 and tomorrow in Europe/Zurich. The output contains raw UVI, rounded display
 values, categories and the source/support information needed by a renderer.
-Add `--days all` to export every local date containing supplied forecast daylight.
+Add `--days 4` for four local dates, or `--days all` to export every local date containing supplied forecast daylight.
 This uses the v2 schema; the default two-day output keeps the v1 schema.
 
 ## Prepare the grid
@@ -93,7 +93,10 @@ With `--days all`, dates begin on the issuance date and end on the last supplied
 daylight date. A trailing night-only date is omitted. Incomplete daylight on the
 first or last date produces unavailable values, as do gaps on intermediate days.
 The v2 payload adds `valid_dates`, and `day` is the zero-based offset from issuance's
-local date. The Python equivalent is `export_daily(..., days='all')`.
+local date. Use `--days 4` for exactly four dates from issuance, retaining unavailable
+values if coverage is short. Python accepts `export_daily(..., days=4)` or
+`export_daily(..., days='all')`. Both use the v2 schema; the default two-day
+product remains v1.
 
 ## Peak, rounding and categories
 
@@ -157,4 +160,4 @@ Schema validation checks structure. Calendar pairing, freshness at consumption,
 rounding consistency and support-count relationships also have semantic rules
 implemented by the exporter and covered by the test suite.
 
-Use [the v2 schema](../icon_uv/data/daily-uv-v2.schema.json) for `--days all` output.
+Use [the v2 schema](../icon_uv/data/daily-uv-v2.schema.json) for `--days 4` or `--days all` output.
