@@ -4,6 +4,13 @@ icon-uv has been checked against Swiss UV measurements and direct radiative-tran
 calculations. The results below summarize the evidence and its coverage, helping
 users assess suitability for their locations and products.
 
+The versioned [evidence manifest](validation-manifest.json) records these published
+aggregates, campaign scope, known table identity and coverage limits in a machine-readable
+form. It also explicitly lists missing historical reproduction inputs. The public
+repository does not currently provide the exact campaign configuration, paired
+samples, input hashes or archived run reference needed to independently regenerate
+the historical scores. The manifest does not replace those artifacts.
+
 ## Swiss measurement comparisons
 
 The observational assessment spans 150 ICON initialization dates across all four

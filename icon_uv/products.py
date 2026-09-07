@@ -5,13 +5,15 @@ import time
 
 import numpy as np
 from scipy.interpolate import RegularGridInterpolator
-from scipy.spatial import cKDTree
 import xarray as xr
 
 from . import __version__
 from .ensemble import member_ids, map_members
-from .data import utc
+from .data import utc, _validate_cams
 from .radiation import FLAG_MEANINGS, RadiationTable, solar_geometry
+from .state import validate_grid, positive_distance, SOLAR_SAMPLES
+from .locations import PointLocation, load_locations, plan_support, prepare_point
+from .evaluation import evaluate_uv
 
 
 def _check_icon(ds, *, allow_missing=False):
@@ -46,14 +48,7 @@ def _check_icon(ds, *, allow_missing=False):
 
 
 def _cams_on_icon(cams, icon):
-    for name, units in (("ozone_du", "DU"), ("aod550", "1")):
-        if (name not in cams or cams[name].dims != ("time", "latitude", "longitude")
-            or cams[name].attrs.get("units") != units or not np.all(np.isfinite(cams[name]))):
-            raise ValueError(f"Invalid CAMS {name} contract; expected {units}")
-    for dim in ("time", "latitude", "longitude"):
-        values = cams[dim].values
-        if len(values) < 2 or not np.all(values[1:] > values[:-1]):
-            raise ValueError(f"CAMS {dim} must increase with at least two values")
+    cams = _validate_cams(cams)
     ref = utc(cams.attrs["forecast_reference_time"])
     icon_ref = utc(icon.attrs["forecast_reference_time"])
     if ref > icon_ref:
@@ -84,14 +79,23 @@ def compute_grid(icon, cams, table=None, *, chunk_size=2048, samples=4, progress
     samples subdivides solar geometry only, not forecast cloud evolution. Default
     snow conversion is experimental and recorded, not inferred UV observations.
     """
-    if member_ids(icon) is not None:
-        return map_members(compute_grid, icon, cams=cams, table=table,
-                           chunk_size=chunk_size, samples=samples, progress=progress)
-    _check_icon(icon, allow_missing="minimum_member_fraction" in icon.attrs or "ensemble_members" in icon.attrs)
-    if chunk_size < 1 or samples not in (1, 2, 4, 6, 12):
+    if (isinstance(chunk_size, (bool, np.bool_)) or not isinstance(chunk_size, (int, np.integer)) or chunk_size < 1
+            or isinstance(samples, (bool, np.bool_)) or samples not in SOLAR_SAMPLES):
         raise ValueError("Positive chunk size; samples must be 1,2,4,6,12")
+    ids = member_ids(icon)
+    first = icon.sel(member=ids[0], drop=True) if ids is not None else icon
+    _check_icon(first, allow_missing="minimum_member_fraction" in icon.attrs or "ensemble_members" in icon.attrs)
     table = RadiationTable() if table is None else table
-    composition = _cams_on_icon(cams, icon)
+    composition = _cams_on_icon(cams, first)
+    kwargs = dict(cams=cams, table=table, composition=composition, chunk_size=chunk_size,
+                  samples=samples, progress=progress)
+    if ids is not None:
+        return map_members(_compute_grid_member, icon, shared_vars=('ozone_du', 'aod550'), **kwargs)
+    return _compute_grid_member(icon, **kwargs)
+
+
+def _compute_grid_member(icon, *, cams, table, composition, chunk_size, samples, progress):
+    _check_icon(icon, allow_missing="minimum_member_fraction" in icon.attrs or "ensemble_members" in icon.attrs)
     out = icon.copy(deep=True)
     for name, values in composition.items():
         out[name] = (("time", "cell"), values)
@@ -172,16 +176,10 @@ class POI:
     uv_albedo: float
 
     def __post_init__(self):
-        values = [self.latitude, self.longitude, self.altitude_m, self.uv_albedo]
-        if not self.name or not np.all(np.isfinite(values)):
-            raise ValueError("POI needs a name and finite local values")
-        if not (-90 <= self.latitude <= 90 and -180 <= self.longitude <= 180):
-            raise ValueError("Invalid POI position")
-        if not -100 <= self.altitude_m <= 5000 or not 0 <= self.uv_albedo <= .85:
-            raise ValueError("POI altitude/albedo outside supported domain")
-        h = np.asarray(self.horizon_degrees, float)
-        if h.ndim != 1 or len(h) < 4 or not np.all(np.isfinite(h)) or np.any((h < 0) | (h > 90)):
-            raise ValueError("Provide >=4 finite horizon elevations 0..90, equally spaced from north")
+        if self.horizon_degrees is None:
+            raise ValueError('POI requires explicit horizon elevations')
+        PointLocation(self.name, self.latitude, self.longitude, self.altitude_m,
+                      treatment='adjusted', uv_albedo=self.uv_albedo, horizon_degrees=self.horizon_degrees)
 
 
 def _xyz(lat, lon):
@@ -190,85 +188,95 @@ def _xyz(lat, lon):
 
 
 def compute_pois(grid, pois, table=None, *, maximum_distance_km=10):
-    """Recompute at caller-supplied POIs using retained grid atmospheric state.
+    """Compatibility API for explicitly adjusted points with mandatory horizons."""
+    maximum_distance_km = positive_distance(maximum_distance_km)
+    locations = [PointLocation(p.name, p.latitude, p.longitude, p.altitude_m,
+                               treatment='adjusted', uv_albedo=p.uv_albedo,
+                               horizon_degrees=p.horizon_degrees,
+                               maximum_distance_km=maximum_distance_km) for p in pois]
+    return compute_points(grid, locations, table)
 
-    Pressure is hydrostatically adjusted with fixed 8434 m scale height. Ozone,
-    AOD and inferred cloud are retained from the nearest cell, explicitly flagged.
-    Terrain output is a screening proxy: isotropic sky, no terrain reflections.
+
+def compute_points(grid, locations, table=None):
+    """Hourly native or adjusted point forecasts from the shared location model.
+
+    Native points retain source-cell geometry and surface. Adjusted points use
+    explicit local elevation and albedo; terrain UV requires an explicit horizon.
+    The member axis is retained without averaging atmospheric inputs.
     """
-    if member_ids(grid) is not None:
-        return map_members(compute_pois, grid, pois=list(pois), table=table,
-                           maximum_distance_km=maximum_distance_km)
+    catalog = load_locations(locations)
+    if len(catalog.points) != len(catalog.locations):
+        raise ValueError('Hourly point forecasts require point locations, not regions')
     table = RadiationTable() if table is None else table
-    if grid.attrs.get("radiation_table_sha256") != table.sha256:
-        raise ValueError("POI radiation table differs from grid; recompute grid with this table")
-    pois = list(pois)
-    if not pois or len({p.name for p in pois}) != len(pois):
-        raise ValueError("Supply nonempty, uniquely named POIs")
-    if maximum_distance_km <= 0:
-        raise ValueError("Maximum distance must be positive")
-    if "bbox" in grid.attrs:
-        west, south, east, north = json.loads(grid.attrs["bbox"])
-        if any(not (west <= p.longitude <= east and south <= p.latitude <= north) for p in pois):
-            raise ValueError("POI outside declared grid subdomain")
-    tree = cKDTree(_xyz(grid.latitude.values, grid.longitude.values))
-    distances, cells = tree.query(_xyz([p.latitude for p in pois], [p.longitude for p in pois]))
-    distances = 2*6371*np.arcsin(np.minimum(distances/2, 1))
-    if np.any(distances > maximum_distance_km):
-        raise ValueError("POI too far from available ICON cells")
-    samples = int(grid.attrs["solar_samples_per_hour"])
-    shape = (grid.sizes["time"], len(pois))
-    variables = {k: np.full(shape, np.nan) for k in ("uvi", "clear_sky_uvi", "terrain_screened_uvi",
-                  "erythemal_direct", "erythemal_diffuse", "pressure_pa")}
-    flags = grid.quality_flag.values[:, cells].astype(np.uint16) | 16 | 32
-    for j, (poi, cell) in enumerate(zip(pois, cells)):
-        local = grid.isel(cell=int(cell))
-        pressure = local.pressure_pa.values*np.exp(-(poi.altitude_m-float(local.altitude_m))/8434)
-        horizon = np.asarray(poi.horizon_degrees)
-        sky = np.mean(np.cos(np.deg2rad(horizon))**2)
-        azimuth = np.linspace(0, 360, len(horizon)+1)
+    if grid.attrs.get('radiation_table_sha256') != table.sha256:
+        raise ValueError('POI radiation table differs from grid; recompute grid with this table')
+    ids = member_ids(grid)
+    for m in ids or [None]:
+        validate_grid(grid.sel(member=m, drop=True) if m is not None else grid, table, require_samples=True)
+    plans = [plan_support(grid, p) for p in catalog.points]
+    if any(len(p.indices) != 1 for p in plans):
+        raise ValueError('POI too far from suitable ICON cells or outside declared grid subdomain')
+    if ids is not None:
+        return map_members(_compute_points_member, grid, plans=plans, table=table)
+    return _compute_points_member(grid, plans=plans, table=table)
+
+
+def _compute_points_member(grid, *, plans, table):
+    samples = int(grid.attrs['solar_samples_per_hour'])
+    shape = (grid.sizes['time'], len(plans))
+    names = ('uvi', 'clear_sky_uvi', 'terrain_screened_uvi', 'erythemal_direct', 'erythemal_diffuse', 'pressure_pa')
+    variables = {k: np.full(shape, np.nan) for k in names}
+    flags = np.zeros(shape, dtype=np.uint16)
+    albedo = np.full(shape, np.nan)
+    for j, plan in enumerate(plans):
+        local = prepare_point(grid, plan)
+        point = plan.location
+        albedo[:, j] = local.uv_albedo.values[:, 0]
         for i, bounds in enumerate(grid.time_bounds.values):
-            if not all(np.isfinite(local[k].values[i]) for k in
-                       ('ozone_du', 'pressure_pa', 'aod550', 'effective_cloud_tau550', 'cloud_scale')):
-                flags[i, j] |= 128
+            times = _sample_times(bounds, samples)
+            state = local.isel(time=i)
+            components, screened, valid, flag = evaluate_uv(state, times, table, horizon_degrees=point.horizon_degrees)
+            clear, _, _, _ = evaluate_uv(state, times, table, clear_sky=True)
+            flags[i, j] = flag[0]
+            if not valid[0]:
                 continue
-            z, az, distance = solar_geometry(_sample_times(bounds, samples), poi.latitude, poi.longitude)
-            if np.any((z > 78) & (z < 90)):
-                flags[i, j] |= 64
-            args = (z, float(local.ozone_du[i]), pressure[i], float(local.aod550[i]), poi.uv_albedo)
-            components = table.at(*args, float(local.effective_cloud_tau550[i]))[..., 2:]
-            components *= distance[:, None]*float(local.cloud_scale[i])
-            clear = table.at(*args, 0)[..., 2:]*distance[:, None]
-            h = np.interp(az, azimuth, np.r_[horizon, horizon[0]])
-            screened = components[:, 0]*(90-z > h)+components[:, 1]*sky
-            variables["uvi"][i, j] = 40*components.sum(axis=-1).mean()
-            variables["clear_sky_uvi"][i, j] = 40*clear.sum(axis=-1).mean()
-            variables["terrain_screened_uvi"][i, j] = 40*screened.mean()
-            variables["erythemal_direct"][i, j] = components[:, 0].mean()
-            variables["erythemal_diffuse"][i, j] = components[:, 1].mean()
-            variables["pressure_pa"][i, j] = pressure[i]
-    result = xr.Dataset({k: (("time", "poi"), v) for k, v in variables.items()},
-                         coords={"time": grid.time, "poi": [p.name for p in pois]})
-    result["time_bounds"] = grid.time_bounds
-    result["quality_flag"] = (("time", "poi"), flags)
+            mean = components[:, 0].mean(axis=0)
+            variables['uvi'][i, j] = 40*mean.sum()
+            variables['clear_sky_uvi'][i, j] = 40*clear[:, 0].sum(axis=-1).mean()
+            if point.treatment == 'native' or point.horizon_degrees is not None:
+                variables['terrain_screened_uvi'][i, j] = screened[:, 0].mean()
+            variables['erythemal_direct'][i, j] = mean[0]
+            variables['erythemal_diffuse'][i, j] = mean[1]
+            variables['pressure_pa'][i, j] = float(state.pressure_pa.values[0])
+    points = [p.location for p in plans]
+    cells = np.array([p.indices[0] for p in plans])
+    result = xr.Dataset({k: (('time', 'poi'), v) for k, v in variables.items()},
+                        coords={'time': grid.time, 'poi': [p.id for p in points]})
+    result['time_bounds'] = grid.time_bounds
+    result['quality_flag'] = (('time', 'poi'), flags)
     result.quality_flag.attrs = grid.quality_flag.attrs.copy()
-    for name in ("latitude", "longitude", "altitude_m", "uv_albedo"):
-        result[name] = ("poi", [getattr(p, name) for p in pois])
-    result["source_cell"] = ("poi", grid.cell.values[cells])
-    result["source_altitude_m"] = ("poi", grid.altitude_m.values[cells])
-    result["source_distance_km"] = ("poi", distances)
-    result["horizon_json"] = ("poi", [json.dumps(list(p.horizon_degrees)) for p in pois])
-    for name, units in (("latitude", "degrees_north"), ("longitude", "degrees_east"),
-                         ("altitude_m", "m"), ("source_altitude_m", "m"),
-                         ("uv_albedo", "1"), ("source_distance_km", "km")):
-        result[name].attrs["units"] = units
+    for name in ('latitude', 'longitude', 'altitude_m'):
+        result[name] = ('poi', [getattr(p, name) for p in points])
+    if all(p.treatment == 'adjusted' for p in points):
+        result['uv_albedo'] = ('poi', [p.uv_albedo for p in points])
+    else:
+        result['uv_albedo'] = (('time', 'poi'), albedo)
+    result['treatment'] = ('poi', [p.treatment for p in points])
+    result['source_cell'] = ('poi', grid.cell.values[cells])
+    result['source_altitude_m'] = ('poi', grid.altitude_m.values[cells])
+    result['source_latitude'] = ('poi', grid.latitude.values[cells])
+    result['source_longitude'] = ('poi', grid.longitude.values[cells])
+    result['source_distance_km'] = ('poi', [p.distances_km[0] for p in plans])
+    result['horizon_json'] = ('poi', [json.dumps(p.horizon_degrees) for p in points])
+    for name, units in (('latitude', 'degrees_north'), ('longitude', 'degrees_east'),
+                        ('altitude_m', 'm'), ('source_altitude_m', 'm'), ('source_latitude', 'degrees_north'), ('source_longitude', 'degrees_east'), ('uv_albedo', '1'), ('source_distance_km', 'km')):
+        result[name].attrs['units'] = units
     for name in variables:
-        result[name].attrs = {"units": "W m-2" if name.startswith("erythemal") else "Pa" if name == "pressure_pa" else "1",
-                              "cell_methods": "time: mean"}
-    result.attrs = {k: v for k, v in grid.attrs.items() if k not in ("icon_sources", "compute_seconds")}
-    result.attrs.update({"title": "Caller-defined POI UV diagnostic",
-                         "geometry": "ambient horizontal plus separate terrain-screening proxy",
-                         "local_limitations": "fixed-scale pressure adjustment; unchanged ozone/AOD/cloud column; no above-cloud inference; no anisotropic diffuse or terrain reflection"})
+        result[name].attrs = {'units': 'W m-2' if name.startswith('erythemal') else 'Pa' if name == 'pressure_pa' else '1', 'cell_methods': 'time: mean'}
+    result.terrain_screened_uvi.attrs['comment'] = 'NaN for adjusted points without explicit horizon geometry'
+    result.attrs = {k: v for k, v in grid.attrs.items() if k not in ('icon_sources', 'compute_seconds')}
+    result.attrs.update(title='Location UV diagnostic', geometry='explicit native or adjusted point treatment',
+                        local_limitations='fixed-scale pressure adjustment; unchanged ozone/AOD/cloud column; no above-cloud inference; no anisotropic diffuse or terrain reflection')
     return result
 
 

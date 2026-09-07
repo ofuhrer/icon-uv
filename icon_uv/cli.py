@@ -1,18 +1,47 @@
 """Single small CLI; all core operations are also ordinary Python functions."""
 import argparse
-import hashlib
 import json
+import sys
 from pathlib import Path
 
 import xarray as xr
 
 from .data import BBOX, fetch_cams, fetch_icon, load_cams, write_netcdf
-from .products import POI, compute_grid, compute_pois
+from .products import compute_grid, compute_points
+from .locations import load_locations
 from .radiation import DEFAULT_TABLE, RadiationTable
 
 
 def main():
+    try:
+        _main()
+    except (ValueError, KeyError, OSError, RuntimeError) as exc:
+        if '--debug' in sys.argv:
+            raise
+        raise SystemExit(f'icon-uv: {exc}') from None
+
+
+def _day_count(value):
+    if value == 'all':
+        return value
+    try:
+        count = int(value)
+        if count < 1:
+            raise ValueError
+        return count
+    except ValueError as exc:
+        raise argparse.ArgumentTypeError("days must be a positive integer or 'all'") from exc
+
+
+def _date_arguments(parser):
+    dates = parser.add_mutually_exclusive_group()
+    dates.add_argument('--days', type=_day_count, default=2, help="Positive number of local dates (default: 2), or all supplied daylight dates")
+    dates.add_argument('--dates', nargs='+', metavar='YYYY-MM-DD', help='Explicit increasing local valid dates')
+
+
+def _main():
     p = argparse.ArgumentParser(description="Compute UV Index fields and daily map data from ICON and CAMS")
+    p.add_argument('--debug', action='store_true', help='Show full tracebacks for diagnostics')
     commands = p.add_subparsers(dest="command", required=True)
     icon = commands.add_parser("fetch-icon", help="Fetch a native-grid ICON-CH2 ensemble subset")
     members = icon.add_mutually_exclusive_group()
@@ -38,19 +67,27 @@ def main():
     run.add_argument("--chunk-size", type=int, default=2048)
     run.add_argument("--samples", type=int, choices=(1,2,4,6,12), default=4, help="Solar samples per hour (default: 4; use 12 for daily maps)")
     run.add_argument("--output", type=Path, required=True)
-    poi = commands.add_parser("poi", help="Recompute POIs with caller-provided local geometry JSON")
+    poi = commands.add_parser("poi", aliases=["points"], help="Hourly points from a shared location catalog or legacy POI JSON")
     poi.add_argument("--grid", type=Path, required=True)
-    poi.add_argument("--locations", type=Path, required=True)
+    poi.add_argument("--locations", "--catalog", dest="locations", type=Path, required=True)
     poi.add_argument("--table", type=Path, default=DEFAULT_TABLE)
     poi.add_argument("--output", type=Path, required=True)
     daily = commands.add_parser("daily", help="Export daily map data from a saved UV grid")
     daily.add_argument("--grid", type=Path, required=True)
-    daily.add_argument("--catalog", type=Path, required=True)
-    daily.add_argument("--days", choices=("2", "4", "all"), default="2", help="Two days (default), four days, or every supplied forecast day")
+    daily.add_argument("--locations", "--catalog", dest="catalog", type=Path, required=True)
+    _date_arguments(daily)
+    daily.add_argument('--terrain-screened', action='store_true', help='Use explicit adjusted-point horizons; schema v4')
     daily.add_argument("--issued-at", required=True, help="Timezone-aware issuance timestamp; also fixes replay dates")
     daily.add_argument('--ensemble-quantile', type=float, default=.5, help='Quantile of member daily products (default: 0.5, median)')
     daily.add_argument("--table", type=Path, default=DEFAULT_TABLE)
     daily.add_argument("--output", type=Path, required=True)
+    preflight = commands.add_parser('preflight', help='Check saved-grid state, native support, freshness and daylight coverage without computing UV')
+    preflight.add_argument('--grid', type=Path, required=True)
+    preflight.add_argument('--locations', '--catalog', dest='locations', type=Path, required=True)
+    preflight.add_argument('--issued-at', required=True)
+    preflight.add_argument('--table', type=Path, default=DEFAULT_TABLE)
+    preflight.add_argument('--output', type=Path, help='Optional JSON report')
+    _date_arguments(preflight)
     build = commands.add_parser("build-table", help="Developer only: rebuild LUT with libRadtran")
     build.add_argument("--lib", type=Path, required=True)
     build.add_argument("--cache", type=Path, required=True)
@@ -66,23 +103,30 @@ def main():
         with xr.open_dataset(args.icon) as ds:
             result = compute_grid(ds.load(), load_cams(args.cams), RadiationTable(args.table), chunk_size=args.chunk_size, samples=args.samples, progress=True)
         write_netcdf(result, args.output)
-    elif args.command == "poi":
-        locations = [POI(**item) for item in json.loads(args.locations.read_text())]
+    elif args.command in ('poi', 'points'):
+        locations = load_locations(args.locations)
         with xr.open_dataset(args.grid) as ds:
-            result = compute_pois(ds.load(), locations, RadiationTable(args.table))
+            result = compute_points(ds, locations.points, RadiationTable(args.table))
         write_netcdf(result, args.output)
     elif args.command == "build-table":
         from .build_table import build as make_table
         make_table(args.lib, args.output, args.cache, workers=args.workers)
     elif args.command == "daily":
-        from .daily import export_daily, write_json_atomic
+        from .daily import export_daily_file
+        export_daily_file(args.grid, args.catalog, args.issued_at, output=args.output,
+                          ensemble_quantile=args.ensemble_quantile, days=args.days, dates=args.dates,
+                          terrain_screened=args.terrain_screened, table=RadiationTable(args.table))
+    elif args.command == 'preflight':
+        from .preflight import preflight
+        from .daily import write_json_atomic
         with xr.open_dataset(args.grid) as ds:
-            payload = export_daily(ds.load(), json.loads(args.catalog.read_text()), args.issued_at,
-                                   ensemble_quantile=args.ensemble_quantile,
-                                   days='all' if args.days == 'all' else int(args.days),
-                                   table=RadiationTable(args.table),
-                                   input_sha256=hashlib.sha256(args.grid.read_bytes()).hexdigest())
-        write_json_atomic(payload, args.output)
+            report = preflight(ds, args.locations, args.issued_at, days=args.days,
+                               dates=args.dates, table=RadiationTable(args.table))
+        if args.output is not None:
+            write_json_atomic(report, args.output)
+        print(json.dumps(report, indent=2, allow_nan=False))
+        if not report['ready']:
+            raise SystemExit(1)
 
 
 if __name__ == "__main__":

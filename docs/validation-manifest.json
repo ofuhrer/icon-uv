@@ -1,0 +1,79 @@
+{
+  "manifest_version": 1,
+  "recorded_at": "2026-09-07",
+  "source_summary": "docs/validation.md",
+  "evidence_status": "Published aggregate summary; historical runs have not been independently reproduced by this manifest",
+  "runtime_artifact": {
+    "path": "icon_uv/data/rt.npz",
+    "sha256": "a33db2d4b2806f216eef356c761460383bb4a9fca53e3b958715bc12e6d6dcba"
+  },
+  "observational_campaign": {
+    "period_start_month": "2024-08",
+    "period_end_month": "2026-08",
+    "initialization_dates": 150,
+    "complete_forecast_site_days": 583,
+    "member": "CTRL",
+    "forecast_days": [1, 2],
+    "uv_albedo": 0.05,
+    "comparison": "Matching half-hour observation and prediction windows",
+    "metric_definition": "MAE in unrounded UVI; display agreement uses half-up rounded integers",
+    "sites": [
+      {"name": "Davos", "complete_days": [146, 146], "daily_peak_mae_uvi": [0.61, 0.64], "within_one_displayed_unit_percent": [89, 88]},
+      {"name": "Weissfluhjoch", "complete_days": [100, 99], "daily_peak_mae_uvi": [0.78, 0.85], "within_one_displayed_unit_percent": [86, 81]},
+      {"name": "Payerne", "complete_days": [46, 46], "daily_peak_mae_uvi": [0.48, 0.50], "within_one_displayed_unit_percent": [98, 94]}
+    ],
+    "rolling_peak_comparison": {
+      "site": "Payerne",
+      "window_minutes": 30,
+      "approximate_mae_uvi_by_forecast_day": [0.52, 0.52]
+    }
+  },
+  "cloud_conversion_assessment": {
+    "site": "Payerne",
+    "input": "Colocated measured shortwave radiation",
+    "subset": "290 cloudy hours on 57 summer/autumn days within the observational campaign",
+    "selection": {"shortwave_fraction_of_clear_sky_below": 0.8, "maximum_solar_zenith_degrees": 70, "minimum_clear_sky_uvi": 1},
+    "uv_albedo": 0.05,
+    "mae_uvi": 0.11,
+    "mean_error_uvi": 0.07
+  },
+  "numerical_assessment": {
+    "reference": "Direct libRadtran calculations",
+    "withheld_atmospheric_states": 80,
+    "minimum_reference_uvi": 1,
+    "forward_uv_relative_error_p95_percent": 2.8,
+    "shortwave_to_uv_relative_error_p95_upper_percent": 1.7,
+    "interpretation": "Numerical accuracy within the selected solver physics"
+  },
+  "sensitivity_assessment": {
+    "cases": 150,
+    "varied": ["cloud height", "droplet size", "cloud phase", "surface reflectivity"],
+    "liquid_cloud_dark_surface_max_difference_uvi": 0.14,
+    "unresolved_clear_cloud_mixture_approximate_difference_uvi": 0.5,
+    "high_ice_cloud_bright_snow_tested_difference_uvi": 1.3,
+    "interpretation": "Scenario sensitivities, not general error bounds"
+  },
+  "not_established_by_this_evidence": [
+    "Production snow-dependent UV albedo accuracy",
+    "Regional altitude-band aggregate accuracy",
+    "Calibrated ensemble spread or ensemble observational skill",
+    "General error bounds for extreme UV or cloud enhancement"
+  ],
+  "coverage_gaps": [
+    "Payerne January–June 2025 excluded because instrument identity was missing",
+    "Much of Weissfluhjoch 2026 unavailable",
+    "Accessible corrected UV unavailable for the identified Jungfraujoch and Locarno-Monti sites",
+    "Historical production snow fraction unavailable"
+  ],
+  "reproduction_inputs": {
+    "status": "Not provided in the public repository",
+    "historical_code_revision": null,
+    "campaign_configuration": null,
+    "initialization_date_list": null,
+    "observation_and_forecast_input_hashes": null,
+    "paired_sample_outputs": null,
+    "solver_executable_and_reference_cache_hashes": null,
+    "archived_run_artifact_url": null,
+    "needed_to_reproduce": "Archive the exact campaign code/configuration, input identities, selection masks and paired outputs with permitted access; link those artifacts here. Null means unavailable, never a verified empty input."
+  }
+}

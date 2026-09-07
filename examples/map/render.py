@@ -52,9 +52,14 @@ def basemap(cache):
 
 def validate_products(payload, fields=None):
     """Reject mixed source products before publishing a map bundle."""
-    if payload.get('schema_version') not in ('daily-uv-v1', 'daily-uv-v2', 'daily-uv-v3') or not payload.get('entries'):
+    if payload.get('schema_version') not in ('daily-uv-v1', 'daily-uv-v2', 'daily-uv-v3', 'daily-uv-v4') or not payload.get('entries'):
         raise ValueError('Expected a nonempty daily UV product')
+    geometry = payload.get('uv_geometry', 'ambient_horizontal' if payload['schema_version'] != 'daily-uv-v4' else None)
+    if geometry not in ('ambient_horizontal', 'terrain_screened'):
+        raise ValueError('Expected explicit ambient_horizontal or terrain_screened UV geometry')
     if fields is not None:
+        if fields.get('uv_geometry', 'ambient_horizontal') != geometry:
+            raise ValueError('Field/location UV geometry mismatch: terrain-screened locations cannot use ambient map fields; render locations only')
         if fields.get('schema_version') != 'uv-map-fields-v1' or fields.get('encoding') != 'png-rg-uvi-times-100-alpha-valid':
             raise ValueError('Unsupported map fields')
         if fields.get('ensemble') != payload.get('ensemble'):

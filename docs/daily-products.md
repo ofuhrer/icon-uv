@@ -3,24 +3,20 @@
 `icon-uv daily` turns a saved UV grid and a location catalog into JSON for today
 and tomorrow in Europe/Zurich. The output contains raw UVI, rounded display
 values, categories and the source/support information needed by a renderer.
-Add `--days 4` for four local dates, or `--days all` to export every local date containing supplied forecast daylight.
-This uses the v2 schema; the default two-day output keeps the v1 schema.
+Use `--days N` for any positive number of local dates, `--days all` for every
+supplied forecast daylight date, or `--dates YYYY-MM-DD YYYY-MM-DD` for explicit
+local dates. Ensemble inputs use v3; legacy CTRL catalogs keep v1 for the default
+two dates and v2 for other date selections. Shared point catalogs use v4.
 
 ## Prepare the grid
 
 Use the [README download workflow](../README.md#calculate-uv-fields) to obtain
-ICON and CAMS inputs covering daylight on both dates. The `run` command uses
-four solar samples per hour. For twelve samples per hour in the cloud fit,
-compute the grid through Python:
+ICON and CAMS inputs covering daylight on the requested dates. `run` defaults to
+four solar samples per hour. Use the CLI for twelve samples:
 
-```python
-import xarray as xr
-from icon_uv.data import load_cams, write_netcdf
-from icon_uv.products import compute_grid
-
-with xr.open_dataset("work/icon.nc") as icon:
-    grid = compute_grid(icon.load(), load_cams("work/cams.nc"), samples=12)
-write_netcdf(grid, "work/uv.nc")
+```sh
+uv run --no-sync icon-uv run --icon work/icon.nc --cams work/cams.nc \
+  --samples 12 --output work/uv.nc
 ```
 
 The daily calculation reconstructs UV at five-minute midpoints from the saved
@@ -28,6 +24,11 @@ hourly cloud state. Either input-grid sampling choice is accepted; twelve
 samples also evaluates the cloud fit on that five-minute spacing.
 
 ## Define locations
+
+For a catalog shared with hourly point forecasts, use
+[the location API](location-api.md) and [shared example](../examples/shared_locations.json).
+It adds explicit native or adjusted point treatment and writes schema v4.
+The legacy native town/region format below remains supported.
 
 Save a JSON object with an `entries` list. Each entry needs a unique `id`, a
 `label`, a `kind` and the geometry for that kind:
@@ -95,8 +96,10 @@ first or last date produces unavailable values, as do gaps on intermediate days.
 For CTRL inputs, the v2 payload adds `valid_dates`, and `day` is the zero-based offset from issuance's
 local date. Use `--days 4` for exactly four dates from issuance, retaining unavailable
 values if coverage is short. Python accepts `export_daily(..., days=4)` or
-`export_daily(..., days='all')`. Both use the v2 schema; the default two-day
-product remains v1.
+`export_daily(..., days='all')`; arbitrary positive day counts and explicit
+`dates=['2026-09-07', '2026-09-09']` are also supported. Explicit date selections
+are preserved in `valid_dates`, while `day` remains the offset from issuance.
+Legacy CTRL catalogs use v2 except for the default two-day product (v1).
 
 For native-terrain clear-sky peaks, Python also provides
 `daily_cells(grid, valid_date, clear_sky=True)`. It uses the same temporal
@@ -114,7 +117,7 @@ To compute CTRL only, download with `fetch-icon --control` and pass that file
 through the same commands. Python uses `fetch_icon(..., ensemble=False)`.
 
 Daily ensemble products use **daily-uv-v3**, with an explicit `valid_dates` list
-for two, four or all dates. CTRL inputs without a member dimension keep the v1/v2 contracts.
+for any supported date selection. CTRL inputs without a member dimension keep the v1/v2 contracts.
 The reduction order is:
 
 1. Reconstruct each native cell's 30-minute daily peak for each member.
@@ -201,7 +204,8 @@ Top-level fields include schema/contract versions, `issued_at`, `timezone`,
 `peak_definition`, `category_basis`, source reference times and ages, input/
 catalog/table hashes, model-scope metadata and `entries`.
 
-Each entry includes its catalog location, `valid_date`, `day` (0 or 1), `status`,
+Each entry includes its catalog location, `valid_date`, `day` (the zero-based
+offset from issuance's local date), `status`,
 `reasons`, selected/valid cell counts, `uvi`, `display_uvi` and `category`.
 Available entries also include the aggregation method, contributing cell IDs,
 UVI range/median, combined quality flags and the range of peak-window starts.
@@ -209,30 +213,39 @@ Town entries include the selected source point, height difference and peak time.
 
 | Status | Meaning |
 |---|---|
-| `ok` | All selected cells have complete required daylight coverage |
-| `degraded` | A region has partial coverage that still meets the 95% rule |
+| `ok` | Every requested member product has complete selected spatial support |
+| `degraded` | Accepted partial spatial and/or ensemble support |
 | `unavailable` | Data age, coverage or native support rules fail; UV fields are null |
 
 Use these states and reasons when rendering. Global input errors leave an
 existing output file unchanged; consumers can use its issuance timestamp to
 identify an older result. JSON replacement is atomic and excludes NaN/Infinity.
 
-The [packaged JSON Schema](../icon_uv/data/daily-uv-v1.schema.json) describes the
-structural format. With the development dependencies installed:
+Select the packaged schema from the payload's version. This also works for the
+default ensemble workflow and for shared-location v4 output:
 
 ```python
 import json
-from importlib.resources import files
-import jsonschema
+from icon_uv.schema import load_schema, validate_daily
 
-schema = json.loads((files("icon_uv") / "data/daily-uv-v1.schema.json").read_text())
 with open("work/daily-uv.json") as stream:
     payload = json.load(stream)
-jsonschema.validate(payload, schema)
+schema = load_schema(payload)  # daily-uv-v1, v2, v3 or v4
+validate_daily(payload)        # requires optional jsonschema, included in dev setup
 ```
+
+`load_schema` requires no validator dependency. `validate_daily` checks structure
+and supported date/time formats; unknown version strings fail clearly.
 
 Schema validation checks structure. Calendar pairing, freshness at consumption,
 rounding consistency and support-count relationships also have semantic rules
 implemented by the exporter and covered by the test suite.
 
-Use [the v2 schema](../icon_uv/data/daily-uv-v2.schema.json) for `--days 4` or `--days all` output.
+Published schemas [v1](../icon_uv/data/daily-uv-v1.schema.json),
+[v2](../icon_uv/data/daily-uv-v2.schema.json) and [v3](../icon_uv/data/daily-uv-v3.schema.json)
+retain their existing contracts. [v4](../icon_uv/data/daily-uv-v4.schema.json) adds
+explicit point treatment and UV geometry, with optional ensemble metadata.
+V4 names the contributing-value summaries `support_uvi_range` and
+`support_uvi_median`, covering both native and adjusted point treatment.
+The existing v1–v3 summaries keep their `native_uvi_range` and
+`native_uvi_median` field names.

@@ -22,6 +22,15 @@ CAMS_DATASET = "cams-global-atmospheric-composition-forecasts"
 DU_KG_M2 = 2.1415e-5
 
 
+def file_sha256(path):
+    """Hash a source file without loading another complete copy into memory."""
+    digest = hashlib.sha256()
+    with Path(path).open('rb') as source:
+        for chunk in iter(lambda: source.read(1024*1024), b''):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
 def utc(value):
     t = datetime.fromisoformat(str(value).replace("Z", "+00:00"))
     if t.tzinfo is None:
@@ -281,7 +290,7 @@ def fetch_cams(reference, hours, output, bbox=BBOX):
                     + np.asarray(request["leadtime_hour"], dtype="int64").astype("timedelta64[h]"))
         if utc(ds.attrs["forecast_reference_time"]) != ref or not np.array_equal(ds.time.values, expected):
             raise ValueError("Downloaded CAMS cycle/times do not match the request")
-        ds.attrs.update(source_grib_sha256=hashlib.sha256(downloaded.read_bytes()).hexdigest(),
+        ds.attrs.update(source_grib_sha256=file_sha256(downloaded),
                         retrieval_request=json.dumps(request, sort_keys=True))
         write_netcdf(ds, output)
 
@@ -344,7 +353,7 @@ def load_cams(path):
     path = Path(path)
     with xr.open_dataset(path, engine="netcdf4") as source:
         ds = _validate_cams(source.load())
-    ds.attrs["input_sha256"] = hashlib.sha256(path.read_bytes()).hexdigest()
+    ds.attrs["input_sha256"] = file_sha256(path)
     return ds
 
 
@@ -352,13 +361,23 @@ def _validate_cams(ds):
     """Validate the normalized composition contract at ingestion and consumption."""
     for name, units in (("ozone_du", "DU"), ("aod550", "1")):
         if name not in ds or ds[name].attrs.get("units") != units:
-            raise ValueError(f"CAMS contract requires {name} in {units}")
+            raise ValueError(f"CAMS {name} contract requires units {units}")
         if ds[name].dims != ("time", "latitude", "longitude"):
             raise ValueError("CAMS dimensions must be time,latitude,longitude")
-        if not np.all(np.isfinite(ds[name])):
+        if ds[name].dtype.kind not in 'iuf' or not np.all(np.isfinite(ds[name])):
             raise ValueError(f"Missing CAMS {name}")
+    if 'forecast_reference_time' not in ds.attrs:
+        raise ValueError('CAMS contract requires forecast_reference_time')
     utc(ds.attrs["forecast_reference_time"])
     for dim in ("time", "latitude", "longitude"):
+        if dim not in ds.coords or ds[dim].dims != (dim,):
+            raise ValueError(f'Invalid CAMS {dim} coordinate')
+        values = ds[dim].values
+        if dim == 'time':
+            if values.dtype.kind != 'M' or np.isnat(values).any():
+                raise ValueError('Invalid CAMS time coordinate')
+        elif values.dtype.kind not in 'iuf' or not np.isfinite(values).all():
+            raise ValueError(f'Invalid CAMS {dim} coordinate')
         ds = ds.sortby(dim)
         a = ds[dim].values
         if len(a) < 2 or len(np.unique(a)) != len(a):
@@ -380,15 +399,19 @@ def _netcdf_chunks(variable, dtype):
 
 
 def write_netcdf(ds, path):
-    """Atomic publication; data flags remain integer, times have explicit UTC units."""
+    """Atomically save with lossless compression, preserving all input dtypes.
+
+    Computed grid diagnostics already use float32. Retained physical state must
+    keep its precision: downcasting can move valid inputs beyond table bounds.
+    Data flags remain integer and times have explicit UTC units.
+    """
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
     encoding = {}
     for name, variable in ds.variables.items():
         if variable.dtype.kind not in "iuf":
             continue
-        # Keep the established float32 data policy; coordinates retain their dtype.
-        dtype = "float32" if name in ds.data_vars and variable.dtype.kind == "f" else variable.dtype
+        dtype = variable.dtype
         options = {"dtype": dtype}
         if variable.ndim and all(variable.shape):
             options.update(zlib=True, complevel=4, shuffle=True,

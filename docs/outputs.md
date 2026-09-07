@@ -7,9 +7,11 @@ The main dimensions are `time` and `cell`; latitude, longitude and model altitud
 are cell coordinates. Original cell IDs and the grid UUID are preserved.
 For polygon rendering, obtain triangle vertices from the source ICON grid.
 
-NetCDF uses lossless compression and chunked storage. Floating data variables
-are stored as float32; coordinates retain their precision and quality flags
-remain integers. Scientific UVI values are not rounded to display integers.
+NetCDF uses lossless compression and chunked storage, preserving each input
+variable's dtype. Computed grid diagnostics use float32; float64 atmospheric
+inputs and coordinates retain their precision and quality flags remain integers.
+Writing a file does not introduce a separate float64-to-float32 conversion.
+Scientific UVI values are not rounded to display integers.
 
 | Variable | Units | Meaning |
 |---|---|---|
@@ -103,8 +105,8 @@ UV values are NaN, not zero.
 
 With the default ensemble download, member-dependent ICON and UV fields have
 `(member, time, cell)` dimensions; POI forecasts have `(member, time, poi)`.
-`member` identifies CTRL 0 and perturbed members 1–20. Native coordinates and
-`time_bounds(time, bounds)` are shared. Attributes record the expected member
+`member` identifies CTRL 0 and perturbed members 1–20. Native coordinates, `time_bounds(time, bounds)`, and interpolated CAMS
+`ozone_du(time, cell)` / `aod550(time, cell)` are shared across members. Attributes record the expected member
 IDs and the minimum coverage fraction. Missing samples remain NaN with quality
 flag 128; daily reductions require 90% complete member products by default.
 

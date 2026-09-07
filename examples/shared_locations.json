@@ -1,0 +1,32 @@
+{
+  "catalog_version": 2,
+  "entries": [
+    {
+      "id": "bern",
+      "kind": "point",
+      "label": "Bern, native model surface",
+      "latitude": 46.95,
+      "longitude": 7.44,
+      "altitude_m": 540,
+      "treatment": "native"
+    },
+    {
+      "id": "bern-site",
+      "kind": "point",
+      "label": "Bern example site, explicit surface",
+      "latitude": 46.95,
+      "longitude": 7.44,
+      "altitude_m": 560,
+      "treatment": "adjusted",
+      "uv_albedo": 0.05,
+      "horizon_degrees": [0, 0, 0, 0]
+    },
+    {
+      "id": "bernese-2000",
+      "kind": "region_altitude",
+      "label": "Bernese Alps, 2000 m",
+      "bbox": [7.3, 46.4, 8.5, 46.9],
+      "altitude_m": 2000
+    }
+  ]
+}

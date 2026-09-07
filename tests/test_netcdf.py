@@ -7,6 +7,8 @@ import pytest
 import xarray as xr
 
 from icon_uv.data import _netcdf_chunks, write_netcdf
+from icon_uv.products import compute_grid
+from icon_uv.radiation import AXES, RadiationTable
 
 
 @pytest.mark.parametrize('ensemble', [False, True])
@@ -32,10 +34,8 @@ def test_netcdf_compressed_roundtrip(tmp_path, ensemble):
     path = tmp_path/'out.nc'
     write_netcdf(ds, path)
     assert {name: v.encoding for name, v in ds.variables.items()} == original_encodings
-    expected = ds.copy()
-    expected['scalar'] = expected.scalar.astype('float32')
     with xr.open_dataset(path) as reopened:
-        xr.testing.assert_identical(reopened.load(), expected)
+        xr.testing.assert_identical(reopened.load(), ds)
     with netCDF4.Dataset(path) as saved:
         for name in ['uvi', 'quality_flag', 'cell', 'latitude']:
             variable = saved[name]
@@ -45,8 +45,43 @@ def test_netcdf_compressed_roundtrip(tmp_path, ensemble):
             assert np.prod(variable.chunking())*variable.dtype.itemsize <= 4*1024**2
         assert saved['quality_flag'].dtype == np.dtype('uint16')
         assert saved['latitude'].dtype == np.dtype('float64')
+        assert saved['scalar'].dtype == np.dtype('float64')
         assert saved['time'].units == 'seconds since 1970-01-01'
     assert list(tmp_path.iterdir()) == [path]
+
+
+def test_all_radiation_axis_boundaries_survive_storage(tmp_path):
+    table = RadiationTable()
+    inputs = np.array([[table.axes[name][len(table.axes[name])//2] for name in AXES]]*12)
+    for i, name in enumerate(AXES):
+        inputs[2*i, i] = table.axes[name][0]
+        inputs[2*i+1, i] = table.axes[name][-1]
+    original = table.at(*inputs.T)
+    ds = xr.Dataset({name: ('case', inputs[:, i]) for i, name in enumerate(AXES)})
+    path = tmp_path/'boundaries.nc'
+    write_netcdf(ds, path)
+    with xr.open_dataset(path) as reopened:
+        xr.testing.assert_identical(reopened.load(), ds)
+        np.testing.assert_array_equal(table.at(*(reopened[name].values for name in AXES)), original)
+    # The storage fix does not relax the physical domain.
+    with pytest.raises(ValueError, match='albedo outside'):
+        table.at(45, 300, 90000, .1, .8500001, 0)
+
+
+def test_saved_icon_albedo_boundary_computes_unchanged(tmp_path):
+    from test_uv import cams, icon
+
+    state, composition = icon.__wrapped__(), cams.__wrapped__()
+    state.sw_albedo.values[:] = .85
+    table = RadiationTable()
+    expected = compute_grid(state, composition, table)
+    path = tmp_path/'icon.nc'
+    write_netcdf(state, path)
+    with xr.open_dataset(path) as reopened:
+        actual = compute_grid(reopened.load(), composition, table)
+    np.testing.assert_array_equal(actual.uvi, expected.uvi)
+    assert actual.uvi.dtype == np.dtype('float32')
+    assert actual.sw_albedo.dtype == np.dtype('float64')
 
 
 @pytest.mark.parametrize('dims,shape', [

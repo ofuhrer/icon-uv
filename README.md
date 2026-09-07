@@ -32,6 +32,17 @@ ICON downloads use the public MeteoSwiss STAC service without an account.
 To install into an existing Python environment, use `pip install '.[cams]'`
 from the repository directory. Omit `[cams]` when working only with saved inputs.
 
+## Try a calculation without credentials
+
+```sh
+uv run --no-sync python examples/offline.py --output-dir work/offline
+```
+
+This small example creates **synthetic** ICON/CAMS inputs, saves and reopens them,
+and uses the real bundled radiation table to write hourly grid and point NetCDF
+and daily JSON. It needs no network access or credentials after installation.
+Its two September 2026 days illustrate the formats; they are not a weather forecast.
+
 ## Calculate UV fields
 
 Choose an available **00 UTC ICON cycle** and the **preceding day's 12 UTC CAMS
@@ -164,6 +175,28 @@ uv run --no-sync icon-uv poi --grid work/uv.nc \
 
 See [point forecasts](docs/outputs.md#point-forecasts) for horizon conventions,
 spatial matching and the distinction between ambient and terrain-screened UV.
+
+## Use one location catalog for points and daily products
+
+The [shared catalog](examples/shared_locations.json) defines native points,
+adjusted points with explicit surface properties, and region elevation bands.
+Use it with both commands:
+
+```sh
+uv run --no-sync icon-uv points --grid work/uv.nc \
+  --locations examples/shared_locations.json --output work/points.nc
+uv run --no-sync icon-uv daily --grid work/uv.nc \
+  --locations examples/shared_locations.json --days 3 \
+  --issued-at "$ISSUED_AT" --output work/daily.json
+```
+
+Hourly output includes point entries. Daily output also includes regions. A native
+point retains model elevation and surface state; an adjusted point recalculates at
+the specified elevation, albedo and coordinates. Daily values reconstruct the
+30-minute peak from atmospheric/cloud state, rather than taking a maximum of
+hourly point means. Existing `POI`, `compute_pois`, and `--catalog` inputs remain
+supported. See the [shared Python API](docs/location-api.md) for computation,
+publication, screening and preflight checks.
 
 ## How it works
 

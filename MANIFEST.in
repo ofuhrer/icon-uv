@@ -1,5 +1,6 @@
 include README.md CONTRIBUTING.md LICENSE uv.lock
-recursive-include docs *.md *.png
+recursive-include docs *.md *.json *.png *.gif
+recursive-include tools *.py
 recursive-include tests *.py
 recursive-include examples *.md *.json *.py *.html *.js *.css *LICENSE
 prune analysis

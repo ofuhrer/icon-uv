@@ -5,11 +5,24 @@ Run the commands below from the repository root after following the
 
 | Example | Contents and use |
 |---|---|
+| [offline.py](offline.py) | Credential-free synthetic saved-input calculation using the real radiation table; writes grid, point and daily outputs. |
+| [shared_locations.json](shared_locations.json) | Native/adjusted points and a region in one catalog, accepted by `points` and `daily --locations`. |
 | [davos.json](davos.json) | One point with altitude, UV albedo and a terrain horizon, for `icon-uv poi --locations`. |
 | [product_locations.json](product_locations.json) | Towns and regional elevation bands, for `icon-uv daily --catalog`. |
 | [map/](map/) | An English, four-day Swiss UV map with saved example data, generation scripts and browser assets. |
 
 ## Point and daily forecasts
+
+For a first calculation without downloads or credentials:
+
+```sh
+uv run --no-sync python examples/offline.py --output-dir work/offline
+```
+
+All inputs are explicitly **synthetic**; this demonstrates the workflow and
+formats, not an actual forecast. It produces two days of hourly grid/point
+NetCDF and daily JSON through the bundled radiation table. For shared location
+definitions, see the [location API](../docs/location-api.md).
 
 With a computed hourly UV grid:
 

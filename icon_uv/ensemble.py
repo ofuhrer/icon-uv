@@ -7,6 +7,18 @@ import numpy as np
 import xarray as xr
 
 
+def _expected_members(ds, fallback):
+    try:
+        expected = json.loads(ds.attrs['ensemble_members']) if 'ensemble_members' in ds.attrs else fallback
+    except (TypeError, ValueError) as exc:
+        raise ValueError('Invalid requested ensemble member IDs') from exc
+    if (not isinstance(expected, list) or not expected
+            or any(type(m) is not int or not 0 <= m <= 20 for m in expected)
+            or len(set(expected)) != len(expected)):
+        raise ValueError('Expected nonempty, unique requested ensemble member IDs in 0..20')
+    return expected
+
+
 def member_ids(ds):
     if 'member' not in ds.dims:
         return None
@@ -14,13 +26,13 @@ def member_ids(ds):
     if (ds.member.dims != ('member',) or ids.dtype.kind not in 'iu' or len(ids) < 1
             or len(np.unique(ids)) != len(ids) or np.any((ids < 0) | (ids > 20))):
         raise ValueError('Expected unique ICON-CH2 member IDs in 0..20 (at least one)')
-    expected = json.loads(ds.attrs.get('ensemble_members', json.dumps(ids.tolist())))
+    expected = _expected_members(ds, ids.tolist())
     if not set(ids).issubset(expected):
         raise ValueError('Unexpected ensemble members')
     return ids.tolist()
 
 
-def map_members(function, ds, **kwargs):
+def map_members(function, ds, *, shared_vars=(), **kwargs):
     """Run the existing physical calculation independently, keeping static axes."""
     ids = member_ids(ds)
     results = []
@@ -28,7 +40,7 @@ def map_members(function, ds, **kwargs):
         if kwargs.get('progress'):
             print(f'UV member {m} ({i}/{len(ids)})', flush=True)
         results.append(function(ds.sel(member=m, drop=True), **kwargs))
-    varying = [k for k, v in results[0].data_vars.items() if 'time' in v.dims and k != 'time_bounds']
+    varying = [k for k, v in results[0].data_vars.items() if 'time' in v.dims and k != 'time_bounds' and k not in shared_vars]
     out = xr.concat(results, dim=xr.IndexVariable('member', ids), data_vars=varying,
                     coords='minimal', compat='equals', join='exact')
     out.attrs.pop('member', None)
@@ -41,7 +53,7 @@ def map_members(function, ds, **kwargs):
 
 
 def required_members(ds):
-    expected = json.loads(ds.attrs.get('ensemble_members', json.dumps(member_ids(ds) or [0])))
+    expected = _expected_members(ds, member_ids(ds) or [0])
     fraction = float(ds.attrs.get('minimum_member_fraction', .9))
     if not 0 < fraction <= 1:
         raise ValueError('Minimum member fraction must be in (0, 1]')

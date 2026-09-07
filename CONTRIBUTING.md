@@ -6,12 +6,18 @@
 uv sync --locked --extra cams
 uv run --no-sync pytest -q
 uv run --no-sync icon-uv --help
+uv run --no-sync python tools/generate_schemas.py --check
 uv build --out-dir work/dist
+uv run --no-sync python tools/check_distribution.py work/dist
 ```
 
 The normal tests use synthetic fixtures and temporary files; they require no
 DWH/ADS credentials or downloaded measurement archive. `uv.lock` records resolved
 dependencies, including the development tools used for these checks.
+GitHub Actions runs these checks on Python 3.11 and 3.13. The suite includes a
+credential-free saved-input example using the real bundled radiation table.
+The distribution check installs the wheel in an isolated environment outside
+the source tree and loads every packaged schema and the table.
 
 ## Project layout
 
@@ -22,6 +28,9 @@ dependencies, including the development tools used for these checks.
 | `icon_uv/products.py` | Hourly grid, point and observation-comparison APIs |
 | `icon_uv/daily.py` | Daily peaks, location support and JSON export |
 | `icon_uv/ensemble.py` | Member identity, coverage and ensemble reductions |
+| `icon_uv/locations.py` | Shared location definitions and native/adjusted support selection |
+| `icon_uv/state.py`, `icon_uv/evaluation.py` | Saved-state validation and shared sampled UV evaluation |
+| `icon_uv/schema.py`, `tools/generate_schemas.py` | Consumer schema selection and contract generation |
 | `icon_uv/cli.py` | Command-line interface |
 | `icon_uv/build_table.py`, `icon_uv/validate.py` | Table generation and numerical reference checks |
 | `icon_uv/data/` | Bundled lookup table and daily JSON Schema |
@@ -73,6 +82,13 @@ check the table identity.
 
 For output-format changes, update the schema, field documentation and relevant
 tests together. Run `git diff --check` and inspect package contents before release.
+
+The v1 JSON schema is the shared base for `tools/generate_schemas.py`. That script
+applies the v2 date, v3 ensemble and v4 location/geometry additions and writes the
+standalone published schemas. Run it after deliberate schema edits, then use
+`--check` to ensure artifacts are current. Published v1–v3 contracts and hashes
+remain stable; evolve shared-location products in a new version when compatibility
+requires it. Runtime callers use `load_schema(payload)` to select the artifact.
 
 ## License
 

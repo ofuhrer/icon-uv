@@ -107,3 +107,117 @@ def test_invalid_pair_is_rejected_before_writing_bundle(tmp_path, monkeypatch):
     with pytest.raises(ValueError, match='mismatch'):
         renderer.write_bundle(source, root / 'examples/map/index.fields.json', output, tmp_path / 'cache')
     assert not output.parent.exists()
+
+
+def run_map_helpers(script):
+    """Exercise the browser's presentation and numeric decoding without a DOM server."""
+    import shutil
+    import subprocess
+
+    node = shutil.which('node')
+    if node is None:
+        pytest.skip('Node.js is needed for the map JavaScript regression checks')
+    template = (Path(__file__).resolve().parents[1] / 'examples/map/template.html').read_text()
+    helpers = template.rsplit('<script>', 1)[1].split('async function start(){', 1)[0]
+    # Text-only DOM: assigning textContent cannot accidentally parse catalog HTML.
+    dom = '''
+class Element {
+  constructor() { this.children=[]; this.dataset={}; this.style={}; this.attributes={};
+    this.classList={add: name => this.className+=' '+name}; }
+  append(...children) { this.children.push(...children); }
+  setAttribute(name,value) { this.attributes[name]=value; }
+  set textContent(value) { this.text=String(value); }
+  get textContent() { return (this.text||'')+this.children.map(c=>c.textContent).join(' '); }
+}
+const document={createElement:()=>new Element(),querySelectorAll:()=>[]};
+'''
+    result = subprocess.run([node], input=dom+helpers+script, text=True,
+                            capture_output=True, check=True)
+    return json.loads(result.stdout)
+
+
+def test_map_popups_expose_available_degraded_support_and_ensemble_spread():
+    result = run_map_helpers('''
+const row={location:{label:'<img src=x onerror=alert(1)>',kind:'town',altitude_m:400},
+  valid_date:'2026-09-07',status:'degraded',display_uvi:6,uvi:5.6,category:'high',
+  reasons:['partial_ensemble_support','partial_spatial_support'],
+  ensemble:{valid_member_count:20,p10:4.5,p90:7.2}};
+const forecast={ensemble:{member_count:20,requested_member_ids:Array.from({length:21},(_,i)=>i)}};
+const popup=details([row],forecast),badge=tile(row);
+console.log(JSON.stringify({text:popup.textContent,title:badge.title,classes:badge.className,
+  aria:badge.attributes['aria-label'],heading:popup.children[0].textContent,
+  missing:details([{...row,display_uvi:null,uvi:null,status:'unavailable'}],forecast).textContent}));
+''')
+    assert 'UV Index 5.6' in result['text']
+    assert '20 of 21 contributing members' in result['text']
+    assert 'P10–P90: 4.5–7.2' in result['text']
+    assert 'Some ensemble members are unavailable.' in result['text']
+    assert 'Some regional cells have missing data.' in result['text']
+    assert 'Limited forecast support.' in result['text']
+    assert result['heading'] == '<img src=x onerror=alert(1)>'
+    assert 'degraded' in result['classes'].split()
+    assert 'limited support' in result['title']
+    assert result['aria'] == result['title']
+    assert 'Forecast unavailable.' in result['missing']
+    assert 'Some ensemble members are unavailable.' in result['missing']
+
+
+def test_map_raster_inspection_preserves_zero_missing_counts_and_mercator_position():
+    result = run_map_helpers('''
+const geometry={width:2,height:2,bounds:[[0,0],[80,2]]};
+const field={pixels:new Uint8ClampedArray([0,0,0,255, 2,113,0,255, 9,255,0,0, 3,32,0,255]),
+  counts:new Uint8ClampedArray([8,52,0,255, 7,208,0,255, 0,0,0,255, 7,108,0,255])};
+console.log(JSON.stringify({
+  zero:sampleField(field,geometry,{lat:80,lng:0}),
+  rounded:sampleField(field,geometry,{lat:80,lng:2}),
+  missing:sampleField(field,geometry,{lat:50,lng:0}),
+  bottom:sampleField(field,geometry,{lat:0,lng:2}),
+  outside:sampleField(field,geometry,{lat:81,lng:1}),
+  single:sampleField({...field,counts:null},geometry,{lat:80,lng:0})}));
+''')
+    assert result['zero'] == {'uvi': 0, 'members': 21}
+    assert result['rounded'] == {'uvi': 6.25, 'members': 20}
+    assert result['missing'] == {'uvi': None, 'members': 0}
+    assert result['bottom'] == {'uvi': 8, 'members': 19}
+    assert result['outside'] is None
+    assert result['single'] == {'uvi': 0, 'members': None}
+
+
+def test_map_v4_geometry_matches_fields_or_requires_location_only():
+    root = Path(__file__).resolve().parents[1]
+    payload = json.loads((root / 'examples/map/index.locations.json').read_text())
+    fields = json.loads((root / 'examples/map/index.fields.json').read_text())
+    payload.update(schema_version='daily-uv-v4', uv_geometry='ambient_horizontal')
+    renderer.validate_products(payload, fields)
+    payload['uv_geometry'] = 'terrain_screened'
+    renderer.validate_products(payload)
+    with pytest.raises(ValueError, match='UV geometry mismatch'):
+        renderer.validate_products(payload, fields)
+    payload.pop('uv_geometry')
+    with pytest.raises(ValueError, match='UV geometry'):
+        renderer.validate_products(payload)
+    result = run_map_helpers('''
+const f={schema_version:'daily-uv-v4',uv_geometry:'terrain_screened',entries:[{}]};
+validateProducts(f,null);
+try{validateProducts(f,{})}catch(error){console.log(JSON.stringify(error.message));}
+''')
+    assert 'UV geometry differ' in result
+
+
+def test_shared_map_points_group_by_id_and_fallback_labels_remain_safe():
+    result = run_map_helpers('''
+const row=(kind,id,label)=>({location:{kind,id,label,altitude_m:1000},valid_date:'2026-09-07',
+  display_uvi:null,uvi:null,reasons:[],status:'unavailable'});
+const rows=[row('point','one','Same label'),row('point','two','Same label'),
+  row('town','three','Same label'),row('region_altitude','r1','Same label'),
+  row('region_altitude','r2','Same label'),row('point','<safe id>',undefined)];
+const groups=groupLocations(rows);
+console.log(JSON.stringify({sizes:[...groups.values()].map(group=>group.length),
+  text:details([rows.at(-1)],{uv_geometry:'terrain_screened'}).textContent,
+  screened:details([{...rows[0],location:{...rows[0].location,treatment:'adjusted'}}],
+    {uv_geometry:'terrain_screened'}).textContent}));
+''')
+    assert result['sizes'] == [1, 1, 1, 2, 1]
+    assert '<safe id>' in result['text']
+    assert 'Native model surface · open horizon.' in result['text']
+    assert 'Terrain-screened point UV · horizon screening proxy.' in result['screened']

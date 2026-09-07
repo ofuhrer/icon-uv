@@ -365,7 +365,7 @@ def test_fetch_cams_normalized_netcdf(tmp_path, cams_grib, ads_download):
     assert list(ds.latitude.values) == [46, 48]
     assert ds.ozone_du.attrs["units"] == "DU"
     assert ds.aod550.attrs["units"] == "1"
-    assert ds.ozone_du.dtype == np.float32
+    assert ds.ozone_du.dtype == np.float64
     assert ds.ozone_du.encoding["zlib"]
     assert ds.aod550.encoding["zlib"]
     assert ds.attrs["source_grib_sha256"] == hashlib.sha256(cams_grib.read_bytes()).hexdigest()

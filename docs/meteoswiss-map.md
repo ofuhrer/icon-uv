@@ -146,11 +146,20 @@ red and purple. Each integer UVI has its own shade within a warning level, with
 a distinct colour change between levels. Missing values appear as transparent
 pixels or a grey dash.
 
+A dot on an available location badge marks degraded support. Its popup includes
+the reasons, even when a numerical forecast is available; longer popups scroll
+on small screens. Keep these indications visible when embedding the map.
+
 Fields use native model terrain and an open horizon. They do not represent a
 fixed altitude or the regional 90th-percentile elevation-band values. Each map
 pixel takes the geographically nearest native cell within 3 km; gaps remain
 transparent. Town markers additionally match terrain height, so they can use a
 different cell. The map clips the overlay to the swisstopo relief footprint.
+
+Shared point products from schema v4 are supported, and stable point IDs keep
+sites distinct even when their labels match. A location-only map of screened
+points explicitly identifies its terrain-screened geometry. Such locations cannot
+be paired with ambient gridded fields; the map rejects that inconsistent pairing.
 
 The [field JSON](../examples/map/index.fields.json) embeds numerical PNG
 rasters on a Web Mercator display grid, 360 pixels wide by default. Their red
