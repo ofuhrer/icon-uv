@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.2.0 — 2026-09-07
 
 - Point locations default to forecasts at their requested coordinates and elevation,
   using the same ICON snow-derived UV albedo as regional products unless overridden.
@@ -11,6 +11,11 @@
   daily catalogs. Update the map example to provide a Zermatt forecast.
 - Document the use of ICON's base shortwave flux, separately from its orographically
   shaded radiation diagnostics.
+
+Migration: `PointLocation` and modern point JSON entries now default to
+`treatment="adjusted"`. Set `treatment="native"` to retain the previous matching
+behavior. Legacy town catalogs and explicit POI overrides remain supported.
+Terrain-screened daily catalogs must contain only points with explicit horizons.
 
 ## 0.1.0 — 2026-09-07
 

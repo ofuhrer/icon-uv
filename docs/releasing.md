@@ -8,16 +8,16 @@ Linux with Python 3.11 and 3.13; they do not need forecast-service credentials.
 ## Prepare a GitHub release
 
 1. Set the same version in `pyproject.toml` and `icon_uv/__init__.py`, update
-   `CHANGELOG.md` and the README release-install link, then run `uv lock`.
+   `CHANGELOG.md` and any version-specific installation notes, then run `uv lock`.
 2. Use a fresh output directory and run the release checks:
 
    ```sh
    uv sync --locked --extra cams
    uv run --no-sync pytest -q
    uv run --no-sync python tools/generate_schemas.py --check
-   uv build --out-dir work/release/0.1.0
-   uv run --no-sync python tools/check_distribution.py work/release/0.1.0 --tag v0.1.0
-   uv run --no-sync twine check --strict work/release/0.1.0/*
+   uv build --out-dir work/release/0.2.0
+   uv run --no-sync python tools/check_distribution.py work/release/0.2.0 --tag v0.2.0
+   uv run --no-sync twine check --strict work/release/0.2.0/*
    ```
 
 3. Commit and push the changes. Wait for **Tests and distributions** to pass for
@@ -57,7 +57,7 @@ does not reserve the name. See the official [first-project setup guide](https://
 After the GitHub release exists and the publisher is configured:
 
 ```sh
-gh workflow run publish.yml --ref v0.1.0
+gh workflow run publish.yml --ref v0.2.0
 ```
 
 **Publish to PyPI** is manual. It rejects branch refs and draft or missing
@@ -70,7 +70,7 @@ and generates provenance attestations by default.
 Once publication succeeds, users can install with:
 
 ```sh
-pip install 'icon-uv[cams]==0.1.0'
+pip install 'icon-uv[cams]==0.2.0'
 icon-uv --help
 ```
 

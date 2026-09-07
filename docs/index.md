@@ -60,6 +60,6 @@ Development instructions are in
 See [Releasing](releasing.md) for package publishing. Report problems through
 [GitHub issues](https://github.com/ofuhrer/icon-uv/issues).
 
-This site tracks `main`, including API changes after release 0.1.0. Use the
-repository installation above for these changes. Version-specific source and
+This site tracks `main`. The shared location defaults require icon-uv 0.2.0 or
+later. Version-specific source and
 documentation are available in [GitHub releases](https://github.com/ofuhrer/icon-uv/releases).

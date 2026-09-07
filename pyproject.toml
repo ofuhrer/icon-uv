@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "icon-uv"
-version = "0.1.0"
+version = "0.2.0"
 description = "UV Index forecasts from ICON weather and CAMS atmospheric composition"
 readme = "README.md"
 authors = [{name = "Oliver Fuhrer and contributors"}]

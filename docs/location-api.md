@@ -5,8 +5,8 @@ regional elevation summary. Both hourly and daily calculations use these same
 location definitions and surface defaults. Stable `id` values identify locations;
 `label` supplies display text.
 
-This guide describes `main`, including defaults added after PyPI release 0.1.0.
-Use the [repository installation](index.md#try-it-without-credentials) for these examples.
+This API and its defaults are available in **icon-uv 0.2.0 or later**.
+The [repository installation](index.md#try-it-without-credentials) includes the example catalogs.
 
 ## Calculate and publish
 

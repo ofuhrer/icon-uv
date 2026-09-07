@@ -26,8 +26,8 @@ pip install 'icon-uv[cams]'
 icon-uv --help
 ```
 
-This README tracks `main`, including changes after release 0.1.0. To use the API
-shown below and run the examples, install from the repository with
+The API below requires **icon-uv 0.2.0 or later**. To run the bundled examples,
+install from the repository with
 [uv](https://docs.astral.sh/uv/):
 
 ```sh
