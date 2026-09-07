@@ -189,6 +189,96 @@
       "coordinate_source": "swisstopo SearchServer, gazetteer settlement 303555 (Locarno); height service at the same point"
     },
     {
+      "id": "interlaken",
+      "kind": "town",
+      "label": "Interlaken",
+      "latitude": 46.686874,
+      "longitude": 7.864446,
+      "altitude_m": 568,
+      "coordinate_source": "swisstopo SearchServer, gazetteer settlement 55309 (Interlaken); height service at the same point"
+    },
+    {
+      "id": "grindelwald",
+      "kind": "town",
+      "label": "Grindelwald",
+      "latitude": 46.624756,
+      "longitude": 8.028841,
+      "altitude_m": 1000,
+      "coordinate_source": "swisstopo SearchServer, gazetteer settlement 248561 (Grindelwald); height service at the same point"
+    },
+    {
+      "id": "zermatt",
+      "kind": "town",
+      "label": "Zermatt",
+      "latitude": 46.017536,
+      "longitude": 7.746568,
+      "altitude_m": 1617,
+      "coordinate_source": "swisstopo SearchServer, gazetteer settlement 413112 (Zermatt); height service at the same point"
+    },
+    {
+      "id": "brig",
+      "kind": "town",
+      "label": "Brig",
+      "latitude": 46.317009,
+      "longitude": 7.994198,
+      "altitude_m": 721,
+      "coordinate_source": "swisstopo SearchServer, gazetteer settlement 138131 (Brig); height service at the same point"
+    },
+    {
+      "id": "andermatt",
+      "kind": "town",
+      "label": "Andermatt",
+      "latitude": 46.635929,
+      "longitude": 8.593595,
+      "altitude_m": 1438,
+      "coordinate_source": "swisstopo SearchServer, gazetteer settlement 80835 (Andermatt); height service at the same point"
+    },
+    {
+      "id": "engelberg",
+      "kind": "town",
+      "label": "Engelberg",
+      "latitude": 46.821465,
+      "longitude": 8.405006,
+      "altitude_m": 1009,
+      "coordinate_source": "swisstopo SearchServer, gazetteer settlement 303450 (Engelberg); height service at the same point"
+    },
+    {
+      "id": "lugano",
+      "kind": "town",
+      "label": "Lugano",
+      "latitude": 46.00806,
+      "longitude": 8.952294,
+      "altitude_m": 277,
+      "coordinate_source": "swisstopo SearchServer, gazetteer settlement 110544 (Lugano); height service at the same point"
+    },
+    {
+      "id": "bellinzona",
+      "kind": "town",
+      "label": "Bellinzona",
+      "latitude": 46.194931,
+      "longitude": 9.024765,
+      "altitude_m": 227,
+      "coordinate_source": "swisstopo SearchServer, gazetteer settlement 109745 (Bellinzona); height service at the same point"
+    },
+    {
+      "id": "appenzell",
+      "kind": "town",
+      "label": "Appenzell",
+      "latitude": 47.331543,
+      "longitude": 9.408989,
+      "altitude_m": 778,
+      "coordinate_source": "swisstopo SearchServer, gazetteer settlement 165051 (Appenzell); height service at the same point"
+    },
+    {
+      "id": "la_chaux_de_fonds",
+      "kind": "town",
+      "label": "La Chaux-de-Fonds",
+      "latitude": 47.098457,
+      "longitude": 6.82432,
+      "altitude_m": 992,
+      "coordinate_source": "swisstopo SearchServer, gazetteer settlement 303471 (La Chaux-de-Fonds); height service at the same point"
+    },
+    {
       "id": "jura_1000",
       "kind": "region_altitude",
       "label": "Jura",

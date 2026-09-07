@@ -90,11 +90,13 @@ def _check_grid(grid, table):
     return bounds
 
 
-def daily_cells(grid, valid_date, table=None, chunk_size=256):
+def daily_cells(grid, valid_date, table=None, chunk_size=256, *, clear_sky=False):
     """Reconstruct native-cell peaks; gaps in daylight never become partial maxima.
 
     Returns arrays in source-cell order, with NaN only for unavailable values.
-    Output JSON conversion occurs at the export boundary.
+    Output JSON conversion occurs at the export boundary. With clear_sky=True,
+    remove cloud optical depth and cloud scaling, retaining atmosphere/surface
+    and the same full-day coverage requirements.
     """
     table = RadiationTable() if table is None else table
     bounds = _check_grid(grid, table)
@@ -124,8 +126,10 @@ def daily_cells(grid, valid_date, table=None, chunk_size=256):
             z, _, distance = solar_geometry(t[:, None], local.latitude.values[None, :],
                                             local.longitude.values[None, :])
             args = [local[k].values[i] for k in ('ozone_du', 'pressure_pa', 'aod550', 'uv_albedo', 'effective_cloud_tau550')]
+            if clear_sky:
+                args[-1] = 0
             components = table.at(z, *args)[..., 2:]
-            values = 40*components.sum(axis=-1)*distance*local.cloud_scale.values[i]
+            values = 40*components.sum(axis=-1)*distance*(1 if clear_sky else local.cloud_scale.values[i])
             if not np.isfinite(values).all() or np.any(values < 0):
                 raise ValueError('Invalid reconstructed UVI')
             samples[h*12:(h+1)*12] = values

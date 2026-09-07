@@ -98,6 +98,12 @@ values if coverage is short. Python accepts `export_daily(..., days=4)` or
 `export_daily(..., days='all')`. Both use the v2 schema; the default two-day
 product remains v1.
 
+For native-terrain clear-sky peaks, Python also provides
+`daily_cells(grid, valid_date, clear_sky=True)`. It uses the same temporal
+coverage checks and peak definition, with cloud optical depth set to zero and
+cloud scaling set to one. The [map example](meteoswiss-map.md#field-views) exports
+both gridded peak products.
+
 ## Peak, rounding and categories
 
 The daily peak is the maximum reconstructed 30-minute mean, evaluated at

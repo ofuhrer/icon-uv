@@ -72,6 +72,26 @@ def test_complete_peak_and_daylight_gap():
     assert daily_cells(night,'2026-09-06',table)['available'].all()
 
 
+def test_clear_sky_peaks_remove_cloud_depth_and_scaling_without_mutating_grid():
+    class CloudTable(AnalyticTable):
+        def at(self, z, ozone, pressure, aod, albedo, tau):
+            return super().at(z, ozone, pressure, aod, albedo, tau)/(1+np.asarray(tau)[..., None])
+
+    ds = grid()
+    ds.effective_cloud_tau550.values[:] = 2
+    ds.cloud_scale.values[:] = .6
+    original = ds.copy(deep=True)
+    table = CloudTable()
+    cloudy = daily_cells(ds, '2026-09-06', table)
+    clear = daily_cells(ds, '2026-09-06', table, clear_sky=True)
+    reference = daily_cells(grid(), '2026-09-06', table)
+    np.testing.assert_allclose(clear['uvi'], reference['uvi'])
+    np.testing.assert_allclose(cloudy['uvi'], clear['uvi']*.2)
+    xr.testing.assert_identical(ds, original)
+    missing = ds.isel(time=ds.time.dt.hour.values != 11)
+    assert not daily_cells(missing, '2026-09-06', table, clear_sky=True)['available'].any()
+
+
 def test_reject_corrupt_intervals_units_and_flags():
     ds=grid();table=AnalyticTable()
     for field,value in [('cloud_scale',-1),('ozone_du',np.nan),('quality_flag',.5)]:

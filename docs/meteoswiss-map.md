@@ -1,6 +1,6 @@
 # UV forecast map example
 
-Generate English UV forecasts for 20 towns and six mountain regions, then build
+Generate English UV forecasts for 30 towns and six mountain regions, then build
 a single HTML page with day selection, zoom, pan and sun-protection guidance.
 The page embeds the forecast, map library and swisstopo relief tiles, so it opens
 directly from disk and works offline.
@@ -8,15 +8,17 @@ directly from disk and works offline.
 ## Open the included example
 
 Open [meteoswiss_map.html](../examples/meteoswiss_map.html) directly in a browser.
-It contains a dated forecast snapshot for **7–10 September 2026**, with 144 values
+It contains a dated forecast snapshot for **7–10 September 2026**, with 184 location entries
 from ICON 7 September 00 UTC and CAMS 6 September 12 UTC. The corresponding
 [sample JSON](../examples/meteoswiss_map.sample.json) retains source times, hashes
-and availability details. This is a fixed example, not an automatically refreshed page.
+and availability details; the field JSON contains all four pairs of gridded layers.
+This is a fixed example, not an automatically refreshed page.
 
 Day selection updates the map and the complete values list. Labels are thinned
 when they would overlap, giving the main cities priority and revealing more
 locations as you zoom in. Zoom-out stops at the overview of Switzerland; the
-home control restores that view. Select a marker for its unrounded UV Index and
+home control restores that view. Zoom transitions are animated, with smaller
+wheel and button steps; the browser’s reduced-motion preference is respected. Select a marker for its unrounded UV Index and
 availability details. The expandable list keeps all towns and elevations accessible
 at every zoom level. Small screens also have a mountain-elevation table.
 
@@ -36,22 +38,17 @@ uv run --no-sync icon-uv fetch-cams \
   --reference "$CAMS_REFERENCE" --first-lead 12 --last-lead 108 --output work/cams.grib
 ```
 
-Compute the native cells needed by the catalog, using twelve solar samples per hour:
+Compute the full downloaded grid, using twelve solar samples per hour. Both the
+location export and the field export below use this same grid:
 
 ```python
-import json
-from pathlib import Path
-import numpy as np
 import xarray as xr
 from icon_uv.data import load_cams, write_netcdf
-from icon_uv.daily import select_support
 from icon_uv.products import compute_grid
 
-catalog = json.loads(Path("examples/meteoswiss_map_locations.json").read_text())
 cams = load_cams("work/cams.grib")
 with xr.open_dataset("work/icon.nc") as source:
-    cells = np.unique(np.concatenate([select_support(source, e) for e in catalog["entries"]]))
-    icon = source.isel(cell=cells).load()
+    icon = source.load()
 grid = compute_grid(icon, cams, samples=12)
 write_netcdf(grid, "work/uv.nc")
 ```
@@ -66,16 +63,24 @@ uv run --no-sync python examples/meteoswiss_map.py \
   --grid work/uv.nc --issued-at "YYYY-MM-DDT06:00:00Z" \
   --output work/meteoswiss-map.json
 
+uv run --no-sync python examples/meteoswiss_fields.py \
+  --grid work/uv.nc --issued-at "YYYY-MM-DDT06:00:00Z" \
+  --output work/meteoswiss-map.fields.json
+
 uv run --no-sync python examples/render_meteoswiss_map.py \
-  --input work/meteoswiss-map.json --output work/meteoswiss-map.html
+  --input work/meteoswiss-map.json --fields work/meteoswiss-map.fields.json \
+  --output work/meteoswiss-map.html
 ```
 
 Open `work/meteoswiss-map.html` in a browser. Omitting `--input` rebuilds the
 bundled example snapshot. Edit `examples/meteoswiss_map.template.html` to change
 the page layout; `examples/meteoswiss_map.html` is the ready-to-open generated page.
+Omit `--fields` with a custom location JSON to build a location-only page.
+The renderer checks that location and field products share the same grid hash,
+issuance, radiation table, dates and peak definition.
 
-The exporter produces four local dates (`daily-uv-v2`), with 36 values per day:
-20 towns, three elevation bands for each of five Alpine regions, and one band
+The exporter produces four local dates (`daily-uv-v2`), with 46 entries per day:
+30 towns, three elevation bands for each of five Alpine regions, and one band
 for Jura. Mountain bands appear in 3000 / 2000 / 1000 m order. The renderer also
 limits longer input products to their first four dates. Partial daylight dates
 remain unavailable rather than becoming partial daily maxima. `null` is shown
@@ -91,15 +96,54 @@ uv run --no-sync icon-uv daily --days 4 \
 The HTML renderer downloads relief tiles once to `work/swisstopo-relief-tiles/`;
 `--cache PATH` chooses another cache. Reusing it allows offline rebuilding.
 Use a new cache directory to refresh the basemap. Tiles are embedded at zoom 9;
-higher zoom magnifies that fixed resolution. The curated sample JSON and HTML
+higher zoom magnifies that fixed resolution. The curated location JSON, field JSON and HTML
 are checked in; new forecasts and tile caches stay local under `work/`.
+
+## Field views
+
+Choose **Locations**, **Forecast field** or **Clear-sky field** above the map.
+Both fields show the maximum reconstructed 30-minute mean over the selected
+local day, matching the temporal definition of the location product. Clear sky
+removes cloud optical depth and cloud scaling while retaining ozone, aerosol,
+pressure and surface albedo. Select a field position to inspect its UV Index;
+the opacity control reveals more or less of the relief underneath.
+
+Fields use native model terrain and an open horizon. They do not represent a
+fixed altitude or the regional 90th-percentile elevation-band values. Each map
+pixel takes the geographically nearest native cell within 3 km; gaps remain
+transparent. Town markers additionally match terrain height, so they can use a
+different cell. The map clips the overlay to the swisstopo relief footprint.
+
+The [field JSON](../examples/meteoswiss_map.fields.json) embeds numerical PNG
+rasters on a Web Mercator display grid, 360 pixels wide by default. Their red
+and green bytes encode UV Index truncated to 0.01; alpha distinguishes missing
+values from zero. This preserves the rounded category boundaries. Display
+resampling adds no physical resolution. The browser decodes the values and
+applies the same category colours as the markers; missing pixels remain clear.
+No new Python dependencies or online map services are needed to view the page.
+
+## Ensemble information
+
+The downloader currently selects **control member 0** (`forecast:perturbed=false`).
+Neither the location product nor the fields contain ensemble spread or probabilities.
+The regional 90th percentile is taken across native cells, not ensemble members.
+An ensemble extension would calculate UV separately for each member before
+forming a median, spread and probabilities of exceeding UV protection thresholds.
 
 ## Locations and regions
 
 The [catalog](../examples/meteoswiss_map_locations.json) contains Geneva,
 Neuchâtel, Lausanne, Sion, Bern, Fribourg, Delémont, Basel, Aarau, Lucerne,
 Zurich, Schaffhausen, St. Gallen, Vaduz, Glarus, Chur, Davos, St. Moritz,
-Scuol and Locarno. IDs remain stable independently of the English display names.
+Scuol, Locarno, Interlaken, Grindelwald, Zermatt, Brig, Andermatt, Engelberg,
+Lugano, Bellinzona, Appenzell and La Chaux-de-Fonds. IDs remain stable independently
+of the English display names.
+
+The added towns cover the Bernese Oberland, Upper Valais, central Alpine valleys,
+Ticino, Appenzell and the higher Jura. The six regional elevation-band summaries
+provide the broader mountain context. Individual summits would need explicit
+point-elevation and horizon treatment. In the bundled snapshot, Zermatt has no
+native cell within the existing 5 km / 300 m matching limits and is unavailable.
 
 Town coordinates are settlement reference points from the
 [swisstopo location search](https://docs.geo.admin.ch/access-data/search.html).

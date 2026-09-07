@@ -1,6 +1,6 @@
 {
   "assumptions": "fixed reference profile/H2O/aerosol type; effective uniform liquid cloud; experimental UV snow albedo",
-  "catalog_sha256": "d843a8d29a2767f5defed391aa183e99e0163089047bef1f76c7861fa0306dbd",
+  "catalog_sha256": "f0b3ba7212400bf6640f91eed48ec6dded6883b117ceabae7e47af458a6ccfb0",
   "category_basis": "rounded_integer_half_up",
   "contract_sha256": "804568736f489e914b8c63ac99b2857154ed616a644431efbe04df36e524d422",
   "entries": [
@@ -841,6 +841,406 @@
       },
       "status": "ok",
       "uvi": 5.494773255654205,
+      "valid_cells": 1,
+      "valid_date": "2026-09-07"
+    },
+    {
+      "aggregation": "nearest_suitable_native_cell",
+      "category": "moderate",
+      "day": 0,
+      "display_uvi": 5,
+      "location": {
+        "altitude_m": 568,
+        "coordinate_source": "swisstopo SearchServer, gazetteer settlement 55309 (Interlaken); height service at the same point",
+        "id": "interlaken",
+        "kind": "town",
+        "label": "Interlaken",
+        "latitude": 46.686874,
+        "longitude": 7.864446
+      },
+      "native_uvi_median": 5.430020914791656,
+      "native_uvi_range": [
+        5.430020914791656,
+        5.430020914791656
+      ],
+      "peak_window_start_range_utc": [
+        "2026-09-07T11:10:00.000000000Z",
+        "2026-09-07T11:10:00.000000000Z"
+      ],
+      "peak_window_start_utc": "2026-09-07T11:10:00.000000000Z",
+      "quality_flag": 68,
+      "reasons": [],
+      "selected_cells": 1,
+      "source_cells": [
+        192810
+      ],
+      "source_point": {
+        "altitude_difference_m": 172.7394242286682,
+        "altitude_m": 740.7394242286682,
+        "cell": 192810,
+        "latitude": 46.69036865234375,
+        "longitude": 7.856350302696228
+      },
+      "status": "ok",
+      "uvi": 5.430020914791656,
+      "valid_cells": 1,
+      "valid_date": "2026-09-07"
+    },
+    {
+      "aggregation": "nearest_suitable_native_cell",
+      "category": "high",
+      "day": 0,
+      "display_uvi": 6,
+      "location": {
+        "altitude_m": 1000,
+        "coordinate_source": "swisstopo SearchServer, gazetteer settlement 248561 (Grindelwald); height service at the same point",
+        "id": "grindelwald",
+        "kind": "town",
+        "label": "Grindelwald",
+        "latitude": 46.624756,
+        "longitude": 8.028841
+      },
+      "native_uvi_median": 5.8538910786887755,
+      "native_uvi_range": [
+        5.8538910786887755,
+        5.8538910786887755
+      ],
+      "peak_window_start_range_utc": [
+        "2026-09-07T11:10:00.000000000Z",
+        "2026-09-07T11:10:00.000000000Z"
+      ],
+      "peak_window_start_utc": "2026-09-07T11:10:00.000000000Z",
+      "quality_flag": 68,
+      "reasons": [],
+      "selected_cells": 1,
+      "source_cells": [
+        192933
+      ],
+      "source_point": {
+        "altitude_difference_m": 55.36442422866821,
+        "altitude_m": 1055.3644242286682,
+        "cell": 192933,
+        "latitude": 46.62371826171875,
+        "longitude": 8.027737021446228
+      },
+      "status": "ok",
+      "uvi": 5.8538910786887755,
+      "valid_cells": 1,
+      "valid_date": "2026-09-07"
+    },
+    {
+      "category": null,
+      "day": 0,
+      "display_uvi": null,
+      "location": {
+        "altitude_m": 1617,
+        "coordinate_source": "swisstopo SearchServer, gazetteer settlement 413112 (Zermatt); height service at the same point",
+        "id": "zermatt",
+        "kind": "town",
+        "label": "Zermatt",
+        "latitude": 46.017536,
+        "longitude": 7.746568
+      },
+      "reasons": [
+        "insufficient_native_support"
+      ],
+      "selected_cells": 0,
+      "status": "unavailable",
+      "uvi": null,
+      "valid_cells": 0,
+      "valid_date": "2026-09-07"
+    },
+    {
+      "aggregation": "nearest_suitable_native_cell",
+      "category": "high",
+      "day": 0,
+      "display_uvi": 6,
+      "location": {
+        "altitude_m": 721,
+        "coordinate_source": "swisstopo SearchServer, gazetteer settlement 138131 (Brig); height service at the same point",
+        "id": "brig",
+        "kind": "town",
+        "label": "Brig",
+        "latitude": 46.317009,
+        "longitude": 7.994198
+      },
+      "native_uvi_median": 5.925479078266366,
+      "native_uvi_range": [
+        5.925479078266366,
+        5.925479078266366
+      ],
+      "peak_window_start_range_utc": [
+        "2026-09-07T10:50:00.000000000Z",
+        "2026-09-07T10:50:00.000000000Z"
+      ],
+      "peak_window_start_utc": "2026-09-07T10:50:00.000000000Z",
+      "quality_flag": 68,
+      "reasons": [],
+      "selected_cells": 1,
+      "source_cells": [
+        192462
+      ],
+      "source_point": {
+        "altitude_difference_m": 141.1144242286682,
+        "altitude_m": 862.1144242286682,
+        "cell": 192462,
+        "latitude": 46.31463623046875,
+        "longitude": 8.007229208946228
+      },
+      "status": "ok",
+      "uvi": 5.925479078266366,
+      "valid_cells": 1,
+      "valid_date": "2026-09-07"
+    },
+    {
+      "aggregation": "nearest_suitable_native_cell",
+      "category": "high",
+      "day": 0,
+      "display_uvi": 6,
+      "location": {
+        "altitude_m": 1438,
+        "coordinate_source": "swisstopo SearchServer, gazetteer settlement 80835 (Andermatt); height service at the same point",
+        "id": "andermatt",
+        "kind": "town",
+        "label": "Andermatt",
+        "latitude": 46.635929,
+        "longitude": 8.593595
+      },
+      "native_uvi_median": 5.895971916138738,
+      "native_uvi_range": [
+        5.895971916138738,
+        5.895971916138738
+      ],
+      "peak_window_start_range_utc": [
+        "2026-09-07T10:30:00.000000000Z",
+        "2026-09-07T10:30:00.000000000Z"
+      ],
+      "peak_window_start_utc": "2026-09-07T10:30:00.000000000Z",
+      "quality_flag": 68,
+      "reasons": [],
+      "selected_cells": 1,
+      "source_cells": [
+        190234
+      ],
+      "source_point": {
+        "altitude_difference_m": 151.2394242286682,
+        "altitude_m": 1589.2394242286682,
+        "cell": 190234,
+        "latitude": 46.63299560546875,
+        "longitude": 8.580959677696228
+      },
+      "status": "ok",
+      "uvi": 5.895971916138738,
+      "valid_cells": 1,
+      "valid_date": "2026-09-07"
+    },
+    {
+      "aggregation": "nearest_suitable_native_cell",
+      "category": "moderate",
+      "day": 0,
+      "display_uvi": 5,
+      "location": {
+        "altitude_m": 1009,
+        "coordinate_source": "swisstopo SearchServer, gazetteer settlement 303450 (Engelberg); height service at the same point",
+        "id": "engelberg",
+        "kind": "town",
+        "label": "Engelberg",
+        "latitude": 46.821465,
+        "longitude": 8.405006
+      },
+      "native_uvi_median": 5.40824729432349,
+      "native_uvi_range": [
+        5.40824729432349,
+        5.40824729432349
+      ],
+      "peak_window_start_range_utc": [
+        "2026-09-07T10:30:00.000000000Z",
+        "2026-09-07T10:30:00.000000000Z"
+      ],
+      "peak_window_start_utc": "2026-09-07T10:30:00.000000000Z",
+      "quality_flag": 68,
+      "reasons": [],
+      "selected_cells": 1,
+      "source_cells": [
+        195088
+      ],
+      "source_point": {
+        "altitude_difference_m": 202.2394242286682,
+        "altitude_m": 1211.2394242286682,
+        "cell": 195088,
+        "latitude": 46.82537841796875,
+        "longitude": 8.397854208946228
+      },
+      "status": "ok",
+      "uvi": 5.40824729432349,
+      "valid_cells": 1,
+      "valid_date": "2026-09-07"
+    },
+    {
+      "aggregation": "nearest_suitable_native_cell",
+      "category": "moderate",
+      "day": 0,
+      "display_uvi": 5,
+      "location": {
+        "altitude_m": 277,
+        "coordinate_source": "swisstopo SearchServer, gazetteer settlement 110544 (Lugano); height service at the same point",
+        "id": "lugano",
+        "kind": "town",
+        "label": "Lugano",
+        "latitude": 46.00806,
+        "longitude": 8.952294
+      },
+      "native_uvi_median": 5.448869389190442,
+      "native_uvi_range": [
+        5.448869389190442,
+        5.448869389190442
+      ],
+      "peak_window_start_range_utc": [
+        "2026-09-07T10:30:00.000000000Z",
+        "2026-09-07T10:30:00.000000000Z"
+      ],
+      "peak_window_start_utc": "2026-09-07T10:30:00.000000000Z",
+      "quality_flag": 68,
+      "reasons": [],
+      "selected_cells": 1,
+      "source_cells": [
+        189725
+      ],
+      "source_point": {
+        "altitude_difference_m": 56.98942422866821,
+        "altitude_m": 333.9894242286682,
+        "cell": 189725,
+        "latitude": 46.01165771484375,
+        "longitude": 8.954494833946228
+      },
+      "status": "ok",
+      "uvi": 5.448869389190442,
+      "valid_cells": 1,
+      "valid_date": "2026-09-07"
+    },
+    {
+      "aggregation": "nearest_suitable_native_cell",
+      "category": "high",
+      "day": 0,
+      "display_uvi": 6,
+      "location": {
+        "altitude_m": 227,
+        "coordinate_source": "swisstopo SearchServer, gazetteer settlement 109745 (Bellinzona); height service at the same point",
+        "id": "bellinzona",
+        "kind": "town",
+        "label": "Bellinzona",
+        "latitude": 46.194931,
+        "longitude": 9.024765
+      },
+      "native_uvi_median": 5.643993407560945,
+      "native_uvi_range": [
+        5.643993407560945,
+        5.643993407560945
+      ],
+      "peak_window_start_range_utc": [
+        "2026-09-07T10:30:00.000000000Z",
+        "2026-09-07T10:30:00.000000000Z"
+      ],
+      "peak_window_start_utc": "2026-09-07T10:30:00.000000000Z",
+      "quality_flag": 68,
+      "reasons": [],
+      "selected_cells": 1,
+      "source_cells": [
+        190108
+      ],
+      "source_point": {
+        "altitude_difference_m": 127.23942422866821,
+        "altitude_m": 354.2394242286682,
+        "cell": 190108,
+        "latitude": 46.20428466796875,
+        "longitude": 9.031154990196228
+      },
+      "status": "ok",
+      "uvi": 5.643993407560945,
+      "valid_cells": 1,
+      "valid_date": "2026-09-07"
+    },
+    {
+      "aggregation": "nearest_suitable_native_cell",
+      "category": "high",
+      "day": 0,
+      "display_uvi": 6,
+      "location": {
+        "altitude_m": 778,
+        "coordinate_source": "swisstopo SearchServer, gazetteer settlement 165051 (Appenzell); height service at the same point",
+        "id": "appenzell",
+        "kind": "town",
+        "label": "Appenzell",
+        "latitude": 47.331543,
+        "longitude": 9.408989
+      },
+      "native_uvi_median": 5.612269184151679,
+      "native_uvi_range": [
+        5.612269184151679,
+        5.612269184151679
+      ],
+      "peak_window_start_range_utc": [
+        "2026-09-07T11:05:00.000000000Z",
+        "2026-09-07T11:05:00.000000000Z"
+      ],
+      "peak_window_start_utc": "2026-09-07T11:05:00.000000000Z",
+      "quality_flag": 68,
+      "reasons": [],
+      "selected_cells": 1,
+      "source_cells": [
+        197554
+      ],
+      "source_point": {
+        "altitude_difference_m": 111.73942422866821,
+        "altitude_m": 889.7394242286682,
+        "cell": 197554,
+        "latitude": 47.31976318359375,
+        "longitude": 9.418850302696228
+      },
+      "status": "ok",
+      "uvi": 5.612269184151679,
+      "valid_cells": 1,
+      "valid_date": "2026-09-07"
+    },
+    {
+      "aggregation": "nearest_suitable_native_cell",
+      "category": "moderate",
+      "day": 0,
+      "display_uvi": 5,
+      "location": {
+        "altitude_m": 992,
+        "coordinate_source": "swisstopo SearchServer, gazetteer settlement 303471 (La Chaux-de-Fonds); height service at the same point",
+        "id": "la_chaux_de_fonds",
+        "kind": "town",
+        "label": "La Chaux-de-Fonds",
+        "latitude": 47.098457,
+        "longitude": 6.82432
+      },
+      "native_uvi_median": 4.99810805739053,
+      "native_uvi_range": [
+        4.99810805739053,
+        4.99810805739053
+      ],
+      "peak_window_start_range_utc": [
+        "2026-09-07T10:30:00.000000000Z",
+        "2026-09-07T10:30:00.000000000Z"
+      ],
+      "peak_window_start_utc": "2026-09-07T10:30:00.000000000Z",
+      "quality_flag": 69,
+      "reasons": [],
+      "selected_cells": 1,
+      "source_cells": [
+        185536
+      ],
+      "source_point": {
+        "altitude_difference_m": 92.61442422866821,
+        "altitude_m": 1084.6144242286682,
+        "cell": 185536,
+        "latitude": 47.10345458984375,
+        "longitude": 6.816799521446228
+      },
+      "status": "ok",
+      "uvi": 4.99810805739053,
       "valid_cells": 1,
       "valid_date": "2026-09-07"
     },
@@ -5322,6 +5722,406 @@
       "valid_date": "2026-09-08"
     },
     {
+      "aggregation": "nearest_suitable_native_cell",
+      "category": "high",
+      "day": 1,
+      "display_uvi": 6,
+      "location": {
+        "altitude_m": 568,
+        "coordinate_source": "swisstopo SearchServer, gazetteer settlement 55309 (Interlaken); height service at the same point",
+        "id": "interlaken",
+        "kind": "town",
+        "label": "Interlaken",
+        "latitude": 46.686874,
+        "longitude": 7.864446
+      },
+      "native_uvi_median": 5.870274336766819,
+      "native_uvi_range": [
+        5.870274336766819,
+        5.870274336766819
+      ],
+      "peak_window_start_range_utc": [
+        "2026-09-08T11:10:00.000000000Z",
+        "2026-09-08T11:10:00.000000000Z"
+      ],
+      "peak_window_start_utc": "2026-09-08T11:10:00.000000000Z",
+      "quality_flag": 68,
+      "reasons": [],
+      "selected_cells": 1,
+      "source_cells": [
+        192810
+      ],
+      "source_point": {
+        "altitude_difference_m": 172.7394242286682,
+        "altitude_m": 740.7394242286682,
+        "cell": 192810,
+        "latitude": 46.69036865234375,
+        "longitude": 7.856350302696228
+      },
+      "status": "ok",
+      "uvi": 5.870274336766819,
+      "valid_cells": 1,
+      "valid_date": "2026-09-08"
+    },
+    {
+      "aggregation": "nearest_suitable_native_cell",
+      "category": "high",
+      "day": 1,
+      "display_uvi": 6,
+      "location": {
+        "altitude_m": 1000,
+        "coordinate_source": "swisstopo SearchServer, gazetteer settlement 248561 (Grindelwald); height service at the same point",
+        "id": "grindelwald",
+        "kind": "town",
+        "label": "Grindelwald",
+        "latitude": 46.624756,
+        "longitude": 8.028841
+      },
+      "native_uvi_median": 6.106285124918639,
+      "native_uvi_range": [
+        6.106285124918639,
+        6.106285124918639
+      ],
+      "peak_window_start_range_utc": [
+        "2026-09-08T10:30:00.000000000Z",
+        "2026-09-08T10:30:00.000000000Z"
+      ],
+      "peak_window_start_utc": "2026-09-08T10:30:00.000000000Z",
+      "quality_flag": 68,
+      "reasons": [],
+      "selected_cells": 1,
+      "source_cells": [
+        192933
+      ],
+      "source_point": {
+        "altitude_difference_m": 55.36442422866821,
+        "altitude_m": 1055.3644242286682,
+        "cell": 192933,
+        "latitude": 46.62371826171875,
+        "longitude": 8.027737021446228
+      },
+      "status": "ok",
+      "uvi": 6.106285124918639,
+      "valid_cells": 1,
+      "valid_date": "2026-09-08"
+    },
+    {
+      "category": null,
+      "day": 1,
+      "display_uvi": null,
+      "location": {
+        "altitude_m": 1617,
+        "coordinate_source": "swisstopo SearchServer, gazetteer settlement 413112 (Zermatt); height service at the same point",
+        "id": "zermatt",
+        "kind": "town",
+        "label": "Zermatt",
+        "latitude": 46.017536,
+        "longitude": 7.746568
+      },
+      "reasons": [
+        "insufficient_native_support"
+      ],
+      "selected_cells": 0,
+      "status": "unavailable",
+      "uvi": null,
+      "valid_cells": 0,
+      "valid_date": "2026-09-08"
+    },
+    {
+      "aggregation": "nearest_suitable_native_cell",
+      "category": "high",
+      "day": 1,
+      "display_uvi": 6,
+      "location": {
+        "altitude_m": 721,
+        "coordinate_source": "swisstopo SearchServer, gazetteer settlement 138131 (Brig); height service at the same point",
+        "id": "brig",
+        "kind": "town",
+        "label": "Brig",
+        "latitude": 46.317009,
+        "longitude": 7.994198
+      },
+      "native_uvi_median": 6.168016741687516,
+      "native_uvi_range": [
+        6.168016741687516,
+        6.168016741687516
+      ],
+      "peak_window_start_range_utc": [
+        "2026-09-08T11:10:00.000000000Z",
+        "2026-09-08T11:10:00.000000000Z"
+      ],
+      "peak_window_start_utc": "2026-09-08T11:10:00.000000000Z",
+      "quality_flag": 68,
+      "reasons": [],
+      "selected_cells": 1,
+      "source_cells": [
+        192462
+      ],
+      "source_point": {
+        "altitude_difference_m": 141.1144242286682,
+        "altitude_m": 862.1144242286682,
+        "cell": 192462,
+        "latitude": 46.31463623046875,
+        "longitude": 8.007229208946228
+      },
+      "status": "ok",
+      "uvi": 6.168016741687516,
+      "valid_cells": 1,
+      "valid_date": "2026-09-08"
+    },
+    {
+      "aggregation": "nearest_suitable_native_cell",
+      "category": "high",
+      "day": 1,
+      "display_uvi": 6,
+      "location": {
+        "altitude_m": 1438,
+        "coordinate_source": "swisstopo SearchServer, gazetteer settlement 80835 (Andermatt); height service at the same point",
+        "id": "andermatt",
+        "kind": "town",
+        "label": "Andermatt",
+        "latitude": 46.635929,
+        "longitude": 8.593595
+      },
+      "native_uvi_median": 6.25740191295965,
+      "native_uvi_range": [
+        6.25740191295965,
+        6.25740191295965
+      ],
+      "peak_window_start_range_utc": [
+        "2026-09-08T11:10:00.000000000Z",
+        "2026-09-08T11:10:00.000000000Z"
+      ],
+      "peak_window_start_utc": "2026-09-08T11:10:00.000000000Z",
+      "quality_flag": 68,
+      "reasons": [],
+      "selected_cells": 1,
+      "source_cells": [
+        190234
+      ],
+      "source_point": {
+        "altitude_difference_m": 151.2394242286682,
+        "altitude_m": 1589.2394242286682,
+        "cell": 190234,
+        "latitude": 46.63299560546875,
+        "longitude": 8.580959677696228
+      },
+      "status": "ok",
+      "uvi": 6.25740191295965,
+      "valid_cells": 1,
+      "valid_date": "2026-09-08"
+    },
+    {
+      "aggregation": "nearest_suitable_native_cell",
+      "category": "high",
+      "day": 1,
+      "display_uvi": 6,
+      "location": {
+        "altitude_m": 1009,
+        "coordinate_source": "swisstopo SearchServer, gazetteer settlement 303450 (Engelberg); height service at the same point",
+        "id": "engelberg",
+        "kind": "town",
+        "label": "Engelberg",
+        "latitude": 46.821465,
+        "longitude": 8.405006
+      },
+      "native_uvi_median": 5.929389804258154,
+      "native_uvi_range": [
+        5.929389804258154,
+        5.929389804258154
+      ],
+      "peak_window_start_range_utc": [
+        "2026-09-08T11:10:00.000000000Z",
+        "2026-09-08T11:10:00.000000000Z"
+      ],
+      "peak_window_start_utc": "2026-09-08T11:10:00.000000000Z",
+      "quality_flag": 68,
+      "reasons": [],
+      "selected_cells": 1,
+      "source_cells": [
+        195088
+      ],
+      "source_point": {
+        "altitude_difference_m": 202.2394242286682,
+        "altitude_m": 1211.2394242286682,
+        "cell": 195088,
+        "latitude": 46.82537841796875,
+        "longitude": 8.397854208946228
+      },
+      "status": "ok",
+      "uvi": 5.929389804258154,
+      "valid_cells": 1,
+      "valid_date": "2026-09-08"
+    },
+    {
+      "aggregation": "nearest_suitable_native_cell",
+      "category": "high",
+      "day": 1,
+      "display_uvi": 6,
+      "location": {
+        "altitude_m": 277,
+        "coordinate_source": "swisstopo SearchServer, gazetteer settlement 110544 (Lugano); height service at the same point",
+        "id": "lugano",
+        "kind": "town",
+        "label": "Lugano",
+        "latitude": 46.00806,
+        "longitude": 8.952294
+      },
+      "native_uvi_median": 5.653838253491423,
+      "native_uvi_range": [
+        5.653838253491423,
+        5.653838253491423
+      ],
+      "peak_window_start_range_utc": [
+        "2026-09-08T11:05:00.000000000Z",
+        "2026-09-08T11:05:00.000000000Z"
+      ],
+      "peak_window_start_utc": "2026-09-08T11:05:00.000000000Z",
+      "quality_flag": 68,
+      "reasons": [],
+      "selected_cells": 1,
+      "source_cells": [
+        189725
+      ],
+      "source_point": {
+        "altitude_difference_m": 56.98942422866821,
+        "altitude_m": 333.9894242286682,
+        "cell": 189725,
+        "latitude": 46.01165771484375,
+        "longitude": 8.954494833946228
+      },
+      "status": "ok",
+      "uvi": 5.653838253491423,
+      "valid_cells": 1,
+      "valid_date": "2026-09-08"
+    },
+    {
+      "aggregation": "nearest_suitable_native_cell",
+      "category": "high",
+      "day": 1,
+      "display_uvi": 6,
+      "location": {
+        "altitude_m": 227,
+        "coordinate_source": "swisstopo SearchServer, gazetteer settlement 109745 (Bellinzona); height service at the same point",
+        "id": "bellinzona",
+        "kind": "town",
+        "label": "Bellinzona",
+        "latitude": 46.194931,
+        "longitude": 9.024765
+      },
+      "native_uvi_median": 5.787093771618902,
+      "native_uvi_range": [
+        5.787093771618902,
+        5.787093771618902
+      ],
+      "peak_window_start_range_utc": [
+        "2026-09-08T11:05:00.000000000Z",
+        "2026-09-08T11:05:00.000000000Z"
+      ],
+      "peak_window_start_utc": "2026-09-08T11:05:00.000000000Z",
+      "quality_flag": 68,
+      "reasons": [],
+      "selected_cells": 1,
+      "source_cells": [
+        190108
+      ],
+      "source_point": {
+        "altitude_difference_m": 127.23942422866821,
+        "altitude_m": 354.2394242286682,
+        "cell": 190108,
+        "latitude": 46.20428466796875,
+        "longitude": 9.031154990196228
+      },
+      "status": "ok",
+      "uvi": 5.787093771618902,
+      "valid_cells": 1,
+      "valid_date": "2026-09-08"
+    },
+    {
+      "aggregation": "nearest_suitable_native_cell",
+      "category": "high",
+      "day": 1,
+      "display_uvi": 6,
+      "location": {
+        "altitude_m": 778,
+        "coordinate_source": "swisstopo SearchServer, gazetteer settlement 165051 (Appenzell); height service at the same point",
+        "id": "appenzell",
+        "kind": "town",
+        "label": "Appenzell",
+        "latitude": 47.331543,
+        "longitude": 9.408989
+      },
+      "native_uvi_median": 5.735388271092717,
+      "native_uvi_range": [
+        5.735388271092717,
+        5.735388271092717
+      ],
+      "peak_window_start_range_utc": [
+        "2026-09-08T11:05:00.000000000Z",
+        "2026-09-08T11:05:00.000000000Z"
+      ],
+      "peak_window_start_utc": "2026-09-08T11:05:00.000000000Z",
+      "quality_flag": 68,
+      "reasons": [],
+      "selected_cells": 1,
+      "source_cells": [
+        197554
+      ],
+      "source_point": {
+        "altitude_difference_m": 111.73942422866821,
+        "altitude_m": 889.7394242286682,
+        "cell": 197554,
+        "latitude": 47.31976318359375,
+        "longitude": 9.418850302696228
+      },
+      "status": "ok",
+      "uvi": 5.735388271092717,
+      "valid_cells": 1,
+      "valid_date": "2026-09-08"
+    },
+    {
+      "aggregation": "nearest_suitable_native_cell",
+      "category": "high",
+      "day": 1,
+      "display_uvi": 6,
+      "location": {
+        "altitude_m": 992,
+        "coordinate_source": "swisstopo SearchServer, gazetteer settlement 303471 (La Chaux-de-Fonds); height service at the same point",
+        "id": "la_chaux_de_fonds",
+        "kind": "town",
+        "label": "La Chaux-de-Fonds",
+        "latitude": 47.098457,
+        "longitude": 6.82432
+      },
+      "native_uvi_median": 5.875070868220715,
+      "native_uvi_range": [
+        5.875070868220715,
+        5.875070868220715
+      ],
+      "peak_window_start_range_utc": [
+        "2026-09-08T11:15:00.000000000Z",
+        "2026-09-08T11:15:00.000000000Z"
+      ],
+      "peak_window_start_utc": "2026-09-08T11:15:00.000000000Z",
+      "quality_flag": 68,
+      "reasons": [],
+      "selected_cells": 1,
+      "source_cells": [
+        185536
+      ],
+      "source_point": {
+        "altitude_difference_m": 92.61442422866821,
+        "altitude_m": 1084.6144242286682,
+        "cell": 185536,
+        "latitude": 47.10345458984375,
+        "longitude": 6.816799521446228
+      },
+      "status": "ok",
+      "uvi": 5.875070868220715,
+      "valid_cells": 1,
+      "valid_date": "2026-09-08"
+    },
+    {
       "aggregation": "p90_of_native_cell_daily_maxima",
       "category": "high",
       "day": 1,
@@ -9795,6 +10595,406 @@
       },
       "status": "ok",
       "uvi": 4.46637808351033,
+      "valid_cells": 1,
+      "valid_date": "2026-09-09"
+    },
+    {
+      "aggregation": "nearest_suitable_native_cell",
+      "category": "low",
+      "day": 2,
+      "display_uvi": 2,
+      "location": {
+        "altitude_m": 568,
+        "coordinate_source": "swisstopo SearchServer, gazetteer settlement 55309 (Interlaken); height service at the same point",
+        "id": "interlaken",
+        "kind": "town",
+        "label": "Interlaken",
+        "latitude": 46.686874,
+        "longitude": 7.864446
+      },
+      "native_uvi_median": 1.6102275681409015,
+      "native_uvi_range": [
+        1.6102275681409015,
+        1.6102275681409015
+      ],
+      "peak_window_start_range_utc": [
+        "2026-09-09T11:10:00.000000000Z",
+        "2026-09-09T11:10:00.000000000Z"
+      ],
+      "peak_window_start_utc": "2026-09-09T11:10:00.000000000Z",
+      "quality_flag": 68,
+      "reasons": [],
+      "selected_cells": 1,
+      "source_cells": [
+        192810
+      ],
+      "source_point": {
+        "altitude_difference_m": 172.7394242286682,
+        "altitude_m": 740.7394242286682,
+        "cell": 192810,
+        "latitude": 46.69036865234375,
+        "longitude": 7.856350302696228
+      },
+      "status": "ok",
+      "uvi": 1.6102275681409015,
+      "valid_cells": 1,
+      "valid_date": "2026-09-09"
+    },
+    {
+      "aggregation": "nearest_suitable_native_cell",
+      "category": "low",
+      "day": 2,
+      "display_uvi": 2,
+      "location": {
+        "altitude_m": 1000,
+        "coordinate_source": "swisstopo SearchServer, gazetteer settlement 248561 (Grindelwald); height service at the same point",
+        "id": "grindelwald",
+        "kind": "town",
+        "label": "Grindelwald",
+        "latitude": 46.624756,
+        "longitude": 8.028841
+      },
+      "native_uvi_median": 2.389388468089659,
+      "native_uvi_range": [
+        2.389388468089659,
+        2.389388468089659
+      ],
+      "peak_window_start_range_utc": [
+        "2026-09-09T09:30:00.000000000Z",
+        "2026-09-09T09:30:00.000000000Z"
+      ],
+      "peak_window_start_utc": "2026-09-09T09:30:00.000000000Z",
+      "quality_flag": 68,
+      "reasons": [],
+      "selected_cells": 1,
+      "source_cells": [
+        192933
+      ],
+      "source_point": {
+        "altitude_difference_m": 55.36442422866821,
+        "altitude_m": 1055.3644242286682,
+        "cell": 192933,
+        "latitude": 46.62371826171875,
+        "longitude": 8.027737021446228
+      },
+      "status": "ok",
+      "uvi": 2.389388468089659,
+      "valid_cells": 1,
+      "valid_date": "2026-09-09"
+    },
+    {
+      "category": null,
+      "day": 2,
+      "display_uvi": null,
+      "location": {
+        "altitude_m": 1617,
+        "coordinate_source": "swisstopo SearchServer, gazetteer settlement 413112 (Zermatt); height service at the same point",
+        "id": "zermatt",
+        "kind": "town",
+        "label": "Zermatt",
+        "latitude": 46.017536,
+        "longitude": 7.746568
+      },
+      "reasons": [
+        "insufficient_native_support"
+      ],
+      "selected_cells": 0,
+      "status": "unavailable",
+      "uvi": null,
+      "valid_cells": 0,
+      "valid_date": "2026-09-09"
+    },
+    {
+      "aggregation": "nearest_suitable_native_cell",
+      "category": "moderate",
+      "day": 2,
+      "display_uvi": 4,
+      "location": {
+        "altitude_m": 721,
+        "coordinate_source": "swisstopo SearchServer, gazetteer settlement 138131 (Brig); height service at the same point",
+        "id": "brig",
+        "kind": "town",
+        "label": "Brig",
+        "latitude": 46.317009,
+        "longitude": 7.994198
+      },
+      "native_uvi_median": 4.098204851897074,
+      "native_uvi_range": [
+        4.098204851897074,
+        4.098204851897074
+      ],
+      "peak_window_start_range_utc": [
+        "2026-09-09T10:30:00.000000000Z",
+        "2026-09-09T10:30:00.000000000Z"
+      ],
+      "peak_window_start_utc": "2026-09-09T10:30:00.000000000Z",
+      "quality_flag": 68,
+      "reasons": [],
+      "selected_cells": 1,
+      "source_cells": [
+        192462
+      ],
+      "source_point": {
+        "altitude_difference_m": 141.1144242286682,
+        "altitude_m": 862.1144242286682,
+        "cell": 192462,
+        "latitude": 46.31463623046875,
+        "longitude": 8.007229208946228
+      },
+      "status": "ok",
+      "uvi": 4.098204851897074,
+      "valid_cells": 1,
+      "valid_date": "2026-09-09"
+    },
+    {
+      "aggregation": "nearest_suitable_native_cell",
+      "category": "moderate",
+      "day": 2,
+      "display_uvi": 4,
+      "location": {
+        "altitude_m": 1438,
+        "coordinate_source": "swisstopo SearchServer, gazetteer settlement 80835 (Andermatt); height service at the same point",
+        "id": "andermatt",
+        "kind": "town",
+        "label": "Andermatt",
+        "latitude": 46.635929,
+        "longitude": 8.593595
+      },
+      "native_uvi_median": 3.7958913731351465,
+      "native_uvi_range": [
+        3.7958913731351465,
+        3.7958913731351465
+      ],
+      "peak_window_start_range_utc": [
+        "2026-09-09T10:30:00.000000000Z",
+        "2026-09-09T10:30:00.000000000Z"
+      ],
+      "peak_window_start_utc": "2026-09-09T10:30:00.000000000Z",
+      "quality_flag": 68,
+      "reasons": [],
+      "selected_cells": 1,
+      "source_cells": [
+        190234
+      ],
+      "source_point": {
+        "altitude_difference_m": 151.2394242286682,
+        "altitude_m": 1589.2394242286682,
+        "cell": 190234,
+        "latitude": 46.63299560546875,
+        "longitude": 8.580959677696228
+      },
+      "status": "ok",
+      "uvi": 3.7958913731351465,
+      "valid_cells": 1,
+      "valid_date": "2026-09-09"
+    },
+    {
+      "aggregation": "nearest_suitable_native_cell",
+      "category": "low",
+      "day": 2,
+      "display_uvi": 2,
+      "location": {
+        "altitude_m": 1009,
+        "coordinate_source": "swisstopo SearchServer, gazetteer settlement 303450 (Engelberg); height service at the same point",
+        "id": "engelberg",
+        "kind": "town",
+        "label": "Engelberg",
+        "latitude": 46.821465,
+        "longitude": 8.405006
+      },
+      "native_uvi_median": 1.7079597136102784,
+      "native_uvi_range": [
+        1.7079597136102784,
+        1.7079597136102784
+      ],
+      "peak_window_start_range_utc": [
+        "2026-09-09T12:00:00.000000000Z",
+        "2026-09-09T12:00:00.000000000Z"
+      ],
+      "peak_window_start_utc": "2026-09-09T12:00:00.000000000Z",
+      "quality_flag": 68,
+      "reasons": [],
+      "selected_cells": 1,
+      "source_cells": [
+        195088
+      ],
+      "source_point": {
+        "altitude_difference_m": 202.2394242286682,
+        "altitude_m": 1211.2394242286682,
+        "cell": 195088,
+        "latitude": 46.82537841796875,
+        "longitude": 8.397854208946228
+      },
+      "status": "ok",
+      "uvi": 1.7079597136102784,
+      "valid_cells": 1,
+      "valid_date": "2026-09-09"
+    },
+    {
+      "aggregation": "nearest_suitable_native_cell",
+      "category": "moderate",
+      "day": 2,
+      "display_uvi": 5,
+      "location": {
+        "altitude_m": 277,
+        "coordinate_source": "swisstopo SearchServer, gazetteer settlement 110544 (Lugano); height service at the same point",
+        "id": "lugano",
+        "kind": "town",
+        "label": "Lugano",
+        "latitude": 46.00806,
+        "longitude": 8.952294
+      },
+      "native_uvi_median": 4.746540734610779,
+      "native_uvi_range": [
+        4.746540734610779,
+        4.746540734610779
+      ],
+      "peak_window_start_range_utc": [
+        "2026-09-09T11:05:00.000000000Z",
+        "2026-09-09T11:05:00.000000000Z"
+      ],
+      "peak_window_start_utc": "2026-09-09T11:05:00.000000000Z",
+      "quality_flag": 68,
+      "reasons": [],
+      "selected_cells": 1,
+      "source_cells": [
+        189725
+      ],
+      "source_point": {
+        "altitude_difference_m": 56.98942422866821,
+        "altitude_m": 333.9894242286682,
+        "cell": 189725,
+        "latitude": 46.01165771484375,
+        "longitude": 8.954494833946228
+      },
+      "status": "ok",
+      "uvi": 4.746540734610779,
+      "valid_cells": 1,
+      "valid_date": "2026-09-09"
+    },
+    {
+      "aggregation": "nearest_suitable_native_cell",
+      "category": "moderate",
+      "day": 2,
+      "display_uvi": 4,
+      "location": {
+        "altitude_m": 227,
+        "coordinate_source": "swisstopo SearchServer, gazetteer settlement 109745 (Bellinzona); height service at the same point",
+        "id": "bellinzona",
+        "kind": "town",
+        "label": "Bellinzona",
+        "latitude": 46.194931,
+        "longitude": 9.024765
+      },
+      "native_uvi_median": 4.166436334904666,
+      "native_uvi_range": [
+        4.166436334904666,
+        4.166436334904666
+      ],
+      "peak_window_start_range_utc": [
+        "2026-09-09T11:05:00.000000000Z",
+        "2026-09-09T11:05:00.000000000Z"
+      ],
+      "peak_window_start_utc": "2026-09-09T11:05:00.000000000Z",
+      "quality_flag": 68,
+      "reasons": [],
+      "selected_cells": 1,
+      "source_cells": [
+        190108
+      ],
+      "source_point": {
+        "altitude_difference_m": 127.23942422866821,
+        "altitude_m": 354.2394242286682,
+        "cell": 190108,
+        "latitude": 46.20428466796875,
+        "longitude": 9.031154990196228
+      },
+      "status": "ok",
+      "uvi": 4.166436334904666,
+      "valid_cells": 1,
+      "valid_date": "2026-09-09"
+    },
+    {
+      "aggregation": "nearest_suitable_native_cell",
+      "category": "low",
+      "day": 2,
+      "display_uvi": 1,
+      "location": {
+        "altitude_m": 778,
+        "coordinate_source": "swisstopo SearchServer, gazetteer settlement 165051 (Appenzell); height service at the same point",
+        "id": "appenzell",
+        "kind": "town",
+        "label": "Appenzell",
+        "latitude": 47.331543,
+        "longitude": 9.408989
+      },
+      "native_uvi_median": 1.3286845161739305,
+      "native_uvi_range": [
+        1.3286845161739305,
+        1.3286845161739305
+      ],
+      "peak_window_start_range_utc": [
+        "2026-09-09T10:30:00.000000000Z",
+        "2026-09-09T10:30:00.000000000Z"
+      ],
+      "peak_window_start_utc": "2026-09-09T10:30:00.000000000Z",
+      "quality_flag": 68,
+      "reasons": [],
+      "selected_cells": 1,
+      "source_cells": [
+        197554
+      ],
+      "source_point": {
+        "altitude_difference_m": 111.73942422866821,
+        "altitude_m": 889.7394242286682,
+        "cell": 197554,
+        "latitude": 47.31976318359375,
+        "longitude": 9.418850302696228
+      },
+      "status": "ok",
+      "uvi": 1.3286845161739305,
+      "valid_cells": 1,
+      "valid_date": "2026-09-09"
+    },
+    {
+      "aggregation": "nearest_suitable_native_cell",
+      "category": "moderate",
+      "day": 2,
+      "display_uvi": 4,
+      "location": {
+        "altitude_m": 992,
+        "coordinate_source": "swisstopo SearchServer, gazetteer settlement 303471 (La Chaux-de-Fonds); height service at the same point",
+        "id": "la_chaux_de_fonds",
+        "kind": "town",
+        "label": "La Chaux-de-Fonds",
+        "latitude": 47.098457,
+        "longitude": 6.82432
+      },
+      "native_uvi_median": 4.221727720650558,
+      "native_uvi_range": [
+        4.221727720650558,
+        4.221727720650558
+      ],
+      "peak_window_start_range_utc": [
+        "2026-09-09T12:00:00.000000000Z",
+        "2026-09-09T12:00:00.000000000Z"
+      ],
+      "peak_window_start_utc": "2026-09-09T12:00:00.000000000Z",
+      "quality_flag": 68,
+      "reasons": [],
+      "selected_cells": 1,
+      "source_cells": [
+        185536
+      ],
+      "source_point": {
+        "altitude_difference_m": 92.61442422866821,
+        "altitude_m": 1084.6144242286682,
+        "cell": 185536,
+        "latitude": 47.10345458984375,
+        "longitude": 6.816799521446228
+      },
+      "status": "ok",
+      "uvi": 4.221727720650558,
       "valid_cells": 1,
       "valid_date": "2026-09-09"
     },
@@ -14276,6 +15476,406 @@
       "valid_date": "2026-09-10"
     },
     {
+      "aggregation": "nearest_suitable_native_cell",
+      "category": "moderate",
+      "day": 3,
+      "display_uvi": 5,
+      "location": {
+        "altitude_m": 568,
+        "coordinate_source": "swisstopo SearchServer, gazetteer settlement 55309 (Interlaken); height service at the same point",
+        "id": "interlaken",
+        "kind": "town",
+        "label": "Interlaken",
+        "latitude": 46.686874,
+        "longitude": 7.864446
+      },
+      "native_uvi_median": 5.071080988005257,
+      "native_uvi_range": [
+        5.071080988005257,
+        5.071080988005257
+      ],
+      "peak_window_start_range_utc": [
+        "2026-09-10T11:10:00.000000000Z",
+        "2026-09-10T11:10:00.000000000Z"
+      ],
+      "peak_window_start_utc": "2026-09-10T11:10:00.000000000Z",
+      "quality_flag": 68,
+      "reasons": [],
+      "selected_cells": 1,
+      "source_cells": [
+        192810
+      ],
+      "source_point": {
+        "altitude_difference_m": 172.7394242286682,
+        "altitude_m": 740.7394242286682,
+        "cell": 192810,
+        "latitude": 46.69036865234375,
+        "longitude": 7.856350302696228
+      },
+      "status": "ok",
+      "uvi": 5.071080988005257,
+      "valid_cells": 1,
+      "valid_date": "2026-09-10"
+    },
+    {
+      "aggregation": "nearest_suitable_native_cell",
+      "category": "moderate",
+      "day": 3,
+      "display_uvi": 5,
+      "location": {
+        "altitude_m": 1000,
+        "coordinate_source": "swisstopo SearchServer, gazetteer settlement 248561 (Grindelwald); height service at the same point",
+        "id": "grindelwald",
+        "kind": "town",
+        "label": "Grindelwald",
+        "latitude": 46.624756,
+        "longitude": 8.028841
+      },
+      "native_uvi_median": 5.484469541875369,
+      "native_uvi_range": [
+        5.484469541875369,
+        5.484469541875369
+      ],
+      "peak_window_start_range_utc": [
+        "2026-09-10T11:10:00.000000000Z",
+        "2026-09-10T11:10:00.000000000Z"
+      ],
+      "peak_window_start_utc": "2026-09-10T11:10:00.000000000Z",
+      "quality_flag": 68,
+      "reasons": [],
+      "selected_cells": 1,
+      "source_cells": [
+        192933
+      ],
+      "source_point": {
+        "altitude_difference_m": 55.36442422866821,
+        "altitude_m": 1055.3644242286682,
+        "cell": 192933,
+        "latitude": 46.62371826171875,
+        "longitude": 8.027737021446228
+      },
+      "status": "ok",
+      "uvi": 5.484469541875369,
+      "valid_cells": 1,
+      "valid_date": "2026-09-10"
+    },
+    {
+      "category": null,
+      "day": 3,
+      "display_uvi": null,
+      "location": {
+        "altitude_m": 1617,
+        "coordinate_source": "swisstopo SearchServer, gazetteer settlement 413112 (Zermatt); height service at the same point",
+        "id": "zermatt",
+        "kind": "town",
+        "label": "Zermatt",
+        "latitude": 46.017536,
+        "longitude": 7.746568
+      },
+      "reasons": [
+        "insufficient_native_support"
+      ],
+      "selected_cells": 0,
+      "status": "unavailable",
+      "uvi": null,
+      "valid_cells": 0,
+      "valid_date": "2026-09-10"
+    },
+    {
+      "aggregation": "nearest_suitable_native_cell",
+      "category": "moderate",
+      "day": 3,
+      "display_uvi": 5,
+      "location": {
+        "altitude_m": 721,
+        "coordinate_source": "swisstopo SearchServer, gazetteer settlement 138131 (Brig); height service at the same point",
+        "id": "brig",
+        "kind": "town",
+        "label": "Brig",
+        "latitude": 46.317009,
+        "longitude": 7.994198
+      },
+      "native_uvi_median": 5.466087051588045,
+      "native_uvi_range": [
+        5.466087051588045,
+        5.466087051588045
+      ],
+      "peak_window_start_range_utc": [
+        "2026-09-10T11:10:00.000000000Z",
+        "2026-09-10T11:10:00.000000000Z"
+      ],
+      "peak_window_start_utc": "2026-09-10T11:10:00.000000000Z",
+      "quality_flag": 68,
+      "reasons": [],
+      "selected_cells": 1,
+      "source_cells": [
+        192462
+      ],
+      "source_point": {
+        "altitude_difference_m": 141.1144242286682,
+        "altitude_m": 862.1144242286682,
+        "cell": 192462,
+        "latitude": 46.31463623046875,
+        "longitude": 8.007229208946228
+      },
+      "status": "ok",
+      "uvi": 5.466087051588045,
+      "valid_cells": 1,
+      "valid_date": "2026-09-10"
+    },
+    {
+      "aggregation": "nearest_suitable_native_cell",
+      "category": "high",
+      "day": 3,
+      "display_uvi": 6,
+      "location": {
+        "altitude_m": 1438,
+        "coordinate_source": "swisstopo SearchServer, gazetteer settlement 80835 (Andermatt); height service at the same point",
+        "id": "andermatt",
+        "kind": "town",
+        "label": "Andermatt",
+        "latitude": 46.635929,
+        "longitude": 8.593595
+      },
+      "native_uvi_median": 5.646363275165828,
+      "native_uvi_range": [
+        5.646363275165828,
+        5.646363275165828
+      ],
+      "peak_window_start_range_utc": [
+        "2026-09-10T11:10:00.000000000Z",
+        "2026-09-10T11:10:00.000000000Z"
+      ],
+      "peak_window_start_utc": "2026-09-10T11:10:00.000000000Z",
+      "quality_flag": 68,
+      "reasons": [],
+      "selected_cells": 1,
+      "source_cells": [
+        190234
+      ],
+      "source_point": {
+        "altitude_difference_m": 151.2394242286682,
+        "altitude_m": 1589.2394242286682,
+        "cell": 190234,
+        "latitude": 46.63299560546875,
+        "longitude": 8.580959677696228
+      },
+      "status": "ok",
+      "uvi": 5.646363275165828,
+      "valid_cells": 1,
+      "valid_date": "2026-09-10"
+    },
+    {
+      "aggregation": "nearest_suitable_native_cell",
+      "category": "moderate",
+      "day": 3,
+      "display_uvi": 5,
+      "location": {
+        "altitude_m": 1009,
+        "coordinate_source": "swisstopo SearchServer, gazetteer settlement 303450 (Engelberg); height service at the same point",
+        "id": "engelberg",
+        "kind": "town",
+        "label": "Engelberg",
+        "latitude": 46.821465,
+        "longitude": 8.405006
+      },
+      "native_uvi_median": 5.028467843775983,
+      "native_uvi_range": [
+        5.028467843775983,
+        5.028467843775983
+      ],
+      "peak_window_start_range_utc": [
+        "2026-09-10T10:30:00.000000000Z",
+        "2026-09-10T10:30:00.000000000Z"
+      ],
+      "peak_window_start_utc": "2026-09-10T10:30:00.000000000Z",
+      "quality_flag": 68,
+      "reasons": [],
+      "selected_cells": 1,
+      "source_cells": [
+        195088
+      ],
+      "source_point": {
+        "altitude_difference_m": 202.2394242286682,
+        "altitude_m": 1211.2394242286682,
+        "cell": 195088,
+        "latitude": 46.82537841796875,
+        "longitude": 8.397854208946228
+      },
+      "status": "ok",
+      "uvi": 5.028467843775983,
+      "valid_cells": 1,
+      "valid_date": "2026-09-10"
+    },
+    {
+      "aggregation": "nearest_suitable_native_cell",
+      "category": "moderate",
+      "day": 3,
+      "display_uvi": 5,
+      "location": {
+        "altitude_m": 277,
+        "coordinate_source": "swisstopo SearchServer, gazetteer settlement 110544 (Lugano); height service at the same point",
+        "id": "lugano",
+        "kind": "town",
+        "label": "Lugano",
+        "latitude": 46.00806,
+        "longitude": 8.952294
+      },
+      "native_uvi_median": 5.232351864391038,
+      "native_uvi_range": [
+        5.232351864391038,
+        5.232351864391038
+      ],
+      "peak_window_start_range_utc": [
+        "2026-09-10T11:05:00.000000000Z",
+        "2026-09-10T11:05:00.000000000Z"
+      ],
+      "peak_window_start_utc": "2026-09-10T11:05:00.000000000Z",
+      "quality_flag": 68,
+      "reasons": [],
+      "selected_cells": 1,
+      "source_cells": [
+        189725
+      ],
+      "source_point": {
+        "altitude_difference_m": 56.98942422866821,
+        "altitude_m": 333.9894242286682,
+        "cell": 189725,
+        "latitude": 46.01165771484375,
+        "longitude": 8.954494833946228
+      },
+      "status": "ok",
+      "uvi": 5.232351864391038,
+      "valid_cells": 1,
+      "valid_date": "2026-09-10"
+    },
+    {
+      "aggregation": "nearest_suitable_native_cell",
+      "category": "moderate",
+      "day": 3,
+      "display_uvi": 5,
+      "location": {
+        "altitude_m": 227,
+        "coordinate_source": "swisstopo SearchServer, gazetteer settlement 109745 (Bellinzona); height service at the same point",
+        "id": "bellinzona",
+        "kind": "town",
+        "label": "Bellinzona",
+        "latitude": 46.194931,
+        "longitude": 9.024765
+      },
+      "native_uvi_median": 5.367319726003903,
+      "native_uvi_range": [
+        5.367319726003903,
+        5.367319726003903
+      ],
+      "peak_window_start_range_utc": [
+        "2026-09-10T11:05:00.000000000Z",
+        "2026-09-10T11:05:00.000000000Z"
+      ],
+      "peak_window_start_utc": "2026-09-10T11:05:00.000000000Z",
+      "quality_flag": 69,
+      "reasons": [],
+      "selected_cells": 1,
+      "source_cells": [
+        190108
+      ],
+      "source_point": {
+        "altitude_difference_m": 127.23942422866821,
+        "altitude_m": 354.2394242286682,
+        "cell": 190108,
+        "latitude": 46.20428466796875,
+        "longitude": 9.031154990196228
+      },
+      "status": "ok",
+      "uvi": 5.367319726003903,
+      "valid_cells": 1,
+      "valid_date": "2026-09-10"
+    },
+    {
+      "aggregation": "nearest_suitable_native_cell",
+      "category": "moderate",
+      "day": 3,
+      "display_uvi": 5,
+      "location": {
+        "altitude_m": 778,
+        "coordinate_source": "swisstopo SearchServer, gazetteer settlement 165051 (Appenzell); height service at the same point",
+        "id": "appenzell",
+        "kind": "town",
+        "label": "Appenzell",
+        "latitude": 47.331543,
+        "longitude": 9.408989
+      },
+      "native_uvi_median": 4.928384285605617,
+      "native_uvi_range": [
+        4.928384285605617,
+        4.928384285605617
+      ],
+      "peak_window_start_range_utc": [
+        "2026-09-10T11:05:00.000000000Z",
+        "2026-09-10T11:05:00.000000000Z"
+      ],
+      "peak_window_start_utc": "2026-09-10T11:05:00.000000000Z",
+      "quality_flag": 68,
+      "reasons": [],
+      "selected_cells": 1,
+      "source_cells": [
+        197554
+      ],
+      "source_point": {
+        "altitude_difference_m": 111.73942422866821,
+        "altitude_m": 889.7394242286682,
+        "cell": 197554,
+        "latitude": 47.31976318359375,
+        "longitude": 9.418850302696228
+      },
+      "status": "ok",
+      "uvi": 4.928384285605617,
+      "valid_cells": 1,
+      "valid_date": "2026-09-10"
+    },
+    {
+      "aggregation": "nearest_suitable_native_cell",
+      "category": "moderate",
+      "day": 3,
+      "display_uvi": 5,
+      "location": {
+        "altitude_m": 992,
+        "coordinate_source": "swisstopo SearchServer, gazetteer settlement 303471 (La Chaux-de-Fonds); height service at the same point",
+        "id": "la_chaux_de_fonds",
+        "kind": "town",
+        "label": "La Chaux-de-Fonds",
+        "latitude": 47.098457,
+        "longitude": 6.82432
+      },
+      "native_uvi_median": 5.396991842878468,
+      "native_uvi_range": [
+        5.396991842878468,
+        5.396991842878468
+      ],
+      "peak_window_start_range_utc": [
+        "2026-09-10T11:15:00.000000000Z",
+        "2026-09-10T11:15:00.000000000Z"
+      ],
+      "peak_window_start_utc": "2026-09-10T11:15:00.000000000Z",
+      "quality_flag": 69,
+      "reasons": [],
+      "selected_cells": 1,
+      "source_cells": [
+        185536
+      ],
+      "source_point": {
+        "altitude_difference_m": 92.61442422866821,
+        "altitude_m": 1084.6144242286682,
+        "cell": 185536,
+        "latitude": 47.10345458984375,
+        "longitude": 6.816799521446228
+      },
+      "status": "ok",
+      "uvi": 5.396991842878468,
+      "valid_cells": 1,
+      "valid_date": "2026-09-10"
+    },
+    {
       "aggregation": "p90_of_native_cell_daily_maxima",
       "category": "moderate",
       "day": 3,
@@ -17914,7 +19514,7 @@
     }
   ],
   "example_snapshot": true,
-  "input_sha256": "4eab94094555db4d7c8e4199cab26a25de54493cbedb632cadbce4bf527f60b3",
+  "input_sha256": "88cbe276f26b54421539cf71cb0b3f5ed9d744e6a23fabd5420eeff70039570a",
   "issued_at": "2026-09-07T06:00:00+00:00",
   "peak_definition": "maximum_30min_mean_on_5min_grid_hourly_cloud_reconstruction",
   "qualification": "experimental; site/regime skill must be assessed separately",
