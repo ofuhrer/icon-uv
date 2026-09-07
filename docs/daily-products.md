@@ -8,7 +8,7 @@ the default.
 
 ## Prepare the grid
 
-Follow the [download workflow](https://github.com/ofuhrer/icon-uv#calculate-uv-fields)
+Follow the [download workflow](index.md#calculate-uv-fields)
 with input coverage for every requested daylight period. Twelve solar samples
 per hour align cloud fitting with daily five-minute reconstruction:
 
@@ -34,7 +34,7 @@ uv run --no-sync icon-uv daily --grid work/uv.nc \
 Issuance determines local dates and source-age checks. ICON may be at most
 24 hours old and CAMS at most 48 hours old. Future cycles raise an error; stale
 cycles produce unavailable entries. Reusing the same inputs, catalog and
-issuance produces the same payload. [Python publication](location-api.md#calculate-and-publish)
+issuance produces the same payload. [Python publication](location-api.md#publish-from-a-saved-grid)
 provides the same checks with a source file hash.
 
 Date choices are:
@@ -117,7 +117,8 @@ only. All downstream commands detect the input's member layout automatically.
 
 ## Reading the payload
 
-New shared catalogs use **daily-uv-v5**. Top-level metadata includes issuance,
+Every export uses the **daily-uv** contract (`schema: "daily-uv"`).
+`contract_sha256` identifies the exact bundled schema file. Top-level metadata includes issuance,
 timezone, valid dates, peak definition, source cycle ages, grid/catalog/table
 hashes, UV geometry and optional ensemble information. Each row records its
 location, date, day offset, status/reasons, selected/valid support counts,
@@ -146,7 +147,7 @@ from icon_uv.schema import load_schema, validate_daily
 
 with open("work/daily.json") as stream:
     payload = json.load(stream)
-schema = load_schema(payload)
+schema = load_schema()
 validate_daily(payload)  # requires jsonschema, included in the dev setup
 ```
 
@@ -154,10 +155,8 @@ validate_daily(payload)  # requires jsonschema, included in the dev setup
 and date/time formats. Exporter checks additionally enforce semantic rules such
 as freshness, date pairing, rounding and support counts.
 
-Published v1–v4 contracts remain unchanged. Legacy `kind: "town"` catalogs keep
-native matching: their export uses v1 for two CTRL dates, v2 for other CTRL date
-selections and v3 for ensembles. V4 introduced shared points and `uv_geometry`
-with required adjusted-point albedo; v5 permits inherited albedo. V4/v5 use
-`support_uvi_range` and `support_uvi_median`; v1–v3 retain the original
-`native_uvi_range` and `native_uvi_median` names. The package ships every supported
-[schema](https://github.com/ofuhrer/icon-uv/tree/main/icon_uv/data).
+The single [schema](https://github.com/ofuhrer/icon-uv/blob/main/icon_uv/data/daily-uv.schema.json)
+covers points, regions, arbitrary dates and optional ensemble summaries. Fields
+and geometry do not depend on how the catalog was constructed or which publisher
+was called. `uv_geometry`, `valid_dates`, `support_uvi_range` and
+`support_uvi_median` have the same meaning throughout the API.

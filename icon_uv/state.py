@@ -18,6 +18,31 @@ def positive_distance(value):
     return float(value)
 
 
+def finite_state(state):
+    """Availability of all saved physical drivers, retaining input dimensions."""
+    return np.all([np.isfinite(state[k].values) for k in STATE_UNITS], axis=0)
+
+
+def validate_members(grid, table, *, require_samples=False, require_sources=False):
+    """Validate saved state once per member and optionally its source cycles."""
+    from .ensemble import member_ids
+    from .data import utc
+
+    ids = member_ids(grid)
+    for member in ids or [None]:
+        validate_grid(grid.sel(member=member, drop=True) if member is not None else grid,
+                      table, require_samples=require_samples)
+    if require_sources:
+        for key in ('forecast_reference_time', 'cams_reference_time'):
+            if key not in grid.attrs:
+                raise ValueError(f'Missing source metadata {key}')
+            utc(grid.attrs[key])
+        cycle = np.datetime64(utc(grid.attrs['forecast_reference_time']).replace(tzinfo=None), 'ns')
+        if np.any(grid.time_bounds.values[:, 0] < cycle):
+            raise ValueError('Forecast intervals precede the ICON cycle')
+    return ids
+
+
 def validate_grid(grid, table, *, require_samples=False):
     """Validate one member's retained state and return its UTC interval bounds.
 

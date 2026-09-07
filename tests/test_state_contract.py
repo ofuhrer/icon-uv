@@ -2,9 +2,10 @@
 import numpy as np
 import pytest
 
+from icon_uv.locations import PointLocation
 from icon_uv.data import _validate_cams
 from icon_uv.daily import daily_cells
-from icon_uv.products import POI, compute_pois
+from icon_uv.products import compute_points
 from icon_uv.state import SOLAR_SAMPLES, STATE_UNITS, positive_distance, validate_grid
 from test_daily import AnalyticTable, grid
 
@@ -42,9 +43,9 @@ def test_point_and_daily_consumers_reject_same_corrupt_state(corruption, message
         state.ozone_du.attrs['units'] = 'kg m-2'
     else:
         state.time_bounds.values[:] += np.timedelta64(1, 'D')
-    poi = POI('test', 46.8, 9.8, 1000., horizon_degrees=(0.,)*4, uv_albedo=.05)
+    poi = PointLocation('test', 46.8, 9.8, 1000., horizon_degrees=(0.,)*4, uv_albedo=.05)
     with pytest.raises(ValueError, match=message):
-        compute_pois(state, [poi], AnalyticTable())
+        compute_points(state, [poi], AnalyticTable())
     with pytest.raises(ValueError, match=message):
         daily_cells(state, '2026-09-06', AnalyticTable())
 

@@ -40,9 +40,34 @@ table, and writes hourly grid and point NetCDF and daily JSON. It needs no
 network access or credentials after installation. Its September 2026 dates
 illustrate the formats; the output is not a weather forecast.
 
-For real forecasts, follow the
-[download and calculation workflow](https://github.com/ofuhrer/icon-uv#calculate-uv-fields)
-using an available ICON cycle and the preceding day's CAMS cycle.
+## Calculate UV fields
+
+Choose an available **00 UTC ICON cycle** and the **preceding day's 12 UTC CAMS
+cycle**. Published ICON files have limited retention. Replace both date placeholders:
+
+```sh
+ICON_REFERENCE="YYYY-MM-DDT00:00:00Z"
+CAMS_REFERENCE="PREVIOUS-YYYY-MM-DDT12:00:00Z"
+
+uv run --no-sync icon-uv fetch-icon \
+  --reference "$ICON_REFERENCE" --first-lead 1 --last-lead 48 \
+  --output work/icon.nc
+uv run --no-sync icon-uv fetch-cams \
+  --reference "$CAMS_REFERENCE" --first-lead 12 --last-lead 60 \
+  --output work/cams.nc
+uv run --no-sync icon-uv run \
+  --icon work/icon.nc --cams work/cams.nc --samples 12 --output work/uv.nc
+```
+
+ICON leads are interval boundaries: 1–48 produces 47 hourly intervals, covering
+two Swiss daylight dates. `--bbox W S E N` selects a subset; the default covers
+Switzerland and its surroundings. Keep the downloaded NetCDF inputs for offline
+recalculation. Downloads use all 21 ICON members; add `--control` to `fetch-icon`
+for CTRL only. Outputs retain member-specific cloud and surface conditions.
+
+Use the saved grid with the [location API](location-api.md) to calculate hourly
+points or publish daily JSON. Input coverage must include each requested daylight
+period; see [daily products](daily-products.md).
 
 ## Choose a guide
 
@@ -60,6 +85,5 @@ Development instructions are in
 See [Releasing](releasing.md) for package publishing. Report problems through
 [GitHub issues](https://github.com/ofuhrer/icon-uv/issues).
 
-This site tracks `main`. The shared location defaults require icon-uv 0.2.0 or
-later. Version-specific source and
-documentation are available in [GitHub releases](https://github.com/ofuhrer/icon-uv/releases).
+This site tracks `main`. Install from the repository to use the API documented here.
+Released source and documentation are available in [GitHub releases](https://github.com/ofuhrer/icon-uv/releases).

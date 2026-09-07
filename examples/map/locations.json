@@ -1,5 +1,4 @@
 {
-  "catalog_version": 2,
   "name": "MeteoSwiss map locations",
   "geometry_description": "Town reference points with pressure adjusted to their settlement elevation and ICON-derived UV albedo. Regional elevation bands provide context for surrounding mountains; no additional local horizon screening is applied.",
   "coordinate_sources": {

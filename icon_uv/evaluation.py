@@ -3,6 +3,9 @@ import numpy as np
 from .radiation import solar_geometry
 
 
+from .state import finite_state
+
+
 def evaluate_uv(state, times, table, *, clear_sky=False, horizon_degrees=None):
     """Return horizontal components, screened UVI, availability and quality flags.
 
@@ -11,7 +14,7 @@ def evaluate_uv(state, times, table, *, clear_sky=False, horizon_degrees=None):
     """
     z, az, distance = solar_geometry(times[:, None], state.latitude.values[None, :], state.longitude.values[None, :])
     keys = ('ozone_du', 'pressure_pa', 'aod550', 'uv_albedo', 'effective_cloud_tau550', 'cloud_scale')
-    valid = np.all([np.isfinite(state[k].values) for k in keys], axis=0)
+    valid = finite_state(state)
     components = np.full(z.shape+(2,), np.nan)
     if valid.any():
         args = [state[k].values[valid] for k in keys[:5]]

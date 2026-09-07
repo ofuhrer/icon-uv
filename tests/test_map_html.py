@@ -30,7 +30,7 @@ def test_catalog_text_cannot_escape_data_script_or_expand_template_tokens():
 def test_bundled_snapshot_is_complete_and_page_matches_template_and_json():
     root = Path(__file__).resolve().parents[1]
     payload = json.loads((root / 'examples/map/index.locations.json').read_text())
-    schema = json.loads((root / 'icon_uv/data/daily-uv-v5.schema.json').read_text())
+    schema = json.loads((root / 'icon_uv/data/daily-uv.schema.json').read_text())
     Draft202012Validator(schema, format_checker=FormatChecker()).validate(payload)
     assert payload['example_snapshot'] is True
     assert len(payload['valid_dates']) == 4
@@ -187,12 +187,11 @@ console.log(JSON.stringify({
     assert result['single'] == {'uvi': 0, 'members': None}
 
 
-@pytest.mark.parametrize('version', ['daily-uv-v4', 'daily-uv-v5'])
-def test_map_geometry_matches_fields_or_requires_location_only(version):
+def test_map_geometry_matches_fields_or_requires_location_only():
     root = Path(__file__).resolve().parents[1]
     payload = json.loads((root / 'examples/map/index.locations.json').read_text())
     fields = json.loads((root / 'examples/map/index.fields.json').read_text())
-    payload.update(schema_version=version, uv_geometry='ambient_horizontal')
+    payload.update(schema='daily-uv', uv_geometry='ambient_horizontal')
     renderer.validate_products(payload, fields)
     payload['uv_geometry'] = 'terrain_screened'
     renderer.validate_products(payload)
@@ -202,10 +201,10 @@ def test_map_geometry_matches_fields_or_requires_location_only(version):
     with pytest.raises(ValueError, match='UV geometry'):
         renderer.validate_products(payload)
     result = run_map_helpers('''
-const f={schema_version:'daily-uv-v4',uv_geometry:'terrain_screened',entries:[{}]};
+const f={schema:'daily-uv',uv_geometry:'terrain_screened',entries:[{}]};
 validateProducts(f,null);
 try{validateProducts(f,{})}catch(error){console.log(JSON.stringify(error.message));}
-'''.replace('daily-uv-v4', version))
+''')
     assert 'UV geometry differ' in result
 
 

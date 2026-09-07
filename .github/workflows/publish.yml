@@ -23,7 +23,7 @@ jobs:
           GH_REPO: ${{ github.repository }}
         run: |
           if [ "$GITHUB_REF_TYPE" != tag ]; then
-            echo 'Select a version tag, e.g. gh workflow run publish.yml --ref v0.2.0'
+            echo 'Select a version tag, e.g. gh workflow run publish.yml --ref v0.3.0'
             exit 1
           fi
           test "$(gh release view "$GITHUB_REF_NAME" --json isDraft --jq .isDraft)" = false

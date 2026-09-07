@@ -28,7 +28,7 @@ REGION = RegionBand('region', (9.7, 46.7, 9.9, 46.9), 1000)
 
 
 def check(state, locations=(POINT,), **kwargs):
-    return preflight(state, locations, ISSUED, table=NoRadiationTable(), days=1, **kwargs)
+    return preflight(state, locations, ISSUED, table=NoRadiationTable(), **({'days':1} if 'dates' not in kwargs else {}), **kwargs)
 
 
 def test_complete_readonly_preflight_is_json_serializable():
@@ -150,3 +150,30 @@ def test_deterministic_slice_uses_single_product_coverage():
     report = preflight(single, {'entries': [catalog()['entries'][0]]}, '2026-09-06T06:00:00Z', days=1)
     assert report['ready']
     assert report['ensemble']['required_member_count'] == 1
+
+
+@pytest.mark.parametrize('day', ['2026-03-29', '2026-10-25'])
+@pytest.mark.parametrize('missing', ['night', 'daylight', 'one_cell', 'two_cells', 'member'])
+def test_preflight_and_daily_agree_on_dst_and_partial_support(day, missing):
+    """Independent entry points agree at spatial and member coverage boundaries."""
+    from icon_uv.daily import compute_daily
+
+    parts = [grid(day=day, n=20) for _ in range(3)]
+    if missing in ('night', 'daylight'):
+        hour = 0 if missing == 'night' else 12
+        parts = [p.isel(time=p.time.dt.hour.values != hour) for p in parts]
+    else:
+        for member, state in enumerate(parts):
+            cells = [member] if missing == 'one_cell' else [member, member+1]
+            if missing == 'member':
+                cells = list(range(20)) if member == 2 else []
+            state.uv_albedo.values[np.ix_(state.time.dt.hour.values == 12, cells)] = np.nan
+    state = stack_members(parts, [0, 1, 2])
+    state.attrs['minimum_member_fraction'] = .66
+    locations = [POINT, REGION]
+    report = preflight(state, locations, day+'T06:00:00Z', dates=[day], table=NoRadiationTable())
+    result = compute_daily(state, locations, dates=[day], table=AnalyticTable())
+    for support, entry in zip(report['locations'], result.entries):
+        assert support['dates'][0]['available'] == (entry['status'] != 'unavailable')
+        if entry['status'] != 'unavailable':
+            assert support['dates'][0]['complete_member_count'] == entry['ensemble']['valid_member_count']

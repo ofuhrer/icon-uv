@@ -52,9 +52,9 @@ def basemap(cache):
 
 def validate_products(payload, fields=None):
     """Reject mixed source products before publishing a map bundle."""
-    if payload.get('schema_version') not in ('daily-uv-v1', 'daily-uv-v2', 'daily-uv-v3', 'daily-uv-v4', 'daily-uv-v5') or not payload.get('entries'):
+    if payload.get('schema') != 'daily-uv' or not payload.get('entries'):
         raise ValueError('Expected a nonempty daily UV product')
-    geometry = payload.get('uv_geometry', 'ambient_horizontal' if payload['schema_version'] in ('daily-uv-v1', 'daily-uv-v2', 'daily-uv-v3') else None)
+    geometry = payload.get('uv_geometry')
     if geometry not in ('ambient_horizontal', 'terrain_screened'):
         raise ValueError('Expected explicit ambient_horizontal or terrain_screened UV geometry')
     if fields is not None:

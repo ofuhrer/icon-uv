@@ -3,6 +3,7 @@
 No account creation, embedded credentials, scraping or implicit provider fallback.
 """
 from concurrent.futures import ThreadPoolExecutor
+from functools import partial
 from datetime import datetime, timezone
 from math import prod
 from pathlib import Path
@@ -108,19 +109,8 @@ def interval_radiation(leads, means, errors, *, allow_missing=False):
     return np.maximum(flux, 0)
 
 
-def fetch_icon(reference, first_lead, last_lead, bbox=BBOX, workers=3, *, ensemble=True, minimum_member_fraction=.9):
-    """Return all 21 members (default) or CTRL interval fields on a native subset.
-
-    Leads are interval *boundaries*, so 10..34 gives 24 hourly intervals.
-    Surface state is averaged from the two endpoints. No temporal gap filling.
-    """
-    validate_bbox(bbox)
-    if not 0 < minimum_member_fraction <= 1:
-        raise ValueError('Minimum member fraction must be in (0, 1]')
-    ref = utc(reference)
-    if first_lead < 1 or last_lead <= first_lead:
-        raise ValueError("Use positive, increasing boundary leads, e.g. 10..34")
-    ref_string = ref.strftime("%Y-%m-%dT%H:%M:%SZ")
+def _icon_geometry(bbox):
+    """Download and select native geometry for the requested domain."""
     assets = _request(f"{STAC}/collections/{COLLECTION}/assets").json()["assets"]
     asset = next(a for a in assets if a["id"].startswith("horizontal"))
     raw = _request(asset["href"]).content
@@ -138,73 +128,101 @@ def fetch_icon(reference, first_lead, last_lead, bbox=BBOX, workers=3, *, ensemb
     if len(ids) == 0:
         raise ValueError("No model cells inside bbox")
     grid = fields["tlat"][0]["uuidOfHGrid"]
-    manifest = [{"source": f"{STAC}/collections/{COLLECTION}/assets",
-                 "asset": asset["id"], "sha256": hashlib.sha256(raw).hexdigest()}]
+    return xr.Dataset(coords={'cell': ids, 'latitude': ('cell', lat[ids]),
+                              'longitude': ('cell', lon[ids]), 'altitude_m': ('cell', fields['h'][1][ids])},
+                      attrs={'grid_uuid': grid, 'total_cells': len(lat),
+                             'source': {'source': f'{STAC}/collections/{COLLECTION}/assets',
+                                        'asset': asset['id'], 'sha256': hashlib.sha256(raw).hexdigest()}})
+
+
+def _fetch_icon_asset(job, *, reference, geometry):
+    ref = utc(reference)
+    ref_string = ref.strftime("%Y-%m-%dT%H:%M:%SZ")
+    ids = geometry.cell.values
+    var, lead, perturbed = job
+    body = {"collections": [COLLECTION], "forecast:reference_datetime": ref_string,
+            "forecast:variable": var, "forecast:perturbed": perturbed,
+            "forecast:horizon": f"P{lead//24}DT{lead%24:02d}H00M00S"}
+    features = _request(STAC+"/search", body).json()["features"]
+    if len(features) != 1:
+        raise RuntimeError(f"Expected one ICON asset for {var} lead {lead}; found {len(features)} (expired/incomplete run?)")
+    feature = features[0]
+    name, entry = next(iter(feature["assets"].items()))
+    content = _request(entry["href"]).content
+    messages = _decode_bytes(content)
+    expected = set(range(1, 21)) if perturbed else {0}
+    members = {}; rejected = set()
+    for m, v, _ in messages:
+        member = m.get('perturbationNumber')
+        if member not in expected:
+            continue
+        if member in members or member in rejected:
+            rejected.add(member); members.pop(member, None); continue
+        try:
+            if (m.get("uuidOfHGrid") != geometry.attrs['grid_uuid'] or m["dataDate"] != int(ref.strftime("%Y%m%d"))
+                or m["dataTime"] != int(ref.strftime("%H%M")) or m["endStep"] != lead
+                or m["stepUnits"] != 1 or len(v) != geometry.attrs['total_cells']):
+                raise ValueError(f"ICON reference/grid/time mismatch for {var}")
+            expected_units = {"ASOD_S": "W m**-2", "PS": "Pa", "ALB_RAD": "%", "SNOWC": "%"}
+            if m["units"] != expected_units[var]:
+                raise ValueError(f"Unexpected units for {var}: {m['units']}")
+            if var == "ASOD_S" and (m["stepType"] != "avg" or m["startStep"] != 0):
+                raise ValueError("ICON ASOD_S must be mean since reference time")
+            if var != "ASOD_S" and m["stepType"] != "instant":
+                raise ValueError(f"Expected instantaneous {var}")
+            values = v[ids].copy()
+            valid = np.isfinite(values)
+            if var in ('ALB_RAD', 'SNOWC'):
+                valid &= (values >= 0) & (values <= 100)
+            if var == 'PS':
+                valid &= values > 0
+            members[member] = (np.where(valid, values, np.nan), m)
+        except (ValueError, KeyError):
+            rejected.add(member)
+    source = next(link['href'] for link in feature['links'] if link['rel'] == 'self')
+    return job, members, {'source': source, 'asset': name,
+                         'missing_members': sorted(expected-set(members)),
+                         'sha256': hashlib.sha256(content).hexdigest()}
+
+
+def _available_icon_asset(job, *, reference, geometry):
+    """Retain missing assets as missing state; transport errors still propagate."""
+    try:
+        return _fetch_icon_asset(job, reference=reference, geometry=geometry)
+    except (RuntimeError, ValueError, KeyError) as exc:
+        var, lead, perturbed = job
+        # Do not include transport details or signed URLs in failure manifests.
+        return job, {}, {'variable': var, 'lead': lead, 'perturbed': perturbed,
+                         'unavailable': type(exc).__name__}
+
+
+def fetch_icon(reference, first_lead, last_lead, bbox=BBOX, workers=3, *, ensemble=True, minimum_member_fraction=.9):
+    """Return all 21 members (default) or CTRL interval fields on a native subset.
+
+    Leads are interval *boundaries*, so 10..34 gives 24 hourly intervals.
+    Surface state is averaged from the two endpoints. No temporal gap filling.
+    """
+    validate_bbox(bbox)
+    if not 0 < minimum_member_fraction <= 1:
+        raise ValueError('Minimum member fraction must be in (0, 1]')
+    ref = utc(reference)
+    if first_lead < 1 or last_lead <= first_lead:
+        raise ValueError("Use positive, increasing boundary leads, e.g. 10..34")
+    ref_string = ref.strftime("%Y-%m-%dT%H:%M:%SZ")
+    geometry = _icon_geometry(bbox)
+    ids = geometry.cell.values
+    manifest = [geometry.attrs['source']]
     leads = list(range(first_lead, last_lead+1))
     # Base downward flux: the separate *_OS diagnostics include terrain shading.
     # Cloud inversion needs the ambient horizontal flux, before local screening.
     variables = ("ASOD_S", "PS", "ALB_RAD", "SNOWC")
 
-    def fetch(job):
-        var, lead, perturbed = job
-        body = {"collections": [COLLECTION], "forecast:reference_datetime": ref_string,
-                "forecast:variable": var, "forecast:perturbed": perturbed,
-                "forecast:horizon": f"P{lead//24}DT{lead%24:02d}H00M00S"}
-        features = _request(STAC+"/search", body).json()["features"]
-        if len(features) != 1:
-            raise RuntimeError(f"Expected one ICON asset for {var} lead {lead}; found {len(features)} (expired/incomplete run?)")
-        feature = features[0]
-        name, entry = next(iter(feature["assets"].items()))
-        content = _request(entry["href"]).content
-        messages = _decode_bytes(content)
-        expected = set(range(1, 21)) if perturbed else {0}
-        members = {}; rejected = set()
-        for m, v, _ in messages:
-            member = m.get('perturbationNumber')
-            if member not in expected:
-                continue
-            if member in members or member in rejected:
-                rejected.add(member); members.pop(member, None); continue
-            try:
-                if (m.get("uuidOfHGrid") != grid or m["dataDate"] != int(ref.strftime("%Y%m%d"))
-                    or m["dataTime"] != int(ref.strftime("%H%M")) or m["endStep"] != lead
-                    or m["stepUnits"] != 1 or len(v) != len(lat)):
-                    raise ValueError(f"ICON reference/grid/time mismatch for {var}")
-                expected_units = {"ASOD_S": "W m**-2", "PS": "Pa", "ALB_RAD": "%", "SNOWC": "%"}
-                if m["units"] != expected_units[var]:
-                    raise ValueError(f"Unexpected units for {var}: {m['units']}")
-                if var == "ASOD_S" and (m["stepType"] != "avg" or m["startStep"] != 0):
-                    raise ValueError("ICON ASOD_S must be mean since reference time")
-                if var != "ASOD_S" and m["stepType"] != "instant":
-                    raise ValueError(f"Expected instantaneous {var}")
-                values = v[ids].copy()
-                valid = np.isfinite(values)
-                if var in ('ALB_RAD', 'SNOWC'):
-                    valid &= (values >= 0) & (values <= 100)
-                if var == 'PS':
-                    valid &= values > 0
-                members[member] = (np.where(valid, values, np.nan), m)
-            except (ValueError, KeyError):
-                rejected.add(member)
-        source = next(link['href'] for link in feature['links'] if link['rel'] == 'self')
-        return job, members, {'source': source, 'asset': name,
-                             'missing_members': sorted(expected-set(members)),
-                             'sha256': hashlib.sha256(content).hexdigest()}
-
-    def fetch_available(job):
-        try:
-            return fetch(job)
-        except (RuntimeError, ValueError, KeyError) as exc:
-            var, lead, perturbed = job
-            # Do not include transport details or signed URLs in failure manifests.
-            return job, {}, {'variable': var, 'lead': lead, 'perturbed': perturbed,
-                             'unavailable': type(exc).__name__}
-
     records = {}
     jobs = [(v, h, perturbed) for v in variables for h in leads
             for perturbed in ([False, True] if ensemble else [False])]
+    fetch = partial(_available_icon_asset, reference=ref_string, geometry=geometry)
     with ThreadPoolExecutor(max_workers=workers) as pool:
-        for i, (job, members, source) in enumerate(pool.map(fetch_available, jobs), 1):
+        for i, (job, members, source) in enumerate(pool.map(fetch, jobs), 1):
             var, lead, _ = job
             for member, record in members.items():
                 records[var, lead, member] = record
@@ -226,10 +244,8 @@ def fetch_icon(reference, first_lead, last_lead, bbox=BBOX, workers=3, *, ensemb
     boundaries = base + np.asarray(leads)*np.timedelta64(1, "h")
     ds = xr.Dataset(dict(state, sw_down=(dims, sw if ensemble else sw[0]),
                          time_bounds=(("time", "bounds"), np.column_stack([boundaries[:-1], boundaries[1:]]))),
-                    coords={"time": boundaries[:-1]+np.timedelta64(30, "m"), "cell": ids,
-                            "latitude": ("cell", lat[ids]), "longitude": ("cell", lon[ids]),
-                            "altitude_m": ("cell", fields["h"][1][ids])},
-                    attrs={"forecast_reference_time": ref_string, "grid_uuid": grid,
+                    coords={**geometry.coords, "time": boundaries[:-1]+np.timedelta64(30, "m")},
+                    attrs={"forecast_reference_time": ref_string, "grid_uuid": geometry.attrs["grid_uuid"],
                            "member": 0, "bbox": json.dumps(list(bbox)),
                            "icon_sources": json.dumps(manifest),
                            "source": "MeteoSwiss ICON-CH2-EPS, public STAC" if ensemble else "MeteoSwiss ICON-CH2 control, public STAC",

@@ -4,7 +4,7 @@ import numpy as np
 import pytest
 import xarray as xr
 from icon_uv.locations import PointLocation, RegionBand, load_locations, plan_support
-from icon_uv.products import compute_grid, compute_points, compute_pois, POI
+from icon_uv.products import compute_grid, compute_points
 from icon_uv.daily import compute_daily, export_daily, export_daily_file, write_daily_json
 from icon_uv.data import write_netcdf
 from icon_uv.schema import validate_daily
@@ -21,15 +21,15 @@ def adjusted(horizon=(0.,)*4):
     return PointLocation('summit', 46.8, 9.8, 2000, treatment='adjusted', uv_albedo=.05, horizon_degrees=horizon)
 
 
-def test_shared_catalog_roundtrip_and_legacy_adapters(tmp_path):
+def test_shared_catalog_roundtrip(tmp_path):
     path = tmp_path/'catalog.json'
-    path.write_text(json.dumps({'catalog_version': 2, 'entries': [native().to_entry(), adjusted().to_entry(), RegionBand('alps', (9.7,46.7,9.9,46.9),1000).to_entry()]}))
+    path.write_text(json.dumps({'entries': [native().to_entry(), adjusted().to_entry(), RegionBand('alps', (9.7,46.7,9.9,46.9),1000).to_entry()]}))
     locations = load_locations(path)
     assert len(locations.locations) == 3
     assert len(locations.points) == 2
     assert locations.points[1].treatment == 'adjusted'
-    legacy = load_locations([dict(name='davos', latitude=46.8, longitude=9.8, altitude_m=1500, uv_albedo=.05, horizon_degrees=[0]*4)])
-    assert legacy.points[0].treatment == 'adjusted'
+    catalog = load_locations([dict(kind='point', id='davos', latitude=46.8, longitude=9.8, altitude_m=1500, uv_albedo=.05, horizon_degrees=[0]*4)])
+    assert catalog.points[0].treatment == 'adjusted'
     with pytest.raises(ValueError, match='unique'):
         load_locations([native(), native()])
     with pytest.raises(ValueError, match='treatment'):
@@ -38,7 +38,7 @@ def test_shared_catalog_roundtrip_and_legacy_adapters(tmp_path):
         PointLocation('town',46.8,9.8,1000,treatment='native',uv_albedo=.1)
 
 
-def test_shared_native_hourly_matches_grid_and_legacy_point_unchanged(icon,cams,table):
+def test_shared_native_hourly_matches_grid_and_adjusted_pressure_changes(icon,cams,table):
     g = compute_grid(icon, cams, table)
     p = PointLocation('town',46.8,7,500,treatment='native')
     hourly = compute_points(g,[p],table)
@@ -46,8 +46,6 @@ def test_shared_native_hourly_matches_grid_and_legacy_point_unchanged(icon,cams,
     assert hourly.terrain_screened_uvi.isnull().all()
     ap = PointLocation('local',46.8,7,900,treatment='adjusted',uv_albedo=.1,horizon_degrees=(10.,)*4)
     common = compute_points(g,[ap],table)
-    old = compute_pois(g,[POI('local',46.8,7,900,(10.,)*4,.1)],table)
-    xr.testing.assert_identical(common,old)
     assert (common.pressure_pa < g.pressure_pa.isel(cell=0)).all()
 
 
@@ -64,7 +62,7 @@ def test_adjusted_daily_uses_target_surface_and_rolling_support(tmp_path):
     for result in (ambient,screened):
         payload=write_daily_json(result,tmp_path/'daily.json','2026-09-06T06:00:00Z',input_sha256='0'*64)
         validate_daily(payload)
-        assert payload['schema_version']=='daily-uv-v5'
+        assert payload['schema']=='daily-uv'
     with pytest.raises(ValueError,match='horizon'):
         compute_daily(ds,locations,['2026-09-06'],t,terrain_screened=True)
     with pytest.raises(ValueError,match='horizon'):
@@ -119,8 +117,8 @@ def test_catalog_normalizes_points_and_isolated_metadata(tmp_path):
     assert c.catalog['entries'][0]['treatment']=='adjusted'
     t=AnalyticTable();t.sha256='a'*64
     ds=grid();ds.attrs['radiation_table_sha256']=t.sha256
-    legacy=[dict(name='legacy',latitude=46.8,longitude=9.8,altitude_m=1000,uv_albedo=.05,horizon_degrees=[0]*4)]
-    for locs in (c,legacy):
+    catalog=[dict(kind='point', id='local',latitude=46.8,longitude=9.8,altitude_m=1000,uv_albedo=.05,horizon_degrees=[0]*4)]
+    for locs in (c,catalog):
         result=compute_daily(ds,locs,['2026-09-06'],t)
         payload=write_daily_json(result,tmp_path/'daily.json','2026-09-06T06:00:00Z',input_sha256='0'*64)
         validate_daily(payload)
@@ -191,10 +189,10 @@ def test_default_point_support_adjusts_large_elevation_difference():
     np.testing.assert_allclose(local.pressure_pa, ds.pressure_pa * np.exp(661 / 8434))
     xr.testing.assert_identical(local.uv_albedo, ds.uv_albedo)
     assert local.altitude_m.item() == 1617
-    legacy = load_locations([dict(kind='town', id='zermatt', latitude=point.latitude,
+    catalog = load_locations([dict(kind='point', treatment='native', id='zermatt', latitude=point.latitude,
                                  longitude=point.longitude, altitude_m=point.altitude_m)])
-    assert legacy.points[0].treatment == 'native'
-    assert not len(plan_support(ds, legacy.points[0]).indices)
+    assert catalog.points[0].treatment == 'native'
+    assert not len(plan_support(ds, catalog.points[0]).indices)
 
 
 @pytest.mark.parametrize('ensemble', [False, True])

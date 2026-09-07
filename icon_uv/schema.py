@@ -1,25 +1,20 @@
-"""Select the published daily JSON contract without a runtime validator dependency."""
+"""Load the authoritative daily JSON contract without a runtime validator dependency."""
 
+import hashlib
 import json
 import re
-from collections.abc import Mapping
 from datetime import datetime
 from importlib.resources import files
 
 
-SCHEMA_VERSIONS = ("daily-uv-v1", "daily-uv-v2", "daily-uv-v3", "daily-uv-v4", "daily-uv-v5")
+SCHEMA_NAME = 'daily-uv'
+_SCHEMA_BYTES = files('icon_uv').joinpath('data/daily-uv.schema.json').read_bytes()
+CONTRACT_SHA256 = hashlib.sha256(_SCHEMA_BYTES).hexdigest()
 
 
-def load_schema(version_or_payload):
-    """Return a fresh schema for a version string or a daily payload mapping.
-
-    Unknown versions raise ValueError. Payload data never becomes a file path.
-    """
-    version = (version_or_payload.get("schema_version")
-               if isinstance(version_or_payload, Mapping) else version_or_payload)
-    if not isinstance(version, str) or version not in SCHEMA_VERSIONS:
-        raise ValueError(f"Unsupported daily schema version {version!r}; expected {', '.join(SCHEMA_VERSIONS)}")
-    return json.loads((files("icon_uv") / "data" / f"{version}.schema.json").read_text(encoding="utf-8"))
+def load_schema():
+    """Return an independent copy of the single daily product schema."""
+    return json.loads(_SCHEMA_BYTES)
 
 
 def validate_daily(payload):
@@ -29,7 +24,7 @@ def validate_daily(payload):
     helper. This does not check freshness or cross-field scientific semantics.
     Validation errors are jsonschema.ValidationError; success returns None.
     """
-    schema = load_schema(payload)
+    schema = load_schema()
     try:
         from jsonschema import Draft202012Validator, FormatChecker
     except ImportError as exc:

@@ -35,7 +35,7 @@ def _day_count(value):
 
 def _date_arguments(parser):
     dates = parser.add_mutually_exclusive_group()
-    dates.add_argument('--days', type=_day_count, default=2, help="Positive number of local dates (default: 2), or all supplied daylight dates")
+    dates.add_argument('--days', type=_day_count, help="Positive number of local dates (default: 2), or all supplied daylight dates")
     dates.add_argument('--dates', nargs='+', metavar='YYYY-MM-DD', help='Explicit increasing local valid dates')
 
 
@@ -67,23 +67,23 @@ def _main():
     run.add_argument("--chunk-size", type=int, default=2048)
     run.add_argument("--samples", type=int, choices=(1,2,4,6,12), default=4, help="Solar samples per hour (default: 4; use 12 for daily maps)")
     run.add_argument("--output", type=Path, required=True)
-    poi = commands.add_parser("poi", aliases=["points"], help="Hourly points from a shared location catalog or legacy POI JSON")
+    poi = commands.add_parser("points", help="Hourly points from a location catalog")
     poi.add_argument("--grid", type=Path, required=True)
-    poi.add_argument("--locations", "--catalog", dest="locations", type=Path, required=True)
+    poi.add_argument("--locations", dest="locations", type=Path, required=True)
     poi.add_argument("--table", type=Path, default=DEFAULT_TABLE)
     poi.add_argument("--output", type=Path, required=True)
     daily = commands.add_parser("daily", help="Export daily map data from a saved UV grid")
     daily.add_argument("--grid", type=Path, required=True)
-    daily.add_argument("--locations", "--catalog", dest="catalog", type=Path, required=True)
+    daily.add_argument("--locations", dest="locations", type=Path, required=True)
     _date_arguments(daily)
-    daily.add_argument('--terrain-screened', action='store_true', help='Use explicit horizons for a catalog of points; schema v5')
+    daily.add_argument('--terrain-screened', action='store_true', help='Use explicit horizons for a catalog of points')
     daily.add_argument("--issued-at", required=True, help="Timezone-aware issuance timestamp; also fixes replay dates")
     daily.add_argument('--ensemble-quantile', type=float, default=.5, help='Quantile of member daily products (default: 0.5, median)')
     daily.add_argument("--table", type=Path, default=DEFAULT_TABLE)
     daily.add_argument("--output", type=Path, required=True)
     preflight = commands.add_parser('preflight', help='Check saved-grid state, native support, freshness and daylight coverage without computing UV')
     preflight.add_argument('--grid', type=Path, required=True)
-    preflight.add_argument('--locations', '--catalog', dest='locations', type=Path, required=True)
+    preflight.add_argument('--locations', dest='locations', type=Path, required=True)
     preflight.add_argument('--issued-at', required=True)
     preflight.add_argument('--table', type=Path, default=DEFAULT_TABLE)
     preflight.add_argument('--output', type=Path, help='Optional JSON report')
@@ -103,7 +103,7 @@ def _main():
         with xr.open_dataset(args.icon) as ds:
             result = compute_grid(ds.load(), load_cams(args.cams), RadiationTable(args.table), chunk_size=args.chunk_size, samples=args.samples, progress=True)
         write_netcdf(result, args.output)
-    elif args.command in ('poi', 'points'):
+    elif args.command == 'points':
         locations = load_locations(args.locations)
         with xr.open_dataset(args.grid) as ds:
             result = compute_points(ds, locations.points, RadiationTable(args.table))
@@ -113,7 +113,7 @@ def _main():
         make_table(args.lib, args.output, args.cache, workers=args.workers)
     elif args.command == "daily":
         from .daily import export_daily_file
-        export_daily_file(args.grid, args.catalog, args.issued_at, output=args.output,
+        export_daily_file(args.grid, args.locations, args.issued_at, output=args.output,
                           ensemble_quantile=args.ensemble_quantile, days=args.days, dates=args.dates,
                           terrain_screened=args.terrain_screened, table=RadiationTable(args.table))
     elif args.command == 'preflight':

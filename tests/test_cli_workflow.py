@@ -27,7 +27,7 @@ def test_shared_cli_preflight_points_daily(monkeypatch,tmp_path,capsys):
     grid,catalog=fixture(tmp_path)
     invoke(monkeypatch,'preflight','--grid',grid,'--locations',catalog,'--issued-at','2026-09-06T06:00:00Z','--days','1')
     assert json.loads(capsys.readouterr().out)['ready']
-    invoke(monkeypatch,'points','--grid',grid,'--catalog',catalog,'--output',tmp_path/'points.nc')
+    invoke(monkeypatch,'points','--grid',grid,'--locations',catalog,'--output',tmp_path/'points.nc')
     assert (tmp_path/'points.nc').exists()
     invoke(monkeypatch,'daily','--grid',grid,'--locations',catalog,'--issued-at','2026-09-06T06:00:00Z',
            '--dates','2026-09-06','2026-09-08','--output',tmp_path/'daily.json')

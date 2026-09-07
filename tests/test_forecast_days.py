@@ -27,12 +27,12 @@ def test_full_horizon_excludes_trailing_night_and_preserves_two_day_values():
     args = (ds, catalog(), '2026-09-07T06:00:00Z')
     old = export_daily(*args, table=table)
     new = export_daily(*args, table=table, days='all')
-    assert old['schema_version'] == 'daily-uv-v1'
-    assert new['schema_version'] == 'daily-uv-v2'
+    assert old['schema'] == 'daily-uv'
+    assert new['schema'] == 'daily-uv'
     assert new['valid_dates'] == ['2026-09-07','2026-09-08','2026-09-09','2026-09-10','2026-09-11']
     assert [r for r in new['entries'] if r['day'] < 2] == old['entries']
-    assert all(r['status'] == 'ok' for r in new['entries'] if r['location']['kind'] == 'town')
-    schema = json.loads(files('icon_uv').joinpath('data/daily-uv-v2.schema.json').read_text())
+    assert all(r['status'] == 'ok' for r in new['entries'] if r['location']['kind'] == 'point')
+    schema = json.loads(files('icon_uv').joinpath('data/daily-uv.schema.json').read_text())
     Draft202012Validator.check_schema(schema)
     Draft202012Validator(schema, format_checker=FormatChecker()).validate(new)
 
@@ -42,7 +42,7 @@ def test_partial_last_day_and_internal_gap_remain_unavailable():
     ds = ds.isel(time=ds.time.values != np.datetime64('2026-09-09T11:30'))
     result = export_daily(ds, catalog(), '2026-09-07T06:00:00Z', table=AnalyticTable(), days='all')
     assert len(result['valid_dates']) == 5
-    towns = [r for r in result['entries'] if r['location']['kind'] == 'town']
+    towns = [r for r in result['entries'] if r['location']['kind'] == 'point']
     assert [r['day'] for r in towns if r['status'] == 'ok'] == [0, 1, 3]
     assert all(r['uvi'] is None and 'incomplete_daylight' in r['reasons'] for r in towns if r['day'] in (2,4))
 
@@ -51,9 +51,9 @@ def test_partial_last_day_and_internal_gap_remain_unavailable():
 def test_four_day_product_keeps_missing_days_and_omits_fifth(hours, complete_days):
     result = export_daily(forecast(hours=hours), catalog(), '2026-09-07T06:00:00Z',
                           table=AnalyticTable(), days=4)
-    assert result['schema_version'] == 'daily-uv-v2'
+    assert result['schema'] == 'daily-uv'
     assert result['valid_dates'] == ['2026-09-07', '2026-09-08', '2026-09-09', '2026-09-10']
-    towns = [r for r in result['entries'] if r['location']['kind'] == 'town']
+    towns = [r for r in result['entries'] if r['location']['kind'] == 'point']
     assert [r['day'] for r in towns if r['status'] == 'ok'] == complete_days
     assert all(r['uvi'] is None and 'incomplete_daylight' in r['reasons']
                for r in towns if r['day'] not in complete_days)

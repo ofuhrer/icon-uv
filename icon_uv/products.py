@@ -1,5 +1,4 @@
-"""Gridded numerical products and caller-owned POI geometry. No HTTP server."""
-from dataclasses import dataclass
+"""Gridded and point UV products from saved atmospheric state."""
 import json
 import time
 
@@ -11,8 +10,8 @@ from . import __version__
 from .ensemble import member_ids, map_members
 from .data import utc, _validate_cams
 from .radiation import FLAG_MEANINGS, RadiationTable, solar_geometry
-from .state import validate_grid, positive_distance, SOLAR_SAMPLES
-from .locations import PointLocation, load_locations, plan_support, prepare_point
+from .state import validate_members, SOLAR_SAMPLES
+from .locations import load_locations, plan_support, prepare_point
 from .evaluation import evaluate_uv
 
 
@@ -161,40 +160,9 @@ def _compute_grid_member(icon, *, cams, table, composition, chunk_size, samples,
     return out
 
 
-@dataclass(frozen=True)
-class POI:
-    """All local fields are mandatory. Horizon: equally spaced azimuths from north.
-
-    uv_albedo represents effective UV reflectance of local surroundings, not a
-    skin/material reflectance. No lookup of elevation, horizon or snow is made.
-    """
-    name: str
-    latitude: float
-    longitude: float
-    altitude_m: float
-    horizon_degrees: tuple[float, ...]
-    uv_albedo: float
-
-    def __post_init__(self):
-        if self.horizon_degrees is None:
-            raise ValueError('POI requires explicit horizon elevations')
-        PointLocation(self.name, self.latitude, self.longitude, self.altitude_m,
-                      treatment='adjusted', uv_albedo=self.uv_albedo, horizon_degrees=self.horizon_degrees)
-
-
 def _xyz(lat, lon):
     a, b = np.deg2rad(lat), np.deg2rad(lon)
     return np.column_stack([np.cos(a)*np.cos(b), np.cos(a)*np.sin(b), np.sin(a)])
-
-
-def compute_pois(grid, pois, table=None, *, maximum_distance_km=10):
-    """Compatibility API for explicitly adjusted points with mandatory horizons."""
-    maximum_distance_km = positive_distance(maximum_distance_km)
-    locations = [PointLocation(p.name, p.latitude, p.longitude, p.altitude_m,
-                               treatment='adjusted', uv_albedo=p.uv_albedo,
-                               horizon_degrees=p.horizon_degrees,
-                               maximum_distance_km=maximum_distance_km) for p in pois]
-    return compute_points(grid, locations, table)
 
 
 def compute_points(grid, locations, table=None):
@@ -209,14 +177,10 @@ def compute_points(grid, locations, table=None):
     if len(catalog.points) != len(catalog.locations):
         raise ValueError('Hourly point forecasts require point locations, not regions')
     table = RadiationTable() if table is None else table
-    if grid.attrs.get('radiation_table_sha256') != table.sha256:
-        raise ValueError('POI radiation table differs from grid; recompute grid with this table')
-    ids = member_ids(grid)
-    for m in ids or [None]:
-        validate_grid(grid.sel(member=m, drop=True) if m is not None else grid, table, require_samples=True)
+    ids = validate_members(grid, table, require_samples=True)
     plans = [plan_support(grid, p) for p in catalog.points]
     if any(len(p.indices) != 1 for p in plans):
-        raise ValueError('POI too far from suitable ICON cells or outside declared grid subdomain')
+        raise ValueError('Point too far from suitable ICON cells or outside declared grid subdomain')
     if ids is not None:
         return map_members(_compute_points_member, grid, plans=plans, table=table)
     return _compute_points_member(grid, plans=plans, table=table)

@@ -1,10 +1,10 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "Daily UV location product v4",
-  "description": "Explicit native or adjusted point treatment, regional memberwise spatial support, arbitrary local dates and ambient or terrain-screened UV. Ensemble summaries are present for ensemble inputs.",
+  "title": "Daily UV product",
+  "description": "Point and regional daily peaks with explicit support, freshness, geometry and optional ensemble summaries.",
   "type": "object",
   "required": [
-    "schema_version",
+    "schema",
     "contract_sha256",
     "issued_at",
     "timezone",
@@ -22,11 +22,9 @@
     "uv_geometry"
   ],
   "properties": {
-    "schema_version": {
-      "const": "daily-uv-v4"
-    },
     "contract_sha256": {
-      "const": "02db66f8fa54d9b5b542fa9a1020415b533fbefc6df54fa2874be55ca6ae36ca"
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
     },
     "issued_at": {
       "type": "string",
@@ -194,6 +192,9 @@
         "ambient_horizontal",
         "terrain_screened"
       ]
+    },
+    "schema": {
+      "const": "daily-uv"
     }
   },
   "$defs": {
@@ -226,9 +227,8 @@
             },
             "kind": {
               "enum": [
-                "town",
-                "region_altitude",
-                "point"
+                "point",
+                "region_altitude"
               ]
             },
             "altitude_m": {
@@ -282,21 +282,6 @@
               "if": {
                 "properties": {
                   "kind": {
-                    "const": "town"
-                  }
-                }
-              },
-              "then": {
-                "required": [
-                  "latitude",
-                  "longitude"
-                ]
-              }
-            },
-            {
-              "if": {
-                "properties": {
-                  "kind": {
                     "const": "region_altitude"
                   }
                 }
@@ -339,14 +324,25 @@
                 ],
                 "properties": {
                   "treatment": {
-                    "const": "adjusted"
+                    "const": "native"
                   }
                 }
               },
               "then": {
-                "required": [
-                  "uv_albedo"
-                ]
+                "not": {
+                  "anyOf": [
+                    {
+                      "required": [
+                        "uv_albedo"
+                      ]
+                    },
+                    {
+                      "required": [
+                        "horizon_degrees"
+                      ]
+                    }
+                  ]
+                }
               }
             }
           ]
@@ -625,10 +621,7 @@
                     "location": {
                       "properties": {
                         "kind": {
-                          "enum": [
-                            "town",
-                            "point"
-                          ]
+                          "const": "point"
                         }
                       }
                     }
@@ -770,7 +763,10 @@
               "location": {
                 "properties": {
                   "kind": {
-                    "const": "town"
+                    "const": "point"
+                  },
+                  "treatment": {
+                    "const": "native"
                   }
                 }
               }
@@ -817,6 +813,36 @@
               "then": {
                 "required": [
                   "ensemble"
+                ]
+              }
+            }
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "entries": {
+            "items": {
+              "if": {
+                "properties": {
+                  "status": {
+                    "enum": [
+                      "ok",
+                      "degraded"
+                    ]
+                  },
+                  "location": {
+                    "properties": {
+                      "kind": {
+                        "const": "point"
+                      }
+                    }
+                  }
+                }
+              },
+              "then": {
+                "required": [
+                  "peak_window_start_utc"
                 ]
               }
             }

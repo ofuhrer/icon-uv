@@ -1,8 +1,8 @@
 {
   "assumptions": "fixed reference profile/H2O/aerosol type; effective uniform liquid cloud; experimental UV snow albedo",
-  "catalog_sha256": "4da40031d40ac0b8384020ba9759b4d493cf3e85c6ca7a06004d74eacadb1bf2",
+  "catalog_sha256": "3de76493badd6e7b0c38173e2f56d0e6ccc8705a9ed5cb2f4b7536a2b50621c8",
   "category_basis": "rounded_integer_half_up",
-  "contract_sha256": "7a8f7cff08d2a57ee43fba2bac40b6e06b62cc4df573e01a3662520812e69585",
+  "contract_sha256": "2dd55758be665baa60b0c85468af5e73ec6266632f02509312eaf4446f98c418",
   "entries": [
     {
       "aggregation": "adjusted_point_daily_maximum",
@@ -1300,7 +1300,7 @@
       "day": 0,
       "display_uvi": 6,
       "location": {
-        "altitude_m": 1000,
+        "altitude_m": 1000.0,
         "bbox": [
           6.0,
           46.5,
@@ -2514,7 +2514,7 @@
       "day": 0,
       "display_uvi": 6,
       "location": {
-        "altitude_m": 1000,
+        "altitude_m": 1000.0,
         "bbox": [
           7.0,
           45.9,
@@ -2713,7 +2713,7 @@
       "day": 0,
       "display_uvi": 7,
       "location": {
-        "altitude_m": 2000,
+        "altitude_m": 2000.0,
         "bbox": [
           7.0,
           45.9,
@@ -2993,7 +2993,7 @@
       "day": 0,
       "display_uvi": 9,
       "location": {
-        "altitude_m": 3000,
+        "altitude_m": 3000.0,
         "bbox": [
           7.0,
           45.9,
@@ -3190,7 +3190,7 @@
       "day": 0,
       "display_uvi": 6,
       "location": {
-        "altitude_m": 1000,
+        "altitude_m": 1000.0,
         "bbox": [
           7.3,
           46.4,
@@ -3358,7 +3358,7 @@
       "day": 0,
       "display_uvi": 6,
       "location": {
-        "altitude_m": 2000,
+        "altitude_m": 2000.0,
         "bbox": [
           7.3,
           46.4,
@@ -3556,7 +3556,7 @@
       "day": 0,
       "display_uvi": 8,
       "location": {
-        "altitude_m": 3000,
+        "altitude_m": 3000.0,
         "bbox": [
           7.3,
           46.4,
@@ -3667,7 +3667,7 @@
       "day": 0,
       "display_uvi": 6,
       "location": {
-        "altitude_m": 1000,
+        "altitude_m": 1000.0,
         "bbox": [
           8.7,
           46.7,
@@ -3748,7 +3748,7 @@
       "day": 0,
       "display_uvi": 6,
       "location": {
-        "altitude_m": 2000,
+        "altitude_m": 2000.0,
         "bbox": [
           8.7,
           46.7,
@@ -3901,7 +3901,7 @@
       "day": 0,
       "display_uvi": 8,
       "location": {
-        "altitude_m": 3000,
+        "altitude_m": 3000.0,
         "bbox": [
           8.7,
           46.7,
@@ -3945,7 +3945,7 @@
       "day": 0,
       "display_uvi": 6,
       "location": {
-        "altitude_m": 1000,
+        "altitude_m": 1000.0,
         "bbox": [
           9.3,
           46.3,
@@ -4047,7 +4047,7 @@
       "day": 0,
       "display_uvi": 7,
       "location": {
-        "altitude_m": 2000,
+        "altitude_m": 2000.0,
         "bbox": [
           9.3,
           46.3,
@@ -4446,7 +4446,7 @@
       "day": 0,
       "display_uvi": 8,
       "location": {
-        "altitude_m": 3000,
+        "altitude_m": 3000.0,
         "bbox": [
           9.3,
           46.3,
@@ -4538,7 +4538,7 @@
       "day": 0,
       "display_uvi": 6,
       "location": {
-        "altitude_m": 1000,
+        "altitude_m": 1000.0,
         "bbox": [
           8.4,
           46.2,
@@ -4644,7 +4644,7 @@
       "day": 0,
       "display_uvi": 6,
       "location": {
-        "altitude_m": 2000,
+        "altitude_m": 2000.0,
         "bbox": [
           8.4,
           46.2,
@@ -4887,7 +4887,7 @@
       "day": 0,
       "display_uvi": 8,
       "location": {
-        "altitude_m": 3000,
+        "altitude_m": 3000.0,
         "bbox": [
           8.4,
           46.2,
@@ -6227,7 +6227,7 @@
       "day": 1,
       "display_uvi": 6,
       "location": {
-        "altitude_m": 1000,
+        "altitude_m": 1000.0,
         "bbox": [
           6.0,
           46.5,
@@ -7441,7 +7441,7 @@
       "day": 1,
       "display_uvi": 6,
       "location": {
-        "altitude_m": 1000,
+        "altitude_m": 1000.0,
         "bbox": [
           7.0,
           45.9,
@@ -7640,7 +7640,7 @@
       "day": 1,
       "display_uvi": 7,
       "location": {
-        "altitude_m": 2000,
+        "altitude_m": 2000.0,
         "bbox": [
           7.0,
           45.9,
@@ -7920,7 +7920,7 @@
       "day": 1,
       "display_uvi": 9,
       "location": {
-        "altitude_m": 3000,
+        "altitude_m": 3000.0,
         "bbox": [
           7.0,
           45.9,
@@ -8117,7 +8117,7 @@
       "day": 1,
       "display_uvi": 6,
       "location": {
-        "altitude_m": 1000,
+        "altitude_m": 1000.0,
         "bbox": [
           7.3,
           46.4,
@@ -8285,7 +8285,7 @@
       "day": 1,
       "display_uvi": 7,
       "location": {
-        "altitude_m": 2000,
+        "altitude_m": 2000.0,
         "bbox": [
           7.3,
           46.4,
@@ -8483,7 +8483,7 @@
       "day": 1,
       "display_uvi": 9,
       "location": {
-        "altitude_m": 3000,
+        "altitude_m": 3000.0,
         "bbox": [
           7.3,
           46.4,
@@ -8594,7 +8594,7 @@
       "day": 1,
       "display_uvi": 6,
       "location": {
-        "altitude_m": 1000,
+        "altitude_m": 1000.0,
         "bbox": [
           8.7,
           46.7,
@@ -8675,7 +8675,7 @@
       "day": 1,
       "display_uvi": 6,
       "location": {
-        "altitude_m": 2000,
+        "altitude_m": 2000.0,
         "bbox": [
           8.7,
           46.7,
@@ -8828,7 +8828,7 @@
       "day": 1,
       "display_uvi": 8,
       "location": {
-        "altitude_m": 3000,
+        "altitude_m": 3000.0,
         "bbox": [
           8.7,
           46.7,
@@ -8872,7 +8872,7 @@
       "day": 1,
       "display_uvi": 6,
       "location": {
-        "altitude_m": 1000,
+        "altitude_m": 1000.0,
         "bbox": [
           9.3,
           46.3,
@@ -8974,7 +8974,7 @@
       "day": 1,
       "display_uvi": 7,
       "location": {
-        "altitude_m": 2000,
+        "altitude_m": 2000.0,
         "bbox": [
           9.3,
           46.3,
@@ -9373,7 +9373,7 @@
       "day": 1,
       "display_uvi": 8,
       "location": {
-        "altitude_m": 3000,
+        "altitude_m": 3000.0,
         "bbox": [
           9.3,
           46.3,
@@ -9465,7 +9465,7 @@
       "day": 1,
       "display_uvi": 6,
       "location": {
-        "altitude_m": 1000,
+        "altitude_m": 1000.0,
         "bbox": [
           8.4,
           46.2,
@@ -9571,7 +9571,7 @@
       "day": 1,
       "display_uvi": 6,
       "location": {
-        "altitude_m": 2000,
+        "altitude_m": 2000.0,
         "bbox": [
           8.4,
           46.2,
@@ -9814,7 +9814,7 @@
       "day": 1,
       "display_uvi": 9,
       "location": {
-        "altitude_m": 3000,
+        "altitude_m": 3000.0,
         "bbox": [
           8.4,
           46.2,
@@ -11154,7 +11154,7 @@
       "day": 2,
       "display_uvi": 5,
       "location": {
-        "altitude_m": 1000,
+        "altitude_m": 1000.0,
         "bbox": [
           6.0,
           46.5,
@@ -12368,7 +12368,7 @@
       "day": 2,
       "display_uvi": 4,
       "location": {
-        "altitude_m": 1000,
+        "altitude_m": 1000.0,
         "bbox": [
           7.0,
           45.9,
@@ -12567,7 +12567,7 @@
       "day": 2,
       "display_uvi": 4,
       "location": {
-        "altitude_m": 2000,
+        "altitude_m": 2000.0,
         "bbox": [
           7.0,
           45.9,
@@ -12847,7 +12847,7 @@
       "day": 2,
       "display_uvi": 6,
       "location": {
-        "altitude_m": 3000,
+        "altitude_m": 3000.0,
         "bbox": [
           7.0,
           45.9,
@@ -13044,7 +13044,7 @@
       "day": 2,
       "display_uvi": 2,
       "location": {
-        "altitude_m": 1000,
+        "altitude_m": 1000.0,
         "bbox": [
           7.3,
           46.4,
@@ -13212,7 +13212,7 @@
       "day": 2,
       "display_uvi": 4,
       "location": {
-        "altitude_m": 2000,
+        "altitude_m": 2000.0,
         "bbox": [
           7.3,
           46.4,
@@ -13410,7 +13410,7 @@
       "day": 2,
       "display_uvi": 6,
       "location": {
-        "altitude_m": 3000,
+        "altitude_m": 3000.0,
         "bbox": [
           7.3,
           46.4,
@@ -13521,7 +13521,7 @@
       "day": 2,
       "display_uvi": 3,
       "location": {
-        "altitude_m": 1000,
+        "altitude_m": 1000.0,
         "bbox": [
           8.7,
           46.7,
@@ -13602,7 +13602,7 @@
       "day": 2,
       "display_uvi": 3,
       "location": {
-        "altitude_m": 2000,
+        "altitude_m": 2000.0,
         "bbox": [
           8.7,
           46.7,
@@ -13755,7 +13755,7 @@
       "day": 2,
       "display_uvi": 3,
       "location": {
-        "altitude_m": 3000,
+        "altitude_m": 3000.0,
         "bbox": [
           8.7,
           46.7,
@@ -13799,7 +13799,7 @@
       "day": 2,
       "display_uvi": 3,
       "location": {
-        "altitude_m": 1000,
+        "altitude_m": 1000.0,
         "bbox": [
           9.3,
           46.3,
@@ -13901,7 +13901,7 @@
       "day": 2,
       "display_uvi": 3,
       "location": {
-        "altitude_m": 2000,
+        "altitude_m": 2000.0,
         "bbox": [
           9.3,
           46.3,
@@ -14300,7 +14300,7 @@
       "day": 2,
       "display_uvi": 4,
       "location": {
-        "altitude_m": 3000,
+        "altitude_m": 3000.0,
         "bbox": [
           9.3,
           46.3,
@@ -14392,7 +14392,7 @@
       "day": 2,
       "display_uvi": 4,
       "location": {
-        "altitude_m": 1000,
+        "altitude_m": 1000.0,
         "bbox": [
           8.4,
           46.2,
@@ -14498,7 +14498,7 @@
       "day": 2,
       "display_uvi": 4,
       "location": {
-        "altitude_m": 2000,
+        "altitude_m": 2000.0,
         "bbox": [
           8.4,
           46.2,
@@ -14741,7 +14741,7 @@
       "day": 2,
       "display_uvi": 6,
       "location": {
-        "altitude_m": 3000,
+        "altitude_m": 3000.0,
         "bbox": [
           8.4,
           46.2,
@@ -16081,7 +16081,7 @@
       "day": 3,
       "display_uvi": 5,
       "location": {
-        "altitude_m": 1000,
+        "altitude_m": 1000.0,
         "bbox": [
           6.0,
           46.5,
@@ -17295,7 +17295,7 @@
       "day": 3,
       "display_uvi": 6,
       "location": {
-        "altitude_m": 1000,
+        "altitude_m": 1000.0,
         "bbox": [
           7.0,
           45.9,
@@ -17494,7 +17494,7 @@
       "day": 3,
       "display_uvi": 6,
       "location": {
-        "altitude_m": 2000,
+        "altitude_m": 2000.0,
         "bbox": [
           7.0,
           45.9,
@@ -17774,7 +17774,7 @@
       "day": 3,
       "display_uvi": 8,
       "location": {
-        "altitude_m": 3000,
+        "altitude_m": 3000.0,
         "bbox": [
           7.0,
           45.9,
@@ -17971,7 +17971,7 @@
       "day": 3,
       "display_uvi": 5,
       "location": {
-        "altitude_m": 1000,
+        "altitude_m": 1000.0,
         "bbox": [
           7.3,
           46.4,
@@ -18139,7 +18139,7 @@
       "day": 3,
       "display_uvi": 6,
       "location": {
-        "altitude_m": 2000,
+        "altitude_m": 2000.0,
         "bbox": [
           7.3,
           46.4,
@@ -18337,7 +18337,7 @@
       "day": 3,
       "display_uvi": 8,
       "location": {
-        "altitude_m": 3000,
+        "altitude_m": 3000.0,
         "bbox": [
           7.3,
           46.4,
@@ -18448,7 +18448,7 @@
       "day": 3,
       "display_uvi": 5,
       "location": {
-        "altitude_m": 1000,
+        "altitude_m": 1000.0,
         "bbox": [
           8.7,
           46.7,
@@ -18529,7 +18529,7 @@
       "day": 3,
       "display_uvi": 6,
       "location": {
-        "altitude_m": 2000,
+        "altitude_m": 2000.0,
         "bbox": [
           8.7,
           46.7,
@@ -18682,7 +18682,7 @@
       "day": 3,
       "display_uvi": 7,
       "location": {
-        "altitude_m": 3000,
+        "altitude_m": 3000.0,
         "bbox": [
           8.7,
           46.7,
@@ -18726,7 +18726,7 @@
       "day": 3,
       "display_uvi": 6,
       "location": {
-        "altitude_m": 1000,
+        "altitude_m": 1000.0,
         "bbox": [
           9.3,
           46.3,
@@ -18828,7 +18828,7 @@
       "day": 3,
       "display_uvi": 6,
       "location": {
-        "altitude_m": 2000,
+        "altitude_m": 2000.0,
         "bbox": [
           9.3,
           46.3,
@@ -19227,7 +19227,7 @@
       "day": 3,
       "display_uvi": 8,
       "location": {
-        "altitude_m": 3000,
+        "altitude_m": 3000.0,
         "bbox": [
           9.3,
           46.3,
@@ -19319,7 +19319,7 @@
       "day": 3,
       "display_uvi": 6,
       "location": {
-        "altitude_m": 1000,
+        "altitude_m": 1000.0,
         "bbox": [
           8.4,
           46.2,
@@ -19425,7 +19425,7 @@
       "day": 3,
       "display_uvi": 6,
       "location": {
-        "altitude_m": 2000,
+        "altitude_m": 2000.0,
         "bbox": [
           8.4,
           46.2,
@@ -19668,7 +19668,7 @@
       "day": 3,
       "display_uvi": 8,
       "location": {
-        "altitude_m": 3000,
+        "altitude_m": 3000.0,
         "bbox": [
           8.4,
           46.2,
@@ -19719,7 +19719,7 @@
   "peak_definition": "maximum_30min_mean_on_5min_grid_hourly_cloud_reconstruction",
   "qualification": "experimental; site/regime skill must be assessed separately",
   "radiation_table_sha256": "a33db2d4b2806f216eef356c761460383bb4a9fca53e3b958715bc12e6d6dcba",
-  "schema_version": "daily-uv-v5",
+  "schema": "daily-uv",
   "sources": {
     "cams": {
       "age_hours": 18.0,

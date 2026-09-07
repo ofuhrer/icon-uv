@@ -59,4 +59,4 @@ def test_excluded_member_extremes_do_not_enter_native_metadata():
     assert row['ensemble']['valid_member_count'] == 20
     assert row['ensemble']['member_uvi'][0] is None
     assert row['ensemble']['member_valid_cells'][0] == 0
-    assert row['native_uvi_range'][1] < 6
+    assert row['support_uvi_range'][1] < 6

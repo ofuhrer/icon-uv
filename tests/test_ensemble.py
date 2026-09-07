@@ -10,9 +10,10 @@ import xarray as xr
 from jsonschema import Draft202012Validator, FormatChecker
 
 from icon_uv import data
+from icon_uv.locations import PointLocation
 from icon_uv.daily import daily_cells, export_daily
 from icon_uv.ensemble import member_ids, summary
-from icon_uv.products import compute_grid, compute_pois, POI
+from icon_uv.products import compute_grid, compute_points
 from test_daily import grid, catalog, AnalyticTable
 from test_uv import icon, cams, table
 
@@ -105,10 +106,10 @@ def test_memberwise_uv_and_pois_match_independent_calculations(icon,cams,table,t
     # Nonlinear cloud inversion must not be applied to averaged SW.
     shortcut=compute_grid(ensemble.mean('member',keep_attrs=True),cams,table)
     assert np.max(abs(result.uvi.mean('member')-shortcut.uvi))>.01
-    pois=[POI('test',46.8,7,500,[0]*4,.05)]
-    points=compute_pois(result,pois,table)
+    pois=[PointLocation('test', 46.8, 7, 500, horizon_degrees=[0]*4, uv_albedo=.05)]
+    points=compute_points(result,pois,table)
     for m in range(3):
-        np.testing.assert_allclose(points.uvi.sel(member=m),compute_pois(expected[m],pois,table).uvi)
+        np.testing.assert_allclose(points.uvi.sel(member=m),compute_points(expected[m],pois,table).uvi)
     path=tmp_path/'ensemble.nc';data.write_netcdf(result,path)
     with xr.open_dataset(path) as saved:
         assert member_ids(saved)==[0,1,2]
@@ -142,14 +143,14 @@ def test_region_spatial_percentile_precedes_ensemble_reduction():
     c=catalog()
     for e in c['entries']:e['label']=e['id']
     payload=export_daily(ens,c,'2026-09-06T06:00:00Z',input_sha256='0'*64,table=table)
-    assert payload['schema_version']=='daily-uv-v3' and len(payload['valid_dates'])==2
+    assert payload['schema']=='daily-uv' and len(payload['valid_dates'])==2
     region=payload['entries'][1]
     peak=daily_cells(parts[0],'2026-09-06',table)['uvi'].max()
     assert region['uvi']==pytest.approx(peak)
     assert payload['entries'][0]['uvi']==pytest.approx(peak*.2)
     assert 'peak_window_start_utc' not in payload['entries'][0]
     assert region['ensemble']['member_uvi']==pytest.approx([peak]*3)
-    schema=json.loads((Path(__file__).parents[1]/'icon_uv/data/daily-uv-v3.schema.json').read_text())
+    schema=json.loads((Path(__file__).parents[1]/'icon_uv/data/daily-uv.schema.json').read_text())
     Draft202012Validator(schema,format_checker=FormatChecker()).validate(payload)
     partial=ens.isel(time=ens.time.dt.hour.values!=12)
     unavailable=export_daily(partial,catalog(),'2026-09-06T06:00:00Z',input_sha256='0'*64,table=table)
@@ -203,7 +204,7 @@ def test_missing_input_is_local_to_member_cell_and_hour(icon,cams,table):
     assert int(result.quality_flag.sel(member=1)[0,0]) & 128
     assert np.isfinite(result.uvi.sel(member=1)[1,0])
     assert np.isfinite(result.uvi.sel(member=0)).all()
-    points=compute_pois(result,[POI('test',46.8,7,500,[0]*4,.05)],table)
+    points=compute_points(result,[PointLocation('test', 46.8, 7, 500, horizon_degrees=[0]*4, uv_albedo=.05)],table)
     assert np.isnan(points.uvi.sel(member=1)[0,0])
     assert np.isfinite(points.uvi.sel(member=1)[1,0])
 

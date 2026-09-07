@@ -85,7 +85,7 @@ from [swisstopo terrain profiles](https://api3.geo.admin.ch/rest/services/profil
 on 5 September 2026 using a 20 km radius and 401 samples per ray. Horizon angles
 are rounded to 0.01°; point altitude is 1588.2 m. UV albedo 0.05 is an explicit
 assumption. This is terrain-derived example geometry, not a surveyed instrument
-installation or measured albedo. `load_locations` accepts this legacy POI list
+installation or measured albedo. `load_locations` accepts this point catalog
 for both hourly and daily calculations.
 
 ## Daily JSON

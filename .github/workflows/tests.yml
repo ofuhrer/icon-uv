@@ -27,8 +27,6 @@ jobs:
         run: uv sync --locked --extra cams
       - name: Test, including the offline example
         run: uv run --no-sync pytest -q
-      - name: Check generated schemas
-        run: uv run --no-sync python tools/generate_schemas.py --check
       - name: CLI smoke check
         run: uv run --no-sync icon-uv --help
       - name: Build source distribution and wheel

@@ -1,6 +1,6 @@
 """UV forecasts with shared location definitions and hourly/daily calculations."""
 
-__version__ = "0.2.0"
+__version__ = "0.3.0"
 
 from .locations import PointLocation, RegionBand, load_locations
 from .products import compute_grid, compute_points

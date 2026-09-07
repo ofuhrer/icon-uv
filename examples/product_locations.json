@@ -1,114 +1,125 @@
 {
-  "catalog_version": 1,
   "status": "illustrative; verify location and region choices before adoption",
   "entries": [
     {
       "id": "bas",
-      "kind": "town",
+      "kind": "point",
       "label": "Basel",
       "latitude": 47.541142,
       "longitude": 7.583525,
       "altitude_m": 316.0,
-      "coordinate_source": "SwissMetNet BAS station vicinity; illustrative product location"
+      "coordinate_source": "SwissMetNet BAS station vicinity; illustrative product location",
+      "treatment": "native"
     },
     {
       "id": "ber",
-      "kind": "town",
+      "kind": "point",
       "label": "Bern",
       "latitude": 46.990744,
       "longitude": 7.464061,
       "altitude_m": 553.0,
-      "coordinate_source": "SwissMetNet BER station vicinity; illustrative product location"
+      "coordinate_source": "SwissMetNet BER station vicinity; illustrative product location",
+      "treatment": "native"
     },
     {
       "id": "chu",
-      "kind": "town",
+      "kind": "point",
       "label": "Chur",
       "latitude": 46.870572,
       "longitude": 9.530761,
       "altitude_m": 556.0,
-      "coordinate_source": "SwissMetNet CHU station vicinity; illustrative product location"
+      "coordinate_source": "SwissMetNet CHU station vicinity; illustrative product location",
+      "treatment": "native"
     },
     {
       "id": "dav",
-      "kind": "town",
+      "kind": "point",
       "label": "Davos",
       "latitude": 46.812969,
       "longitude": 9.843558,
       "altitude_m": 1594.0,
-      "coordinate_source": "SwissMetNet DAV station vicinity; illustrative product location"
+      "coordinate_source": "SwissMetNet DAV station vicinity; illustrative product location",
+      "treatment": "native"
     },
     {
       "id": "gve",
-      "kind": "town",
+      "kind": "point",
       "label": "Geneva",
       "latitude": 46.247519,
       "longitude": 6.127742,
       "altitude_m": 411.0,
-      "coordinate_source": "SwissMetNet GVE station vicinity; illustrative product location"
+      "coordinate_source": "SwissMetNet GVE station vicinity; illustrative product location",
+      "treatment": "native"
     },
     {
       "id": "lug",
-      "kind": "town",
+      "kind": "point",
       "label": "Lugano",
       "latitude": 46.004217,
       "longitude": 8.960322,
       "altitude_m": 273.0,
-      "coordinate_source": "SwissMetNet LUG station vicinity; illustrative product location"
+      "coordinate_source": "SwissMetNet LUG station vicinity; illustrative product location",
+      "treatment": "native"
     },
     {
       "id": "luz",
-      "kind": "town",
+      "kind": "point",
       "label": "Lucerne",
       "latitude": 47.036439,
       "longitude": 8.301022,
       "altitude_m": 454.0,
-      "coordinate_source": "SwissMetNet LUZ station vicinity; illustrative product location"
+      "coordinate_source": "SwissMetNet LUZ station vicinity; illustrative product location",
+      "treatment": "native"
     },
     {
       "id": "puy",
-      "kind": "town",
+      "kind": "point",
       "label": "Lausanne vicinity",
       "latitude": 46.512283,
       "longitude": 6.667517,
       "altitude_m": 456.0,
-      "coordinate_source": "SwissMetNet PUY station vicinity; illustrative product location"
+      "coordinate_source": "SwissMetNet PUY station vicinity; illustrative product location",
+      "treatment": "native"
     },
     {
       "id": "sam",
-      "kind": "town",
+      "kind": "point",
       "label": "St Moritz vicinity",
       "latitude": 46.526247,
       "longitude": 9.879469,
       "altitude_m": 1709.0,
-      "coordinate_source": "SwissMetNet SAM station vicinity; illustrative product location"
+      "coordinate_source": "SwissMetNet SAM station vicinity; illustrative product location",
+      "treatment": "native"
     },
     {
       "id": "sio",
-      "kind": "town",
+      "kind": "point",
       "label": "Sion",
       "latitude": 46.21865,
       "longitude": 7.330203,
       "altitude_m": 482.0,
-      "coordinate_source": "SwissMetNet SIO station vicinity; illustrative product location"
+      "coordinate_source": "SwissMetNet SIO station vicinity; illustrative product location",
+      "treatment": "native"
     },
     {
       "id": "sma",
-      "kind": "town",
+      "kind": "point",
       "label": "Zurich",
       "latitude": 47.381003,
       "longitude": 8.567194,
       "altitude_m": 604.0,
-      "coordinate_source": "SwissMetNet SMA station vicinity; illustrative product location"
+      "coordinate_source": "SwissMetNet SMA station vicinity; illustrative product location",
+      "treatment": "native"
     },
     {
       "id": "stg",
-      "kind": "town",
+      "kind": "point",
       "label": "St Gallen",
       "latitude": 47.425475,
       "longitude": 9.398528,
       "altitude_m": 776.0,
-      "coordinate_source": "SwissMetNet STG station vicinity; illustrative product location"
+      "coordinate_source": "SwissMetNet STG station vicinity; illustrative product location",
+      "treatment": "native"
     },
     {
       "id": "bernese_1000",

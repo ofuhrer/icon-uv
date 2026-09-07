@@ -8,7 +8,7 @@ Run the commands below from the repository root after following the
 | [offline.py](offline.py) | Credential-free synthetic saved-input calculation using the real radiation table; writes grid, point and daily outputs. |
 | [shared_locations.json](shared_locations.json) | Ambient points with ICON-derived albedo and a region, accepted by `points` and `daily --locations`. |
 | [davos.json](davos.json) | One site with assumed UV albedo and a supplied swisstopo horizon, for hourly or screened daily output. |
-| [product_locations.json](product_locations.json) | Legacy native-town catalog retained for compatibility; new products use shared locations. |
+| [product_locations.json](product_locations.json) | Explicit native points near stations, with regional elevation bands. |
 | [map/](map/) | An English, four-day Swiss UV map with saved example data, generation scripts and browser assets. |
 
 ## Point and daily forecasts

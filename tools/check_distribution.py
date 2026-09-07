@@ -15,16 +15,15 @@ from pathlib import Path
 from importlib.metadata import version
 import icon_uv
 from icon_uv.radiation import RadiationTable
-from icon_uv.schema import SCHEMA_VERSIONS, load_schema
+from icon_uv.schema import load_schema
 
 assert 'site-packages' in str(Path(icon_uv.__file__).resolve())
 assert icon_uv.__version__ == version('icon-uv')
-for version in SCHEMA_VERSIONS:
-    assert load_schema(version)['properties']['schema_version']['const'] == version
+assert load_schema()['properties']['schema']['const'] == 'daily-uv'
 table = RadiationTable()
 assert table.sha256 == 'a33db2d4b2806f216eef356c761460383bb4a9fca53e3b958715bc12e6d6dcba'
 assert table.at(30, 310, 95000, .12, .05, 0)[..., 2:].sum() > 0
-print('Isolated wheel imports and bundled schemas/radiation table: OK')
+print('Isolated wheel imports and bundled schema/radiation table: OK')
 """
 
 
@@ -46,7 +45,7 @@ def main():
         if args.tag and args.tag != f"v{metadata['Version']}":
             parser.error(f"Tag {args.tag!r} does not match package version {metadata['Version']}")
         assert "icon_uv/data/rt.npz" in names
-        assert all(f"icon_uv/data/daily-uv-v{version}.schema.json" in names for version in (1, 2, 3, 4, 5))
+        assert {name for name in names if name.endswith(".schema.json")} == {"icon_uv/data/daily-uv.schema.json"}
     with tarfile.open(sources[0]) as archive:
         project_path, = (name for name in archive.getnames() if name.endswith('/pyproject.toml'))
         with archive.extractfile(project_path) as stream:
@@ -54,7 +53,7 @@ def main():
         assert project['name'] == metadata['Name']
         assert project['version'] == metadata['Version']
         names = {name.split("/", 1)[-1] for name in archive.getnames()}
-        assert {"CHANGELOG.md", "docs/releasing.md", "docs/images/uv-map.gif", "docs/validation-manifest.json", "examples/offline.py", "tools/generate_schemas.py",
+        assert {"CHANGELOG.md", "docs/releasing.md", "docs/images/uv-map.gif", "docs/validation-manifest.json", "examples/offline.py",
                 "tools/check_distribution.py", "tests/test_schema_helpers.py"} <= names
     with tempfile.TemporaryDirectory(prefix="icon-uv-wheel-") as directory:
         subprocess.run(["uv", "run", "--isolated", "--no-project", "--with", str(wheel),

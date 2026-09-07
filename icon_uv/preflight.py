@@ -1,12 +1,13 @@
 """Inspect saved forecast support and physical inputs without calculating UV."""
 import numpy as np
 
-from .daily import _sources, daylight_hours, utc_instant, valid_dates
-from .ensemble import member_ids, required_members
-from .locations import (PointLocation, RegionBand, load_locations, plan_support,
-                        prepare_point, REGION_MINIMUM_CELLS, REGION_MINIMUM_FRACTION)
+from .daily import _sources, utc_instant, valid_dates
+from .coverage import daylight_coverage, eligible_members
+from .ensemble import required_members
+from .locations import (PointLocation, load_locations, plan_support,
+                        prepare_point, support_requirements)
 from .radiation import RadiationTable
-from .state import STATE_UNITS, validate_grid
+from .state import validate_members
 
 
 def _check_ranges(state, table, context):
@@ -29,24 +30,14 @@ def _day_support(states, ids, day, minimum, spatial_minimum, spatial_fraction):
     required_count = np.zeros(n, dtype=int)
     supplied_count = np.zeros(n, dtype=int)
     complete_count = np.zeros((len(states), n), dtype=int)
-    lookup = {t: i for i, t in enumerate(states[0].time_bounds.values[:, 0])}
-    # Solar geometry is cheap, but its minute-by-cell arrays still need a bound.
     for start in range(0, n, 256):
         sl = slice(start, min(start+256, n))
-        geometry = states[0].isel(cell=sl)
-        hours, required = daylight_hours(day, geometry.latitude.values, geometry.longitude.values)
-        required_count[sl] = required.sum(axis=0)
-        present = [(h, lookup[hour]) for h, hour in enumerate(hours) if hour in lookup]
-        if not present:
-            continue
-        h, rows = np.array(present).T
-        supplied_count[sl] = required[h].sum(axis=0)
-        for m, state in enumerate(states):
-            local = state.isel(time=rows, cell=sl)
-            finite = np.all([np.isfinite(local[field].values) for field in STATE_UNITS], axis=0)
-            complete_count[m, sl] = (required[h] & finite).sum(axis=0)
-    complete_cells = (complete_count == required_count[None, :]).sum(axis=1)
-    member_available = (complete_cells >= spatial_minimum) & (complete_cells >= spatial_fraction*n)
+        coverage = daylight_coverage([state.isel(cell=sl) for state in states], day)
+        required_count[sl] = coverage.required
+        supplied_count[sl] = coverage.supplied
+        complete_count[:, sl] = coverage.complete
+    complete_cells, member_available = eligible_members(
+        complete_count == required_count[None, :], spatial_minimum, spatial_fraction)
     count = int(member_available.sum())
     reasons = []
     if n < spatial_minimum:
@@ -67,7 +58,7 @@ def _day_support(states, ids, day, minimum, spatial_minimum, spatial_fraction):
                          for m, member in enumerate(ids)])
 
 
-def preflight(grid, locations, issued_at, *, days=2, dates=None, table=None):
+def preflight(grid, locations, issued_at, *, days=None, dates=None, table=None):
     """Report source freshness, native support and daylight coverage without UV.
 
     Hour counts are aligned with each location's ``cell_ids``. Supplied counts
@@ -78,20 +69,13 @@ def preflight(grid, locations, issued_at, *, days=2, dates=None, table=None):
     """
     table = RadiationTable() if table is None else table
     catalog = load_locations(locations)
-    ids = member_ids(grid)
+    ids = validate_members(grid, table, require_sources=True)
     present_ids = ids or [0]
     members = [grid.sel(member=m, drop=True) for m in ids] if ids else [grid]
     for member, state in zip(present_ids, members):
-        validate_grid(state, table)
         _check_ranges(state, table, f'Source member {member}')
-    for key in ('forecast_reference_time', 'cams_reference_time'):
-        if key not in grid.attrs:
-            raise ValueError(f'Preflight requires source metadata {key}')
     issue = utc_instant(issued_at)
     sources, stale = _sources(grid.attrs, issue)
-    cycle = np.datetime64(utc_instant(grid.attrs['forecast_reference_time']).replace(tzinfo=None), 'ns')
-    if np.any(grid.time_bounds.values[:, 0] < cycle):
-        raise ValueError('Forecast intervals precede the ICON cycle')
     resolved = valid_dates(grid, issued_at, days=days, dates=dates)
     expected, fraction, minimum = required_members(grid)
     if ids is None:
@@ -100,8 +84,7 @@ def preflight(grid, locations, issued_at, *, days=2, dates=None, table=None):
     for location in catalog.locations:
         plan = plan_support(grid, location)
         selected = len(plan.indices)
-        spatial_minimum = REGION_MINIMUM_CELLS if isinstance(location, RegionBand) else 1
-        spatial_fraction = REGION_MINIMUM_FRACTION if isinstance(location, RegionBand) else 1.
+        spatial_minimum, spatial_fraction = support_requirements(location)
         if isinstance(location, PointLocation) and selected:
             states = [prepare_point(member, plan) for member in members]
         else:

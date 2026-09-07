@@ -1,7 +1,7 @@
 # Releasing icon-uv
 
 The package builds a pure-Python wheel and source archive with setuptools and
-`uv build`. The wheel includes the radiation table, all JSON schemas and the
+`uv build`. The wheel includes the radiation table, the daily JSON schema and the
 license. Its dependencies may install native libraries. Tests and builds run on
 Linux with Python 3.11 and 3.13; they do not need forecast-service credentials.
 
@@ -14,10 +14,9 @@ Linux with Python 3.11 and 3.13; they do not need forecast-service credentials.
    ```sh
    uv sync --locked --extra cams
    uv run --no-sync pytest -q
-   uv run --no-sync python tools/generate_schemas.py --check
-   uv build --out-dir work/release/0.2.0
-   uv run --no-sync python tools/check_distribution.py work/release/0.2.0 --tag v0.2.0
-   uv run --no-sync twine check --strict work/release/0.2.0/*
+   uv build --out-dir work/release/0.3.0
+   uv run --no-sync python tools/check_distribution.py work/release/0.3.0 --tag v0.3.0
+   uv run --no-sync twine check --strict work/release/0.3.0/*
    ```
 
 3. Commit and push the changes. Wait for **Tests and distributions** to pass for
@@ -28,7 +27,7 @@ Linux with Python 3.11 and 3.13; they do not need forecast-service credentials.
 
 The distribution checker verifies resources, matching wheel/source versions,
 the release tag and the installed `__version__`. It installs the wheel outside
-the source tree and exercises its schemas and radiation table. Twine checks the
+the source tree and exercises its schema and radiation table. Twine checks the
 package metadata and README. README links are absolute so they also work on PyPI.
 
 ## One-time PyPI setup
@@ -57,7 +56,7 @@ does not reserve the name. See the official [first-project setup guide](https://
 After the GitHub release exists and the publisher is configured:
 
 ```sh
-gh workflow run publish.yml --ref v0.2.0
+gh workflow run publish.yml --ref v0.3.0
 ```
 
 **Publish to PyPI** is manual. It rejects branch refs and draft or missing
@@ -70,7 +69,7 @@ and generates provenance attestations by default.
 Once publication succeeds, users can install with:
 
 ```sh
-pip install 'icon-uv[cams]==0.2.0'
+pip install 'icon-uv[cams]==0.3.0'
 icon-uv --help
 ```
 

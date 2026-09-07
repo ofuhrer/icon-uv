@@ -9,8 +9,9 @@ import pytest
 import xarray as xr
 import eccodes as ec
 
+from icon_uv.locations import PointLocation
 from icon_uv.data import interval_radiation, load_cams, write_netcdf, cams_request, fetch_cams
-from icon_uv.products import POI, compute_grid, compute_pois, compare_observations
+from icon_uv.products import compute_grid, compute_points, compare_observations
 from icon_uv.radiation import AXES, RadiationTable, erythema, solar_geometry
 from icon_uv.check_grid import check_grid
 from icon_uv.compare_public_uv import compare as compare_public_uv
@@ -256,36 +257,35 @@ def test_cams_request():
 
 
 def test_poi_requires_own_geometry():
-    with pytest.raises(TypeError):
-        POI("incomplete", 47, 8, 500)
+    assert PointLocation("ambient", 47, 8, 500).horizon_degrees is None
     with pytest.raises(ValueError):
-        POI("bad", 47, 8, 500, (0, 0, np.nan, 0), .05)
+        PointLocation("bad", 47, 8, 500, horizon_degrees=(0, 0, np.nan, 0), uv_albedo=.05)
 
 
 def test_poi_flat_horizon_and_screen(icon, cams, table):
     grid = compute_grid(icon, cams, table)
-    flat = POI("flat", 46.8, 7., 500, (0.,)*36, .05)
-    wall = POI("wall", 46.8, 7., 500, (90.,)*36, .05)
-    higher = POI("higher", 46.8, 7., 1000, (0.,)*36, .05)
-    result = compute_pois(grid, [flat, wall, higher], table)
+    flat = PointLocation("flat", 46.8, 7., 500, horizon_degrees=(0.,)*36, uv_albedo=.05)
+    wall = PointLocation("wall", 46.8, 7., 500, horizon_degrees=(90.,)*36, uv_albedo=.05)
+    higher = PointLocation("higher", 46.8, 7., 1000, horizon_degrees=(0.,)*36, uv_albedo=.05)
+    result = compute_points(grid, [flat, wall, higher], table)
     np.testing.assert_allclose(result.uvi[:, 0], grid.uvi[:, 0], rtol=1e-6)
     np.testing.assert_allclose(result.terrain_screened_uvi[:, 0], result.uvi[:, 0])
     assert np.all(result.terrain_screened_uvi[:, 1] < 1e-20)
     assert np.all(result.pressure_pa[:, 2] < result.pressure_pa[:, 0])
     assert np.all(result.quality_flag.values & 16)
     with pytest.raises(ValueError, match="too far"):
-        compute_pois(grid, [POI("far", 48, 10, 500, (0.,)*4, .05)], table)
+        compute_points(grid, [PointLocation("far", 48, 10, 500, horizon_degrees=(0.,)*4, uv_albedo=.05)], table)
 
 
 def test_poi_rejects_changed_radiation_table(icon, cams, table):
     grid = compute_grid(icon, cams, table)
     grid.attrs["radiation_table_sha256"] = "old-table"
     with pytest.raises(ValueError, match="table differs"):
-        compute_pois(grid, [POI("site", 47, 8, 500, (0.,)*4, .05)], table)
+        compute_points(grid, [PointLocation("site", 47, 8, 500, horizon_degrees=(0.,)*4, uv_albedo=.05)], table)
 
 
 def test_observation_matching(icon, cams, table):
-    f = compute_pois(compute_grid(icon, cams, table), [POI("site", 46.8, 7, 500, (0.,)*4, .05)], table)
+    f = compute_points(compute_grid(icon, cams, table), [PointLocation("site", 46.8, 7, 500, horizon_degrees=(0.,)*4, uv_albedo=.05)], table)
     o = f[["uvi", "time_bounds"]].copy(deep=True)
     o["uvi"] = o.uvi-1
     o.uvi.attrs["units"] = "1"

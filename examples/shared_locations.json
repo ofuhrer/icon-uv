@@ -1,5 +1,4 @@
 {
-  "catalog_version": 2,
   "entries": [
     {
       "id": "bern",
@@ -21,7 +20,12 @@
       "id": "bernese-2000",
       "kind": "region_altitude",
       "label": "Bernese Alps, 2000 m",
-      "bbox": [7.3, 46.4, 8.5, 46.9],
+      "bbox": [
+        7.3,
+        46.4,
+        8.5,
+        46.9
+      ],
       "altitude_m": 2000
     }
   ]

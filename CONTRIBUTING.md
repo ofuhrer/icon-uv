@@ -6,7 +6,6 @@
 uv sync --locked --extra cams
 uv run --no-sync pytest -q
 uv run --no-sync icon-uv --help
-uv run --no-sync python tools/generate_schemas.py --check
 uv build --out-dir work/dist
 uv run --no-sync python tools/check_distribution.py work/dist
 uv run --no-sync twine check --strict work/dist/*
@@ -18,7 +17,7 @@ dependencies, including the development tools used for these checks.
 GitHub Actions runs these checks on Python 3.11 and 3.13. The suite includes a
 credential-free saved-input example using the real bundled radiation table.
 The distribution check installs the wheel in an isolated environment outside
-the source tree and loads every packaged schema and the table.
+the source tree and loads the packaged schema and table.
 CI also checks PyPI metadata and saves the tested wheel and source archive.
 See the [release guide](docs/releasing.md) for version tags, GitHub releases
 and the one-time PyPI Trusted Publisher setup.
@@ -54,8 +53,8 @@ of documentation deployments; the site follows `main`.
 | `icon_uv/daily.py` | Daily peaks, location support and JSON export |
 | `icon_uv/ensemble.py` | Member identity, coverage and ensemble reductions |
 | `icon_uv/locations.py` | Shared location definitions and native/adjusted support selection |
-| `icon_uv/state.py`, `icon_uv/evaluation.py` | Saved-state validation and shared sampled UV evaluation |
-| `icon_uv/schema.py`, `tools/generate_schemas.py` | Consumer schema selection and contract generation |
+| `icon_uv/state.py`, `icon_uv/coverage.py`, `icon_uv/evaluation.py` | Saved-state validation, daylight/member support and shared sampled UV evaluation |
+| `icon_uv/schema.py`, `icon_uv/data/daily-uv.schema.json` | The authoritative daily contract and consumer validation |
 | `icon_uv/cli.py` | Command-line interface |
 | `icon_uv/build_table.py`, `icon_uv/validate.py` | Table generation and numerical reference checks |
 | `icon_uv/data/` | Bundled lookup table and daily JSON Schema |
@@ -108,12 +107,12 @@ check the table identity.
 For output-format changes, update the schema, field documentation and relevant
 tests together. Run `git diff --check` and inspect package contents before release.
 
-The v1 JSON schema is the shared base for `tools/generate_schemas.py`. That script
-applies the v2 date, v3 ensemble and v4 location/geometry additions and writes the
-standalone published schemas. Run it after deliberate schema edits, then use
-`--check` to ensure artifacts are current. Published v1–v3 contracts and hashes
-remain stable; evolve shared-location products in a new version when compatibility
-requires it. Runtime callers use `load_schema(payload)` to select the artifact.
+Edit `icon_uv/data/daily-uv.schema.json` directly when changing daily output.
+There is one authoritative schema and no generation or migration chain.
+`load_schema()` loads it, and exported `contract_sha256` is its file hash.
+Tests validate actual exports for points, regions, CTRL and ensemble inputs.
+Update the curated map snapshot's contract metadata when changing its format;
+preserve its source hashes and scientific values unless recalculating the forecast.
 
 ## License
 

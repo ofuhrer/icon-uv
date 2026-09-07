@@ -5,7 +5,8 @@ import pytest
 import xarray as xr
 
 from icon_uv.daily import (daily_cells, daylight_hours, display_value, export_daily as _export_daily,
-                           local_day_bounds, select_support, write_json_atomic)
+                           local_day_bounds, write_json_atomic)
+from icon_uv.locations import plan_support, location_from_entry
 
 
 def export_daily(*args, **kwargs):
@@ -115,7 +116,7 @@ def test_native_identifiers_cannot_be_truncated_or_negative(cells):
 
 def catalog():
     return {'entries':[
-        {'id':'town','kind':'town','latitude':46.8,'longitude':9.8,'altitude_m':1000},
+        {'id':'town','kind':'point','treatment':'native','latitude':46.8,'longitude':9.8,'altitude_m':1000},
         {'id':'region','kind':'region_altitude','bbox':[9.7,46.7,9.9,46.9],'altitude_m':1000},
         {'id':'unsupported','kind':'region_altitude','bbox':[9.7,46.7,9.9,46.9],'altitude_m':3000}]}
 
@@ -136,7 +137,7 @@ def test_native_support_and_export_failure_states():
     with pytest.raises(ValueError,match='timezone'):
         export_daily(ds,c,'2026-09-06T06:00:00',table=table)
     moved=dict(c['entries'][0],altitude_m=1500)
-    assert len(select_support(ds,moved))==0
+    assert len(plan_support(ds,location_from_entry(moved)).indices)==0
 
 
 def test_partial_region_and_atomic_json(tmp_path):
@@ -159,11 +160,11 @@ def test_region_95_percent_coverage_boundary(monkeypatch):
         return dict(available=np.array(available),uvi=np.arange(20,dtype=float),
                     peak_start=np.full(20,np.datetime64('2026-09-06T12:00','ns')),
                     quality_flag=np.zeros(20,dtype=np.uint16))
-    monkeypatch.setattr('icon_uv.daily.daily_cells',lambda *a:result([True]*19+[False]))
+    monkeypatch.setattr('icon_uv.daily._daily_cells',lambda *a,**k:result([True]*19+[False]))
     row=export_daily(ds,catalog(),'2026-09-06T06:00:00Z',table=AnalyticTable())['entries'][1]
     assert row['status']=='degraded' and row['valid_cells']==19
     assert row['uvi']==pytest.approx(16.2)
     assert row['display_uvi']==16 and row['category']=='extreme'
-    monkeypatch.setattr('icon_uv.daily.daily_cells',lambda *a:result([True]*18+[False]*2))
+    monkeypatch.setattr('icon_uv.daily._daily_cells',lambda *a,**k:result([True]*18+[False]*2))
     row=export_daily(ds,catalog(),'2026-09-06T06:00:00Z',table=AnalyticTable())['entries'][1]
     assert row['status']=='unavailable' and row['display_uvi'] is None

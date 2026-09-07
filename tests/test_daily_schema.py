@@ -10,7 +10,7 @@ from test_daily import AnalyticTable, catalog, export_daily, grid
 
 
 def validator():
-    schema = json.loads(files('icon_uv').joinpath('data/daily-uv-v1.schema.json').read_text())
+    schema = json.loads(files('icon_uv').joinpath('data/daily-uv.schema.json').read_text())
     Draft202012Validator.check_schema(schema)
     return Draft202012Validator(schema, format_checker=FormatChecker())
 

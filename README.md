@@ -26,8 +26,7 @@ pip install 'icon-uv[cams]'
 icon-uv --help
 ```
 
-The API below requires **icon-uv 0.2.0 or later**. To run the bundled examples,
-install from the repository with
+To run the current API and bundled examples, install from the repository with
 [uv](https://docs.astral.sh/uv/):
 
 ```sh
@@ -52,76 +51,22 @@ network or credentials. The output illustrates the formats, not a weather foreca
 
 ## Calculate UV fields
 
-Choose an available **00 UTC ICON cycle** and the **preceding day's 12 UTC CAMS
-cycle**. Published ICON files have limited retention. Replace both date placeholders:
+Follow the [forecast workflow](https://ofuhrer.github.io/icon-uv/#calculate-uv-fields)
+to download ICON/CAMS inputs, compute a saved UV grid and export location products.
+The guide explains cycle selection, daylight coverage and ensemble options.
 
-```sh
-ICON_REFERENCE="YYYY-MM-DDT00:00:00Z"
-CAMS_REFERENCE="PREVIOUS-YYYY-MM-DDT12:00:00Z"
+## Hourly and daily locations
 
-uv run --no-sync icon-uv fetch-icon \
-  --reference "$ICON_REFERENCE" --first-lead 1 --last-lead 48 \
-  --output work/icon.nc
-uv run --no-sync icon-uv fetch-cams \
-  --reference "$CAMS_REFERENCE" --first-lead 12 --last-lead 60 \
-  --output work/cams.nc
-uv run --no-sync icon-uv run \
-  --icon work/icon.nc --cams work/cams.nc --samples 12 --output work/uv.nc
-```
+Define a point with coordinates and elevation, or a regional elevation band.
+The same catalog drives hourly point NetCDF and daily JSON; optional albedo and
+terrain horizons describe a specific site. See the
+[location API](https://ofuhrer.github.io/icon-uv/location-api/) for the Python API,
+JSON catalog and command-line examples.
 
-ICON leads are interval boundaries: 1–48 produces 47 hourly intervals, covering
-two Swiss daylight dates. `--bbox W S E N` selects a subset; the default covers
-Switzerland and its surroundings. Keep the downloaded NetCDF inputs for offline
-recalculation. Downloads use all 21 ICON members; add `--control` to `fetch-icon`
-for CTRL only. Outputs retain member-specific cloud and surface conditions.
-
-## One catalog for hourly and daily forecasts
-
-```python
-import xarray as xr
-from icon_uv import (
-    PointLocation, RegionBand, load_locations,
-    compute_points, compute_daily, export_daily_file,
-)
-
-locations = load_locations([
-    PointLocation("zermatt", 46.017536, 7.746568, 1617, label="Zermatt"),
-    RegionBand("valais-3000", (7.0, 45.9, 8.4, 46.4), 3000),
-])
-with xr.open_dataset("work/uv.nc") as grid:
-    hourly = compute_points(grid, locations.points)
-    daily = compute_daily(grid, locations, dates=["2026-09-07", "2026-09-08"])
-
-# Publish with the saved grid's hash and issuance freshness checks.
-payload = export_daily_file(
-    "work/uv.nc", locations, issued_at="2026-09-07T06:00:00Z",
-    output="work/daily.json",
-)
-```
-
-Use dates matching your saved forecast. Points calculate ambient horizontal UV at
-the requested coordinates and elevation. UV albedo defaults to the selected
-ICON cell's snow-derived estimate. Region bands report the spatial P90 of cell
-daily peaks near their elevation; ensemble products then take the member median.
-Daily peaks reconstruct a rolling 30-minute mean from the saved atmosphere and
-cloud state, rather than taking a maximum of hourly means.
-
-The same [JSON catalog](https://github.com/ofuhrer/icon-uv/blob/main/examples/shared_locations.json)
-works with both commands:
-
-```sh
-uv run --no-sync icon-uv points --grid work/uv.nc \
-  --locations examples/shared_locations.json --output work/points.nc
-uv run --no-sync icon-uv daily --grid work/uv.nc \
-  --locations examples/shared_locations.json --days 2 \
-  --issued-at "YYYY-MM-DDT06:00:00Z" --output work/daily.json
-```
-
-See the [location API](https://ofuhrer.github.io/icon-uv/location-api/) for optional
-site inputs, native-cell treatment and compatibility. The
-[Davos example](https://github.com/ofuhrer/icon-uv/blob/main/examples/davos.json)
-shows one supplied terrain horizon and assumed local UV albedo. No horizon
-preprocessing or HORAYZON installation is required.
+Daily products reconstruct a rolling 30-minute peak from saved cloud and
+atmospheric state. They include ensemble summaries, support details and freshness
+checks. The [offline example](https://github.com/ofuhrer/icon-uv/blob/main/examples/offline.py)
+runs the complete saved-input workflow with synthetic data.
 
 ## Documentation and examples
 

@@ -5,44 +5,59 @@ regional elevation summary. Both hourly and daily calculations use these same
 location definitions and surface defaults. Stable `id` values identify locations;
 `label` supplies display text.
 
-This API and its defaults are available in **icon-uv 0.2.0 or later**.
 The [repository installation](index.md#try-it-without-credentials) includes the example catalogs.
 
-## Calculate and publish
+## Publish from a saved grid
+
+For daily JSON, the file API selects relevant cells, calculates once, hashes the
+source file and applies issuance freshness checks:
 
 ```python
-import xarray as xr
-from icon_uv import (
-    PointLocation, RegionBand, load_locations,
-    compute_points, compute_daily, export_daily_file,
-)
+from icon_uv import PointLocation, RegionBand, load_locations, export_daily_file
 
 locations = load_locations([
     PointLocation("zermatt", 46.017536, 7.746568, 1617, label="Zermatt"),
     RegionBand("valais-3000", (7.0, 45.9, 8.4, 46.4), 3000),
 ])
 # Or: locations = load_locations("examples/shared_locations.json")
-with xr.open_dataset("work/uv.nc") as grid:
-    hourly = compute_points(grid, locations.points)
-    daily = compute_daily(grid, locations, dates=["2026-09-07", "2026-09-08"])
-
 payload = export_daily_file(
     "work/uv.nc", locations, issued_at="2026-09-07T06:00:00Z",
     dates=["2026-09-07", "2026-09-08"], output="work/daily.json",
 )
 ```
 
-Choose dates matching your forecast. `compute_points` returns hourly means in an
-xarray Dataset and retains ensemble members. `compute_daily` returns a
-`DailyResult`: it reconstructs five-minute samples and finds the maximum
-30-minute mean for each Swiss local date. It also includes regional products.
-Hourly means cannot recover this daily peak exactly.
+Choose dates matching your forecast. The returned payload is also written
+atomically when `output` is supplied. `days=N` or `days="all"` can replace
+`dates`; omitting both selects two dates from the local issuance date.
+`days` and `dates` are mutually exclusive in Python and the CLI.
 
-Calculation does not require an issuance time or file hash. `export_daily_file`
-adds the saved grid's SHA-256 and freshness checks, and optionally writes JSON.
-For an existing result, use `write_daily_json(daily, output_path,
-issued_at=..., input_sha256=...)` with the actual source-grid hash.
-Publication replaces JSON atomically; see [daily products](daily-products.md#export).
+## Calculate in memory
+
+Use this workflow when you need calculated values before publication:
+
+```python
+import xarray as xr
+from icon_uv import compute_points, compute_daily, write_daily_json
+from icon_uv.data import file_sha256
+
+with xr.open_dataset("work/uv.nc") as grid:
+    hourly = compute_points(grid, locations.points)
+    daily = compute_daily(grid, locations, dates=["2026-09-07", "2026-09-08"])
+
+# Publish the existing result without recalculating it.
+payload = write_daily_json(
+    daily, "work/daily.json", issued_at="2026-09-07T06:00:00Z",
+    input_sha256=file_sha256("work/uv.nc"),
+)
+```
+
+`compute_points` returns hourly means in an xarray Dataset and retains ensemble
+members. Pass `locations.points` when your catalog also contains regions.
+`compute_daily` returns a `DailyResult` with entries, dates and provenance. It
+reconstructs five-minute samples and finds the maximum 30-minute mean for each
+Swiss local date, including regional products. Calculation requires explicit
+dates, but no issuance timestamp or file hash. Publication adds those checks;
+see [daily products](daily-products.md#export).
 
 ## Location defaults
 
@@ -95,7 +110,7 @@ points with explicit horizons. `uv_geometry` identifies the chosen daily geometr
 The package accepts supplied horizon arrays and does not generate them or depend
 on HORAYZON.
 
-## CLI and compatibility
+## Catalog and CLI
 
 ```sh
 uv run --no-sync icon-uv points --grid work/uv.nc \
@@ -105,16 +120,23 @@ uv run --no-sync icon-uv daily --grid work/uv.nc \
   --issued-at "YYYY-MM-DDT06:00:00Z" --output work/daily.json
 ```
 
-The shared catalog uses `catalog_version: 2`, `kind: "point"` or
-`kind: "region_altitude"`, and the same field names as Python. New point entries
+A JSON catalog is an object with an `entries` array. Entries use
+`kind: "point"` or `kind: "region_altitude"` and the same fields as Python:
+
+```json
+{"entries": [{"id": "bern", "kind": "point", "latitude": 46.95,
+              "longitude": 7.44, "altitude_m": 540}]}
+```
+
+There is one authoritative catalog format with no version selector. Point entries
 may omit `treatment`, albedo and horizon. Set `treatment: "native"` explicitly to
 retain native-cell matching. Native points do not accept local surface overrides.
+Top-level and entry metadata such as coordinate sources are retained in the
+normalized catalog; IDs must be unique. `load_locations` also accepts a list of
+entry objects or Python location definitions.
 
-New shared products use **daily-uv-v5**, allowing inherited point albedo.
-Published v1–v4 schemas remain unchanged. Legacy `kind: "town"` catalogs retain
-native matching and their existing v1/v2/v3 export formats. `POI`, `compute_pois`,
-legacy POI JSON lists, `poi` and `--catalog` remain compatibility entry points.
-See [JSON contracts](daily-products.md#reading-the-payload) for version selection.
+All catalogs publish the same [daily JSON contract](daily-products.md#reading-the-payload),
+including catalogs containing only regions, CTRL runs and ensembles.
 
 `daily` accepts positive `--days N`, `--days all`, or explicit `--dates` (mutually
 exclusive with `--days`). `--terrain-screened` selects screened daily output.

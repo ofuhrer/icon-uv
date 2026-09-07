@@ -94,7 +94,7 @@ issuance, radiation table, dates and peak definition. Publish matching location
 and field files together. Edit `examples/map/template.html` and rerun
 the renderer when changing the page itself.
 
-The exporter produces four local dates in `daily-uv-v5` for CTRL or ensembles, with 46 entries per day:
+The exporter produces four local dates in the `daily-uv` contract for CTRL or ensembles, with 46 entries per day:
 30 towns, three elevation bands for each of five Alpine regions, and one band
 for Jura. Mountain bands appear in 3000 / 2000 / 1000 m order. The renderer also
 limits longer input products to their first four dates. Partial daylight dates

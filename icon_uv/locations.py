@@ -113,32 +113,27 @@ def location_from_entry(entry):
     if not isinstance(entry, Mapping):
         raise ValueError('Location entry must be an object')
     try:
-        kind = entry.get('kind', 'point' if 'name' in entry else None)
+        kind = entry.get('kind')
         if kind == 'region_altitude':
             return RegionBand(entry['id'], entry['bbox'], entry['altitude_m'], entry.get('label'))
-        if kind not in ('town', 'point'):
-            raise ValueError('Unsupported location kind')
-        legacy_poi = 'name' in entry and 'id' not in entry
-        if kind == 'town' and any(k in entry for k in ('treatment', 'uv_albedo', 'horizon_degrees')):
-            raise ValueError('Use kind point for explicit surface treatment')
+        if kind != 'point':
+            raise ValueError('Location kind must be point or region_altitude')
         return PointLocation(
-            entry['name'] if legacy_poi else entry['id'], entry['latitude'], entry['longitude'],
-            entry['altitude_m'], entry.get('label'),
-            entry.get('treatment', 'native' if kind == 'town' else 'adjusted'),
-            entry.get('uv_albedo'), entry.get('horizon_degrees'), entry.get('maximum_distance_km'))
+            entry['id'], entry['latitude'], entry['longitude'], entry['altitude_m'],
+            label=entry.get('label'), treatment=entry.get('treatment', 'adjusted'),
+            uv_albedo=entry.get('uv_albedo'), horizon_degrees=entry.get('horizon_degrees'),
+            maximum_distance_km=entry.get('maximum_distance_km'))
     except (KeyError, TypeError) as exc:
         raise ValueError(f'Invalid location entry: {exc}') from exc
 
 
 def load_locations(source):
-    """Read one shared catalog, legacy town catalogs, or legacy POI JSON lists."""
+    """Read a catalog path/mapping or an iterable of point and region definitions."""
     if isinstance(source, LocationCatalog):
         return source
     if isinstance(source, (str, Path)):
         source = json.loads(Path(source).read_text(encoding='utf-8'))
     if isinstance(source, dict):
-        if source.get('catalog_version', 1) not in (1, 2):
-            raise ValueError('Unsupported catalog_version')
         catalog = source
         entries = source.get('entries', [])
     else:
@@ -147,7 +142,7 @@ def load_locations(source):
         except TypeError as exc:
             raise ValueError('Locations must be a catalog or a list') from exc
         entries = [e.to_entry() if isinstance(e, (PointLocation, RegionBand)) else e for e in entries]
-        catalog = {'catalog_version': 2, 'entries': entries}
+        catalog = {'entries': entries}
     if not isinstance(entries, (list, tuple)):
         raise ValueError('Catalog entries must be a list')
     locations = tuple(location_from_entry(e) for e in entries)
@@ -156,9 +151,7 @@ def load_locations(source):
     # Fail before computation if metadata cannot be represented in the output.
     catalog = json.loads(json.dumps(catalog, allow_nan=False))
     for entry, location in zip(catalog['entries'], locations):
-        if isinstance(location, PointLocation) and entry.get('kind') != 'town':
-            entry.pop('name', None)
-            entry.update(location.to_entry())
+        entry.update(location.to_entry())
     return LocationCatalog(locations, catalog)
 
 
@@ -167,6 +160,11 @@ class SupportPlan:
     location: PointLocation | RegionBand
     indices: np.ndarray
     distances_km: np.ndarray
+
+
+def support_requirements(location):
+    """Minimum native cells and complete fraction within each member."""
+    return (REGION_MINIMUM_CELLS, REGION_MINIMUM_FRACTION) if isinstance(location, RegionBand) else (1, 1.)
 
 
 def plan_support(grid, location):

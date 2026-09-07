@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.3.0 — 2026-09-07
+
+- Use one unversioned location catalog and one directly maintained `daily-uv` JSON schema.
+- Remove legacy town/POI adapters, CLI aliases and historical schema selection.
+- Resolve file-export dates and support once; share daylight and member eligibility rules with preflight.
+- Keep `fetch_icon` as the acquisition API while separating its internal geometry and asset handling.
+- Consolidate the forecast workflow and show publication without duplicate calculation.
+
+Migration: use `PointLocation`/`compute_points` and `points --locations`; native
+points use `kind="point", treatment="native"`. Remove `catalog_version` from
+catalogs. Daily JSON uses `schema="daily-uv"`, and `load_schema()` takes no version
+argument. Python publication rejects simultaneous `days` and `dates`.
+
 ## 0.2.0 — 2026-09-07
 
 - Point locations default to forecasts at their requested coordinates and elevation,
