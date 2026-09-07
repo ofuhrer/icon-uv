@@ -70,7 +70,8 @@ with xr.open_dataset("work/uv.nc") as grid:
     hourly_uvi = grid.uvi.isel(cell=0).load()
 ```
 
-`uvi(time, cell)` is an hourly mean. `time` is the UTC interval midpoint;
+`uvi(member, time, cell)` contains hourly means; CTRL-only output omits `member`.
+`time` is the UTC interval midpoint;
 `time_bounds` gives its start and end. Native cell IDs, coordinates, elevations
 and input-source identities accompany the fields. See the
 [output reference](docs/outputs.md) for variables, units and quality flags.

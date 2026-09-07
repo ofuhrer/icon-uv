@@ -68,6 +68,14 @@ an explicit UV albedo. If the cloud response is nonmonotonic, inversion chooses
 the earliest bracketing branch. Shortwave above clear sky or below the minimum
 cloud response uses a scalar extension and sets a quality flag.
 
+The inferred thickness represents the radiative effect of clouds; it does not
+uniquely identify cloud fraction, height or phase. The table accounts for the
+different spectral response of shortwave and UV. Its homogeneous liquid-cloud
+approximation cannot resolve subhourly cloud variability or three-dimensional
+cloud-edge enhancement, and is sensitive to ice clouds over bright snow. See
+[validation](validation.md#cloud-conversion-and-numerical-accuracy) for the evidence
+and its coverage.
+
 UV Index is calculated from erythemal direct and diffuse irradiance:
 
 ```text

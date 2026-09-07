@@ -60,7 +60,11 @@ def png_values(values):
     rgba[..., 1] = encoded & 255
     rgba[..., 3] = np.where(finite, 255, 0)
     height, width = values.shape
-    raw = b''.join(b'\0'+row.tobytes() for row in rgba)
+    # The reversible PNG Up filter exploits similarity between adjacent map rows.
+    # uint8 subtraction wraps modulo 256, as required by the PNG specification.
+    filtered = rgba.copy()
+    filtered[1:] = rgba[1:]-rgba[:-1]
+    raw = b''.join(b'\2'+row.tobytes() for row in filtered)
 
     def chunk(kind, content):
         return struct.pack('>I', len(content))+kind+content+struct.pack('>I', zlib.crc32(kind+content))

@@ -139,6 +139,11 @@ multiplicative blending over a contrast-enhanced relief, preserving ridges and
 valleys even when the UV shading is prominent. Relief brightness indicates terrain
 shading; the UV category is carried by the colour.
 
+The legend, location badges and map layers share shades of green, yellow, orange,
+red and purple. Each integer UVI has its own shade within a warning level, with
+a distinct colour change between levels. Missing values appear as transparent
+pixels or a grey dash.
+
 Fields use native model terrain and an open horizon. They do not represent a
 fixed altitude or the regional 90th-percentile elevation-band values. Each map
 pixel takes the geographically nearest native cell within 3 km; gaps remain
@@ -148,8 +153,9 @@ different cell. The map clips the overlay to the swisstopo relief footprint.
 The [field JSON](../examples/map/index.fields.json) embeds numerical PNG
 rasters on a Web Mercator display grid, 360 pixels wide by default. Their red
 and green bytes encode UV Index truncated to 0.01; alpha distinguishes missing
-values from zero. This preserves the rounded category boundaries. Display
-resampling adds no physical resolution. The browser decodes the values and
+values from zero. This preserves the rounded category boundaries.
+The PNGs are compressed losslessly.
+Display resampling adds no physical resolution. The browser decodes the values and
 applies the same category colours as the markers; missing pixels remain clear.
 No new Python dependencies or online map services are needed to view the page.
 

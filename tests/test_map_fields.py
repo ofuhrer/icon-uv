@@ -15,7 +15,7 @@ fields = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(fields)
 
 
-def decode(uri):
+def decode_rgba(uri):
     png = base64.b64decode(uri.split(',')[1])
     assert png[:8] == b'\x89PNG\r\n\x1a\n'
     offset, data = 8, b''
@@ -30,8 +30,17 @@ def decode(uri):
             data += content
         offset += length+12
     raw = np.frombuffer(zlib.decompress(data), dtype=np.uint8).reshape(height, width*4+1)
-    assert np.all(raw[:, 0] == 0)
-    rgba = raw[:, 1:].reshape(height, width, 4)
+    rows = raw[:, 1:].astype(np.uint16)
+    for y in range(height):
+        if raw[y, 0] == 2 and y:
+            rows[y] = (rows[y]+rows[y-1]) % 256
+        else:
+            assert raw[y, 0] in (0, 2)
+    return rows.astype(np.uint8).reshape(height, width, 4)
+
+
+def decode(uri):
+    rgba = decode_rgba(uri)
     return np.where(rgba[..., 3], (rgba[..., 0].astype(int)*256+rgba[..., 1])/100, np.nan)
 
 
@@ -44,6 +53,18 @@ def test_scalar_png_preserves_zero_missing_and_risk_boundaries():
     np.testing.assert_array_equal(np.floor(decoded[good]+.5), np.floor(values[good]+.5))
     with pytest.raises(ValueError):
         fields.png_values(np.array([[-1.0]]))
+
+
+def test_png_filter_roundtrip_preserves_every_numeric_byte():
+    values = np.random.default_rng(17).integers(0, 65536, size=(19, 37))/100
+    values[0, :3] = [0, np.nan, 655.35]
+    values[1::3, 4::5] = np.nan
+    rgba = decode_rgba(fields.png_values(values))
+    finite = np.isfinite(values)
+    expected = np.floor(np.where(finite, values, 0)*100+1e-9).astype(np.uint16)
+    np.testing.assert_array_equal(rgba[..., 0].astype(np.uint16)*256+rgba[..., 1], expected)
+    np.testing.assert_array_equal(rgba[..., 3], finite*255)
+    assert not rgba[..., 2].any()
 
 
 def test_sparse_native_grid_does_not_fill_distant_map_pixels():

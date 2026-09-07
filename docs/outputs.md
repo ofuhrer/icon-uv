@@ -7,6 +7,10 @@ The main dimensions are `time` and `cell`; latitude, longitude and model altitud
 are cell coordinates. Original cell IDs and the grid UUID are preserved.
 For polygon rendering, obtain triangle vertices from the source ICON grid.
 
+NetCDF uses lossless compression and chunked storage. Floating data variables
+are stored as float32; coordinates retain their precision and quality flags
+remain integers. Scientific UVI values are not rounded to display integers.
+
 | Variable | Units | Meaning |
 |---|---|---|
 | `uvi` | 1 | Hourly mean all-sky UV Index on an open horizontal surface |

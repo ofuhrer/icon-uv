@@ -4,6 +4,7 @@ No account creation, embedded credentials, scraping or implicit provider fallbac
 """
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timezone
+from math import prod
 from pathlib import Path
 import hashlib
 import json
@@ -346,12 +347,32 @@ def load_cams(path):
     return ds
 
 
+def _netcdf_chunks(variable, dtype):
+    """Bound chunks to 4 MiB, retaining nearby cells and ensemble members together."""
+    limits = {"member": 32, "time": 6 if "member" in variable.dims else 24,
+              "cell": 8192}
+    chunks = [min(size, limits.get(dim, size)) for dim, size in variable.sizes.items()]
+    while prod(chunks)*np.dtype(dtype).itemsize > 4*1024**2:
+        largest = int(np.argmax(chunks))
+        chunks[largest] = max(1, (chunks[largest]+1)//2)
+    return tuple(chunks)
+
+
 def write_netcdf(ds, path):
     """Atomic publication; data flags remain integer, times have explicit UTC units."""
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
-    encoding = {name: {"zlib": True, "complevel": 2, "dtype": "float32"}
-                for name, v in ds.data_vars.items() if v.dtype.kind == "f"}
+    encoding = {}
+    for name, variable in ds.variables.items():
+        if variable.dtype.kind not in "iuf":
+            continue
+        # Keep the established float32 data policy; coordinates retain their dtype.
+        dtype = "float32" if name in ds.data_vars and variable.dtype.kind == "f" else variable.dtype
+        options = {"dtype": dtype}
+        if variable.ndim and all(variable.shape):
+            options.update(zlib=True, complevel=4, shuffle=True,
+                           chunksizes=_netcdf_chunks(variable, dtype))
+        encoding[name] = options
     for name in ("time", "time_bounds"):
         if name in ds:
             encoding[name] = {"units": "seconds since 1970-01-01 00:00:00", "calendar": "proleptic_gregorian"}

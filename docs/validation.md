@@ -1,150 +1,86 @@
 # Verification and validation
 
-This page summarizes numerical tests and comparisons with Swiss UV measurements.
-The figures below describe the stated samples and averaging methods, providing
-a basis for assessing the package for a particular location or product.
+icon-uv has been checked against Swiss UV measurements and direct radiative-transfer
+calculations. The results below summarize the evidence and its coverage, helping
+users assess suitability for their locations and products.
 
-## Swiss UV measurements
+## Swiss measurement comparisons
 
-The campaign samples 150 ICON initialization dates from August 2024 to August
-2026, using the 00 UTC cycle on days 3, 8, 13, 18, 23 and 28 of each month.
-Dates were selected before scoring, spanning all four seasons. Comparisons use
-583 complete site-days out of 900 planned across Davos, Weissfluhjoch and
-Payerne, with the two forecast days scored separately.
+The observational assessment spans 150 ICON initialization dates across all four
+seasons from August 2024 to August 2026. It includes 583 complete forecast
+site-days at Davos, Weissfluhjoch and Payerne. Results use the CTRL member;
+the first and second forecast days are scored separately.
 
-MAE is mean absolute error in unrounded UVI. Display and category agreement use
-the [daily-product rounding and category rules](daily-products.md#peak-rounding-and-categories).
-Every pair of values below gives the first / second forecast day.
+MAE is mean absolute error in unrounded UVI. Each pair below gives the first /
+second forecast day. Display agreement follows the package's
+[rounding rules](daily-products.md#peak-rounding-and-categories).
 
-| Site | Complete days, first / second forecast day | Daily-peak MAE (UVI) | Within one displayed unit | Same category |
-|---|---:|---:|---:|---:|
-| Davos | 146 / 146 | 0.613 / 0.635 | 89.0% / 88.4% | 76.0% / 80.8% |
-| Weissfluhjoch | 100 / 99 | 0.777 / 0.854 | 86.0% / 80.8% | 76.0% / 72.7% |
-| Payerne | 46 / 46 | 0.484 / 0.502 | 97.8% / 93.5% | 89.1% / 87.0% |
+| Site | Complete days | Daily-peak MAE (UVI) | Within one displayed unit |
+|---|---:|---:|---:|
+| Davos | 146 / 146 | 0.61 / 0.64 | 89% / 88% |
+| Weissfluhjoch | 100 / 99 | 0.78 / 0.85 | 86% / 81% |
+| Payerne | 46 / 46 | 0.48 / 0.50 | 98% / 94% |
 
-These CTRL peaks use matched half-hour windows and fixed UV albedo 0.05 because the
-historical archive lacks production snow fraction. Payerne minute observations
-also support the exported 30-minute rolling peak on five-minute window starts:
-MAE is 0.523 / 0.521 UVI. The mountain feed provides half-hour values only.
+The comparison uses matching half-hour observation and prediction windows, with
+fixed UV albedo 0.05 because historical production snow fraction was unavailable.
+Payerne's minute observations also support the exported 30-minute rolling peak,
+with MAE about 0.52 UVI on both forecast days.
 
-On paired dates, replacing forecast shortwave with measured shortwave reduces
-MAE by 0.268–0.338 UVI at Davos, 0.171–0.301 at Weissfluhjoch and 0.269–0.309 at
-Payerne. All six date-block 95% intervals exclude zero. Payerne uses colocated
-shortwave measurements; the mountain sites use nearby stations.
+Forecast solar radiation and spatial matching account for an important part of
+the error. Replacing forecast radiation with measurements reduces daily-peak MAE
+at all three sites. Alternative grid matches change some mountain-site peaks by
+more than one UVI unit. This reflects differences between native model terrain,
+local cloud conditions and instrument locations.
 
-Alternative station-to-grid matches change individual peaks by up to 2.112 UVI
-at Davos and 1.084 at Weissfluhjoch. These differences reflect the spatial
-representativeness of model terrain, clouds and instrument locations.
+## Cloud conversion and numerical accuracy
 
-Underestimation by at least two displayed categories occurs on 2/292 Davos and
-4/199 Weissfluhjoch site-days, and 0/92 at Payerne. Only two observed site-days
-reach the extreme category. These site comparisons do not directly test regional
-altitude-band aggregates. Much of Weissfluhjoch's 2026 record is absent.
-Jungfraujoch and Locarno-Monti were
-identified, but accessible corrected UV was unavailable for comparison.
+Cloud conversion was assessed separately from weather prediction by using
+colocated measured shortwave radiation as input at Payerne. Across 290 cloudy
+hours on 57 summer/autumn days, the method has **0.11 UVI MAE** and **+0.07 UVI
+mean error** against measured UV. Here, cloudy means shortwave below 80% of the
+modeled clear-sky value; solar zenith angles are at most 70° and clear-sky UVI is
+at least 1. These are a subset of the existing campaign, using fixed albedo 0.05.
 
-Davos and Weissfluhjoch measurements come from the [PMOD/WRC UV network](https://www.pmodwrc.ch/en/world-radiation-center-2/wcc-uv/measurement-sites-wccuv/)
-via the [Medical University of Innsbruck data service](https://uv-data.i-med.ac.at/public/sites/).
-Payerne measurements are from MeteoSwiss's BSRN records distributed through
-[PANGAEA](https://bsrn.awi.de/data/data-retrieval-via-pangaea/), including the
-[July 2025 UV record](https://doi.pangaea.de/10.1594/PANGAEA.992977).
-Payerne records from January–June 2025 were excluded because instrument identity
-was missing. A ±30-second observation-timing sensitivity check changed Payerne
-peaks by at most 0.085 UVI; two of 92 displayed values depended on this timing.
-Coverage and available quality metadata differ between feeds.
+Direct libRadtran calculations test both numerical interpolation and physical
+assumptions. Across 80 withheld atmospheric states, the 95th-percentile relative
+error is 2.8% for forward UV interpolation and at most 1.7% for shortwave-to-UV
+conversion, evaluated where reference UVI is at least 1. These measure numerical
+accuracy within the selected solver physics.
 
-## Shortwave input checks
+A separate 150-case assessment varies cloud height, droplet size, phase and
+surface reflectivity. Liquid-cloud height and droplet-size variants over a dark
+surface remain within 0.14 UVI of the direct solver. Unresolved clear/cloudy
+mixtures can produce differences around 0.5 UVI, while high ice clouds over
+bright snow reach 1.3 UVI in the tested cases. These are sensitivities within
+specified scenarios, not general error bounds. They identify limits of inferring
+one effective liquid cloud from an hourly broadband radiation value.
 
-The same 150 initialization dates provide 159,630 matched station-hours at 135
-SwissMetNet sites in the 08–16 UTC initialization-day window. Mean forecast bias
-is +18.51 W/m², MAE 85.81 W/m² and root-mean-square error 127.12 W/m². Scores use
-DWH quality-category-4 observations. Low, intermediate and high observed sunshine
-durations are represented on 145, 150 and 145 dates respectively; these are
-sunshine strata rather than cloud-type classifications. Station-hours share
-weather systems and are not independent samples.
+The [method description](method.md) explains the cloud approximation, atmosphere,
+surface assumptions and supported input ranges.
 
-## Ensemble verification and forecast comparison
+## Coverage and interpretation
 
-A replay of the 7 September 2026 00 UTC ICON cycle used all 21 members, 47 hourly
-intervals and 2,938 native cells supporting the map catalog, with CAMS from
-6 September 12 UTC. Each member's cloud inversion and UV calculation runs
-independently. Checks cover shuffled member ordering, missing members and fields,
-the 90% coverage threshold, and daily/spatial aggregation before ensemble reduction.
-This verifies the implementation; the measurement scores above describe CTRL,
-not ensemble skill or calibrated uncertainty.
-
-The supplied MeteoSwiss maps for 7–8 September provide 28 comparable displayed
-values per day: 12 towns and 16 regional altitude values. Our CTRL values are
-higher on average by 1.1 / 0.8 displayed UVI units for towns and 1.9 / 1.1 for
-regions. Using the ensemble median leaves **51 of 56 rounded values unchanged**.
-The average absolute change from CTRL is only 0.10 / 0.04 unrounded UVI.
-
-| Regional value | Date | Our ensemble median | Member P10–P90 | MeteoSwiss display |
-|---|---|---:|---:|---:|
-| Bernese Alps, 3000 m | 7 September | 8.47 | 8.10–8.85 | 4 |
-| Grisons Alps, 3000 m | 8 September | 7.60 | 7.36–7.89 | 4 |
-
-These differences warrant investigation. They cannot be attributed solely to
-rounding or the choice of CTRL versus ensemble. Two sensitivities identify
-important product assumptions:
-
-- Replacing regional spatial P90 with spatial P50 changes the CTRL Bernese
-  Alps value on 7 September from 8.40 to 7.41, and Grisons Alps on 8 September
-  from 8.04 to 6.84. Our altitude-band boxes and aggregation are not established
-  matches to MeteoSwiss's regions.
-- Holding inferred clouds fixed and replacing snow-dependent UV albedo with
-  0.05 changes those CTRL values to 6.37 and 6.95 respectively. Snow reflection
-  therefore contributes substantially, but this sensitivity does not establish
-  which albedo is correct. Production snow-dependent albedo was not tested by
-  the historical UV campaign. The spatial and albedo sensitivities are separate
-  experiments and should not be added together.
-
-MeteoSwiss describes a [cloud-dependent daily UV forecast](https://www.meteoswiss.admin.ch/weather/weather-and-climate-from-a-to-z/uv-index.html).
-Its exact issuance cycle, regional sampling and cloud treatment cannot be inferred
-from screenshots. A second forecast is a useful comparison, not a measurement
-reference; a narrow ensemble also omits errors shared by every member.
-
-The next validation should align issuance times and product definitions, then
-compare CTRL and ensemble daily peaks against the same Swiss UV observations,
-stratified by cloud conditions, season, altitude and snow. Assess both deterministic
-error and ensemble calibration using interval coverage, CRPS and threshold Brier
-scores. Check shortwave forcing and snow/albedo assumptions before changing the
-regional statistic or selecting an upper ensemble quantile.
-
-## Numerical accuracy
-
-The lookup table is compared with direct libRadtran calculations at 80 withheld
-atmospheric states. Relative errors below use the 57 states with reference
-UVI at least 1; the largest forward absolute error across all 80 is 0.248 UVI.
-
-| Calculation | 95th-percentile absolute relative error | Maximum |
-|---|---:|---:|
-| Forward interpolation | 2.76% | 3.21% |
-| SW inversion with equal SW/UV albedo | 1.12% | 1.43% |
-| SW inversion with different SW/UV albedos | 1.66% | 1.97% |
-
-These compare interpolation with the selected solver physics. An additional
-72-state study varies seasonal profile, water vapour, elevation, albedo and
-cloud state. Conversion MAE ranges from 0.064 to 0.187 UVI across its three
-profile/water groups, with maximum errors from 0.148 to 0.523 UVI. These
-sensitivities describe changes to the reference atmosphere, separate from the
-interpolation errors above.
-
-## Performance and verification
-
-A 38,718-cell, 24-hour calculation took approximately 52 seconds on the tested
-Apple-silicon Mac. A two-day catalog replay using 1,781 cells produced 54 JSON
-entries in approximately 17 seconds with 242 MiB peak resident memory. Both
-measurements use saved local inputs and exclude network acquisition.
-
-Tests cover input units and intervals, packing tolerance, radiation interpolation,
-cloud inversion, missing data, local-day/DST handling, spatial support, rounding,
-JSON/NetCDF output and failed writes. Independent data checks reconciled 14,129
-observed UV windows, 92 Payerne rolling peaks and 85,950 native values against
-separate readers. Saved-grid checks also compared native-cell decoding and
-daily JSON values with independently reconstructed results.
+- Measurement coverage varies by site and season. Payerne's January–June 2025
+  records were excluded because instrument identity was missing; much of the
+  Weissfluhjoch 2026 record was unavailable. Accessible corrected UV was not
+  available for the identified Jungfraujoch and Locarno-Monti sites.
+- The historical results do not directly validate production snow-dependent UV
+  albedo or regional altitude-band aggregates. Extreme-UV observations and
+  cloud-enhancement cases are sparse.
+- Ensemble tests verify member handling, missing-data coverage and aggregation.
+  The observation scores above describe CTRL performance; ensemble spread has
+  not been calibrated against observations and excludes shared uncertainties in
+  atmospheric composition and radiation physics.
+- Comparisons with MeteoSwiss and DWD products help check magnitudes and identify
+  differences in weather inputs, surface assumptions and regional aggregation.
+  Agreement with another forecast is not a substitute for measurement validation.
 
 ## Run checks
+
+The automated tests cover input units and intervals, radiation interpolation,
+cloud inversion, direct-solver reference columns, missing members, daily products,
+output encoding and file integrity. Saved-grid checks independently reconstruct
+shortwave radiation from the inferred cloud state.
 
 ```sh
 uv sync --locked --extra cams
@@ -153,5 +89,14 @@ uv run --no-sync python -m icon_uv.check_grid \
   --grid work/uv.nc --output work/grid_check.json
 ```
 
-The final command requires a saved UV grid. Direct-solver checks additionally
-need libRadtran; see [table rebuilding](../CONTRIBUTING.md#change-the-radiation-table).
+The final command requires a saved UV grid. Rebuilding and validating the radiation
+table against a direct solver is described in [CONTRIBUTING.md](../CONTRIBUTING.md#change-the-radiation-table).
+
+## Measurement and method sources
+
+- Davos and Weissfluhjoch: [PMOD/WRC UV network](https://www.pmodwrc.ch/en/world-radiation-center-2/wcc-uv/measurement-sites-wccuv/),
+  through the [Medical University of Innsbruck data service](https://uv-data.i-med.ac.at/public/sites/).
+- Payerne: MeteoSwiss BSRN records through [PANGAEA](https://bsrn.awi.de/data/data-retrieval-via-pangaea/),
+  including the [July 2025 UV record](https://doi.pangaea.de/10.1594/PANGAEA.992977).
+- Radiative transfer: [libRadtran](https://www.libradtran.org/).
+- Cloud-modification comparison: [Staiger et al. (2008)](https://acp.copernicus.org/articles/8/2493/2008/).
