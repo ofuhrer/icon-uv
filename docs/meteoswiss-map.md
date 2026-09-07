@@ -99,14 +99,23 @@ Use a new cache directory to refresh the basemap. Tiles are embedded at zoom 9;
 higher zoom magnifies that fixed resolution. The curated location JSON, field JSON and HTML
 are checked in; new forecasts and tile caches stay local under `work/`.
 
-## Field views
+## Map layers
 
-Choose **Locations**, **Forecast field** or **Clear-sky field** above the map.
-Both fields show the maximum reconstructed 30-minute mean over the selected
+Toggle **Locations** and **Map** independently above the map. Both start enabled:
+UV shading sits behind the location badges. Turn either layer off to view the
+other alone, or turn both off to explore the terrain relief. The **Map values**
+selector switches between **Forecast** and **Clear sky**, keeping that choice
+when the map layer is hidden. Location badges always show the forecast with clouds;
+this is stated below the map when combined with clear-sky shading.
+
+Both gridded products show the maximum reconstructed 30-minute mean over the selected
 local day, matching the temporal definition of the location product. Clear sky
 removes cloud optical depth and cloud scaling while retaining ozone, aerosol,
 pressure and surface albedo. Select a field position to inspect its UV Index;
-the opacity control reveals more or less of the relief underneath.
+the **Map opacity** control adjusts the strength of the colour. The colours use
+multiplicative blending over a contrast-enhanced relief, preserving ridges and
+valleys even when the UV shading is prominent. Relief brightness indicates terrain
+shading; the UV category is carried by the colour.
 
 Fields use native model terrain and an open horizon. They do not represent a
 fixed altitude or the regional 90th-percentile elevation-band values. Each map

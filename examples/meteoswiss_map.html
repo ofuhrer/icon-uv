@@ -672,24 +672,29 @@ svg.leaflet-image-layer.leaflet-interactive path {
 *{box-sizing:border-box}body{margin:0;background:var(--page);color:var(--ink);font:16px/1.5 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
 main{max-width:1560px;margin:auto;padding:28px 32px 20px}header{margin-bottom:24px}h1{font-size:clamp(32px,4vw,48px);letter-spacing:-1.5px;line-height:1.12;margin:0 0 12px;font-weight:700}header p{max-width:820px;color:var(--muted);margin:0;font-size:17px}
 button{font:inherit;color:inherit;cursor:pointer}button:focus-visible,a:focus-visible{outline:3px solid #97d8ff;outline-offset:4px}a{color:inherit}.layout{display:grid;grid-template-columns:minmax(0,1fr) 270px;gap:20px}.map-column{min-width:0}.days{display:flex;gap:8px;margin-bottom:14px;overflow:auto;padding:4px 2px 6px}.day{flex:1;min-width:104px;border:1px solid #4d626f;background:transparent;border-radius:5px;padding:9px 10px;text-align:left;line-height:1.35}.day strong,.day small{display:block}.day small{font-size:12px;color:var(--muted);margin-top:3px}.day[aria-pressed=true]{background:#f6f8fa;color:#1b2b36;border-color:#f6f8fa}.day[aria-pressed=true] small{color:#425463}.day:hover{border-color:#fff}.map-wrap{position:relative}#map{height:clamp(490px,65vh,760px);background:#20313d;outline:none;border-radius:5px}.notice{min-height:26px;margin:10px 0 0;color:var(--muted);font-size:13px}.legend{background:var(--panel);padding:22px;border-radius:5px;align-self:start;margin-top:4px}h2{font-size:18px;margin:0 0 18px}.level{margin-bottom:24px}.level:last-child{margin-bottom:0}.level-head{display:flex;align-items:center;gap:10px;margin-bottom:6px}.range{display:flex;gap:3px;flex-shrink:0}.tile{display:inline-flex;align-items:center;justify-content:center;background:var(--moderate);color:#152630;font-weight:750;font-size:20px;width:30px;height:32px;line-height:1;border:0;padding:0;border-radius:0}.tile.low{background:var(--low);color:white}.tile.moderate{background:var(--moderate)}.tile.high{background:var(--high)}.tile.very_high{background:var(--very-high);color:white}.tile.extreme{background:var(--extreme);color:white}.tile.missing{background:#617582;color:white}.level b{display:block;font-size:14px;margin:5px 0}.level p{margin:0;font-size:14px;color:var(--muted)}.level-head>span{font-size:15px}.extreme-label{width:38px;font-size:17px}footer{font-size:12px;color:var(--muted);margin-top:12px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px 18px}
-.leaflet-container{font-family:inherit}.relief-layer{filter:grayscale(1)}.uv-field{image-rendering:pixelated}.leaflet-control-attribution{background:#20313de8!important;color:#dbe4eb!important;font-size:10px!important}.leaflet-control-attribution a{color:inherit!important}.leaflet-bar a,.home-button{background:var(--panel)!important;color:white!important;border-color:#50616d!important}.leaflet-bar{border:1px solid #60717c!important;box-shadow:none!important}.home-button{font-size:14px!important;width:34px!important;height:34px!important;line-height:34px!important;border:0;display:block;text-align:center}.leaflet-control-zoom a{width:34px!important;height:34px!important;line-height:34px!important}.leaflet-tooltip{font:13px/1.4 system-ui;color:#1b2b36;max-width:250px;white-space:normal}.leaflet-popup-content{font-size:14px;line-height:1.5;color:#1b2b36}.leaflet-popup-content h3{margin:0 0 5px;font-size:16px}.leaflet-popup-content p{margin:4px 0}
+.leaflet-container{font-family:inherit}.relief-layer{filter:grayscale(1) brightness(.8) contrast(1.6)}.uv-field{image-rendering:pixelated;mix-blend-mode:multiply}.leaflet-control-attribution{background:#20313de8!important;color:#dbe4eb!important;font-size:10px!important}.leaflet-control-attribution a{color:inherit!important}.leaflet-bar a,.home-button{background:var(--panel)!important;color:white!important;border-color:#50616d!important}.leaflet-bar{border:1px solid #60717c!important;box-shadow:none!important}.home-button{font-size:14px!important;width:34px!important;height:34px!important;line-height:34px!important;border:0;display:block;text-align:center}.leaflet-control-zoom a{width:34px!important;height:34px!important;line-height:34px!important}.leaflet-tooltip{font:13px/1.4 system-ui;color:#1b2b36;max-width:250px;white-space:normal}.leaflet-popup-content{font-size:14px;line-height:1.5;color:#1b2b36}.leaflet-popup-content h3{margin:0 0 5px;font-size:16px}.leaflet-popup-content p{margin:4px 0}
 .map-label{background:transparent;border:0;text-align:center;width:100px!important;margin-left:-50px!important}.place{display:flex;align-items:center;flex-direction:column}.place-name{display:block;color:#1a2c39;font-size:12px;font-weight:750;line-height:1.1;white-space:nowrap;text-shadow:0 1px 2px white,0 -1px 2px white,1px 0 2px white,-1px 0 2px white;margin-top:3px}.town-tile{width:25px;height:27px;font-size:18px;box-shadow:0 0 0 1px #ffffff90}.region-label{width:126px!important;margin-left:-63px!important}.region-values{display:flex;gap:3px;justify-content:center}.region-values .tile{width:28px;height:30px;font-size:18px}.heights{font-size:10px;color:#1a2c39;font-weight:750;text-shadow:0 0 3px white,0 0 3px white;white-space:nowrap;margin-top:2px;line-height:1}.region-label .place-name{font-size:12px}.map-label:focus-visible{outline:3px solid #1473b6}.map-label.is-thinned{visibility:hidden;pointer-events:none}.compact .town-name{display:none}.mobile-day,.mobile-regions{display:none}
 @media(min-width:1350px){.place-name{font-size:13px}.region-label .place-name{font-size:13px}.town-tile{width:28px;height:30px;font-size:20px}}
 @media(max-width:850px){main{padding:20px 14px}.layout{grid-template-columns:1fr;gap:12px}.legend{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;padding:18px;margin:0}.legend h2{grid-column:1/-1;margin:0}.level{margin:0}.level-head{flex-wrap:wrap;gap:6px}.days{gap:6px}.day{min-width:98px}#map{height:560px}header{margin-bottom:18px}}
 @media(max-width:520px){.legend{grid-template-columns:1fr 1fr}.legend .tile{width:25px;height:28px;font-size:17px}.level p,.level b{font-size:13px}#map{height:500px}.region-values .tile{width:24px;height:26px;font-size:16px}.region-label .place-name{font-size:11px}.heights{font-size:9px}.region-label{width:108px!important;margin-left:-54px!important}}
 @media(max-width:650px){.days{display:none}.mobile-day{display:flex;align-items:center;gap:14px;margin-bottom:14px;font-size:14px;font-weight:600}.mobile-day select{flex:1;min-width:0;background:var(--panel);color:var(--ink);font:inherit;border:1px solid #60717c;border-radius:5px;padding:10px}#map{height:350px}.mobile-regions{display:block;margin:18px 0 6px}.mobile-regions h2{margin-bottom:10px}.mobile-regions table{width:100%;border-collapse:collapse;font-size:14px}.mobile-regions td,.mobile-regions th{padding:7px 2px;text-align:center;border-bottom:1px solid #3d505e}.mobile-regions td:first-child,.mobile-regions th:first-child{text-align:left}.mobile-regions th{font-size:12px;color:var(--muted);font-weight:500}.mobile-regions .tile{width:28px;height:30px;font-size:18px}.compact .town-tile{width:21px;height:23px;font-size:16px}}
 .all-values{margin-top:14px;font-size:14px}.all-values summary{cursor:pointer;font-weight:600}.all-values .table-scroll{overflow:auto;margin-top:10px}.all-values table{width:100%;border-collapse:collapse;text-align:left}.all-values th,.all-values td{padding:6px 10px;border-bottom:1px solid #3d505e;white-space:nowrap}.all-values th{color:var(--muted);font-weight:500}.all-values .tile{width:26px;height:28px;font-size:17px}.snapshot{display:block;color:var(--muted);font-size:13px;margin-bottom:10px}.snapshot:empty{display:none}.leaflet-control-zoom a.leaflet-disabled{color:#82939e!important;cursor:default}
-.views{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap}.view{border:1px solid #60717c;background:transparent;padding:8px 12px;border-radius:5px;font-size:14px}.view[aria-pressed=true]{background:#dbe9ef;color:#152630}.field-controls{font-size:13px;color:var(--muted);display:flex;gap:10px;align-items:center;margin:8px 0}.field-controls input{width:100px;accent-color:#c6e7fa}.field-controls[hidden],.views[hidden]{display:none}
+.layer-controls{display:flex;gap:8px 16px;margin-bottom:12px;align-items:center;flex-wrap:wrap;font-size:14px}.layer-toggle{display:flex;align-items:center;gap:8px;border:1px solid #60717c;padding:8px 12px;border-radius:5px;cursor:pointer}.layer-toggle:has(:checked){background:#dbe9ef;color:#152630}.layer-toggle input{width:16px;height:16px;margin:0;accent-color:#21566f}.map-type{display:flex;align-items:center;gap:8px;color:var(--muted)}.map-type select{font:inherit;color:var(--ink);background:var(--panel);border:1px solid #60717c;border-radius:5px;padding:8px}.field-controls{font-size:13px;color:var(--muted);display:flex;gap:10px;align-items:center;margin:8px 0}.field-controls input{width:100px;accent-color:#c6e7fa}.field-controls[hidden],.layer-toggle[hidden],.map-type[hidden]{display:none}
+@media(max-width:650px){.map-type{flex-basis:100%}.map-type select{flex:1}}
 @media(prefers-reduced-motion:reduce){.leaflet-zoom-animated{transition:none!important}}
 </style>
 <main>
 <header><span class="snapshot" id="snapshot"></span><h1>UV Index</h1><p>The UV Index indicates the intensity of ultraviolet radiation and whether additional sun protection is needed.</p></header>
 <div class="layout"><section class="map-column" aria-label="UV forecast map">
-<nav class="views" id="views" aria-label="Map view"><button class="view" data-mode="locations" aria-pressed="true">Locations</button><button class="view" data-mode="forecast" aria-pressed="false">Forecast field</button><button class="view" data-mode="clear_sky" aria-pressed="false">Clear-sky field</button></nav>
+<div class="layer-controls" role="group" aria-label="Visible layers">
+<label class="layer-toggle"><input id="show-locations" type="checkbox" checked>Locations</label>
+<label class="layer-toggle" id="map-toggle"><input id="show-map" type="checkbox" checked>Map</label>
+<label class="map-type" id="map-type-control">Map values<select id="map-type" aria-label="Map values"><option value="forecast">Forecast</option><option value="clear_sky">Clear sky</option></select></label>
+</div>
 <nav class="days" id="days" aria-label="Forecast day"></nav>
 <label class="mobile-day">Forecast day<select id="mobile-day" aria-label="Forecast day"></select></label>
 <div class="map-wrap"><div id="map" aria-label="Map of Switzerland. Zoom and pan to explore UV forecasts."></div></div>
-<label class="field-controls" id="field-controls" hidden>Field opacity <input id="opacity" aria-label="Field opacity" type="range" min="20" max="90" value="65"></label>
+<label class="field-controls" id="field-controls" hidden>Map opacity <input id="opacity" aria-label="Map opacity" type="range" min="20" max="90" value="65"></label>
 <p class="notice" id="notice" aria-live="polite"></p>
 <p class="notice" id="density" aria-live="polite"></p>
 <details class="all-values"><summary>All location forecasts and elevations</summary><div class="table-scroll"><table><thead><tr><th>Location</th><th>Elevation</th><th>UV Index</th><th>Level</th></tr></thead><tbody id="all-rows"></tbody></table></div></details>
@@ -749,7 +754,8 @@ const basemap=JSON.parse(document.getElementById('basemap').textContent);
 const dates=[...new Set(forecast.entries.map(e=>e.valid_date))].sort().slice(0,4);
 const fields=JSON.parse(document.getElementById('fields').textContent);
 const reduceMotion=matchMedia('(prefers-reduced-motion: reduce)').matches;
-let mode='locations',selectedDate=dates[0],fieldLayer=null,fieldSelection=0;
+let locationsVisible=true,mapVisible=Boolean(fields),mapType='forecast';
+let selectedDate=dates[0],fieldLayer=null,fieldLayerKey=null,fieldSelection=0;
 const fieldCache=new Map();
 const bounds=[[45.78,5.93],[47.82,10.53]];
 const map=L.map('map',{zoomControl:false,zoomAnimation:!reduceMotion,fadeAnimation:!reduceMotion,markerZoomAnimation:!reduceMotion,zoomDelta:.5,wheelPxPerZoomLevel:160,wheelDebounceTime:40,minZoom:0,maxZoom:11,maxBounds:basemap.bounds,maxBoundsViscosity:1,zoomSnap:.1});
@@ -784,7 +790,7 @@ function addMarker(rows){
   box.append(element('span','place-name '+(region?'':'town-name'),loc.label));
   const position=region?[loc.map_latitude??(loc.bbox[1]+loc.bbox[3])/2,loc.map_longitude??(loc.bbox[0]+loc.bbox[2])/2]:[loc.latitude,loc.longitude];
   const marker=L.marker(position,{icon:L.divIcon({html:box,className:'map-label '+(region?'region-label':''),iconSize:[100,56],iconAnchor:[50,14]}),keyboard:true,riseOnHover:true,title:loc.label,alt:loc.label}).bindPopup(details(rows));
-  // Leaflet recreates the icon when returning from a field view.
+  // Leaflet recreates the icon when location markers are re-enabled.
   marker.on('add',()=>{
     const node=marker.getElement();node.dataset.locationId=loc.id;node.dataset.label=loc.label;
     node.setAttribute('aria-label',loc.label+': '+rows.map(r=>(region?r.location.altitude_m+' metres, ':'')+(r.display_uvi===null?'not available':'UV Index '+r.display_uvi)).join('; '));
@@ -792,7 +798,7 @@ function addMarker(rows){
   marker.addTo(markers);
 }
 function dateLabel(value){return new Date(value+'T12:00:00Z').toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short',timeZone:'Europe/Zurich'});}
-function selectDay(date){selectedDate=date;if(!map.hasLayer(markers))markers.addTo(map);markers.clearLayers();map.closePopup();const rows=forecast.entries.filter(e=>e.valid_date===date),groups=new Map();for(const row of rows){const key=row.location.kind==='town'?row.location.id:row.location.label;if(!groups.has(key))groups.set(key,[]);groups.get(key).push(row);}groups.forEach(addMarker);fillValues(rows);const body=document.getElementById('region-rows');body.replaceChildren();groups.forEach(group=>{if(group[0].location.kind!=='region_altitude')return;const tr=element('tr');tr.append(element('td','',group[0].location.label));for(const height of [3000,2000,1000]){const td=element('td'),r=group.find(r=>r.location.altitude_m===height);if(r){td.append(tile(r));td.setAttribute('aria-label',r.display_uvi===null?'Not available':'UV Index '+r.display_uvi);}else td.setAttribute('aria-label','Not applicable');tr.append(td);}body.append(tr);});document.getElementById('mobile-day').value=date;document.querySelectorAll('.day').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.date===date)));const missing=rows.filter(r=>r.display_uvi===null).length;document.getElementById('notice').textContent=missing===rows.length?'Full-day values are not available for this date.':missing?`${missing} of ${rows.length} values unavailable. Select a location for details.`:`${dateLabel(date)} · Daily maximum UV Index · Select a location for details.`;showMode();}
+function selectDay(date){selectedDate=date;if(!map.hasLayer(markers))markers.addTo(map);markers.clearLayers();map.closePopup();const rows=forecast.entries.filter(e=>e.valid_date===date),groups=new Map();for(const row of rows){const key=row.location.kind==='town'?row.location.id:row.location.label;if(!groups.has(key))groups.set(key,[]);groups.get(key).push(row);}groups.forEach(addMarker);fillValues(rows);const body=document.getElementById('region-rows');body.replaceChildren();groups.forEach(group=>{if(group[0].location.kind!=='region_altitude')return;const tr=element('tr');tr.append(element('td','',group[0].location.label));for(const height of [3000,2000,1000]){const td=element('td'),r=group.find(r=>r.location.altitude_m===height);if(r){td.append(tile(r));td.setAttribute('aria-label',r.display_uvi===null?'Not available':'UV Index '+r.display_uvi);}else td.setAttribute('aria-label','Not applicable');tr.append(td);}body.append(tr);});document.getElementById('mobile-day').value=date;document.querySelectorAll('.day').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.date===date)));const missing=rows.filter(r=>r.display_uvi===null).length;document.getElementById('notice').textContent=missing===rows.length?'Full-day values are not available for this date.':missing?`${missing} of ${rows.length} values unavailable. Select a location for details.`:`${dateLabel(date)} · Daily maximum UV Index · Select a location for details.`;updateLayers();}
 const today=new Intl.DateTimeFormat('en-CA',{timeZone:'Europe/Zurich',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
 for(const date of dates){const button=element('button','day');button.type='button';button.dataset.date=date;button.setAttribute('aria-pressed','false');button.append(element('strong','',date===today?'Today':new Date(date+'T12:00Z').toLocaleDateString('en-GB',{weekday:'long',timeZone:'Europe/Zurich'})));button.append(element('small','',new Date(date+'T12:00Z').toLocaleDateString('en-GB',{day:'numeric',month:'short',timeZone:'Europe/Zurich'})));button.onclick=()=>selectDay(date);document.getElementById('days').append(button);const option=element('option','',dateLabel(date));option.value=date;document.getElementById('mobile-day').append(option);}
 document.getElementById('mobile-day').onchange=event=>selectDay(event.target.value);
@@ -836,8 +842,11 @@ function declutter(){
 // Re-evaluate collisions after animated marker transforms have settled.
 map.on('zoomend moveend popupopen popupclose',()=>requestAnimationFrame(declutter));
 map.on('click',event=>inspectField(event.latlng));
-if(!fields)document.getElementById('views').hidden=true;
-for(const button of document.querySelectorAll('.view'))button.onclick=()=>{mode=button.dataset.mode;showMode();};
+document.getElementById('map-toggle').hidden=!fields;
+document.getElementById('show-map').checked=mapVisible;
+document.getElementById('show-locations').onchange=event=>{locationsVisible=event.target.checked;updateLayers();};
+document.getElementById('show-map').onchange=event=>{mapVisible=event.target.checked;updateLayers();};
+document.getElementById('map-type').onchange=event=>{mapType=event.target.value;updateLayers();};
 document.getElementById('opacity').oninput=event=>{if(fieldLayer)fieldLayer.setOpacity(Number(event.target.value)/100);};
 function fieldColours(value){const n=Math.floor(value+.5);return n<3?[39,134,0]:n<6?[255,240,0]:n<8?[255,121,0]:n<11?[211,18,32]:[113,68,201];}
 function projectedY(lat){return Math.asinh(Math.tan(lat*Math.PI/180));}
@@ -863,39 +872,51 @@ async function decodeField(date,type){
   }
   return {url:canvas.toDataURL('image/png'),values};
 }
-async function showMode(){
-  const selection=++fieldSelection;map.closePopup();
-  if(fieldLayer){map.removeLayer(fieldLayer);fieldLayer=null;}
-  document.querySelectorAll('.view').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.mode===mode)));
-  document.getElementById('field-controls').hidden=mode==='locations';
-  if(mode==='locations'){
-    markers.addTo(map);declutter();
-    const rows=forecast.entries.filter(r=>r.valid_date===selectedDate),missing=rows.filter(r=>r.display_uvi===null).length;
-    document.getElementById('notice').textContent=missing?`${dateLabel(selectedDate)} · ${missing} of ${rows.length} values unavailable. Select a location for details.`:dateLabel(selectedDate)+' · Daily maximum UV Index · Select a location for details.';
-    return;
+function removeField(){if(fieldLayer)map.removeLayer(fieldLayer);fieldLayer=null;fieldLayerKey=null;}
+function layerNotice(){
+  const parts=[dateLabel(selectedDate)+' · Daily maximum UV Index'];
+  if(mapVisible)parts.push(mapType==='clear_sky'?'Map: clear sky (clouds removed)':'Map: forecast (with clouds)');
+  if(locationsVisible){
+    const missing=forecast.entries.filter(r=>r.valid_date===selectedDate&&r.display_uvi===null).length;
+    parts.push('Locations: forecast'+(mapVisible&&mapType==='clear_sky'?' with clouds':'')+(missing?` (${missing} unavailable)`:''));
   }
-  map.removeLayer(markers);
-  document.getElementById('density').textContent='At model elevation, with an open horizon. Location forecasts below include clouds.';
-  document.getElementById('notice').textContent='Loading field…';
-  const key=selectedDate+'/'+mode;
-  if(!fieldCache.has(key))fieldCache.set(key,decodeField(selectedDate,mode));
+  return mapVisible||locationsVisible?parts.join(' · '):'Terrain relief only. Enable Locations or Map to see UV forecasts.';
+}
+async function updateLayers(){
+  const selection=++fieldSelection;map.closePopup();
+  document.getElementById('field-controls').hidden=!mapVisible;
+  document.getElementById('map-type-control').hidden=!mapVisible;
+  if(locationsVisible){markers.addTo(map);declutter();}else{
+    map.removeLayer(markers);
+    document.getElementById('density').textContent=mapVisible?'Select the map for its UV Index at model elevation.':'Zoom and pan to explore the terrain.';
+  }
+  document.getElementById('notice').textContent=layerNotice();
+  if(!mapVisible){removeField();return;}
+  const key=selectedDate+'/'+mapType;
+  if(fieldLayer&&fieldLayerKey===key)return;
+  removeField();
+  if(!fieldCache.has(key))fieldCache.set(key,decodeField(selectedDate,mapType));
+  document.getElementById('notice').textContent=layerNotice()+' · Loading map…';
   try{
     const field=await fieldCache.get(key);if(selection!==fieldSelection)return;
-    fieldLayer=L.imageOverlay(field.url,fields.bounds,{className:'uv-field',opacity:Number(document.getElementById('opacity').value)/100,alt:mode==='clear_sky'?'Clear-sky daily maximum UV Index':'Forecast daily maximum UV Index'}).addTo(map);
-    document.getElementById('notice').textContent=dateLabel(selectedDate)+(mode==='clear_sky'?' · Clear-sky daily maximum (clouds removed)':' · Forecast daily maximum (with clouds)')+' · Select the field for its UV Index.';
-  }catch(error){if(selection===fieldSelection)document.getElementById('notice').textContent='This field could not be loaded. Choose Locations to view the forecasts.';}
+    // Both overlays share the relief pane so colour can multiply with the relief;
+    // Leaflet's marker pane keeps the location badges and names above them.
+    fieldLayer=L.imageOverlay(field.url,fields.bounds,{className:'uv-field',opacity:Number(document.getElementById('opacity').value)/100,alt:mapType==='clear_sky'?'Clear-sky daily maximum UV Index':'Forecast daily maximum UV Index'}).addTo(map);
+    fieldLayerKey=key;
+    document.getElementById('notice').textContent=layerNotice();
+  }catch(error){if(selection===fieldSelection)document.getElementById('notice').textContent='The UV map could not be loaded. Location forecasts are available using the Locations toggle.';}
 }
 async function inspectField(latlng){
-  if(mode==='locations'||!fieldLayer)return;
-  const type=mode,date=selectedDate,field=await fieldCache.get(date+'/'+type);
-  if(type!==mode||date!==selectedDate)return;
+  if(!mapVisible||!fieldLayer)return;
+  const type=mapType,date=selectedDate,field=await fieldCache.get(date+'/'+type);
+  if(!mapVisible||type!==mapType||date!==selectedDate)return;
   const [[south,west],[north,east]]=fields.bounds;
   const x=Math.floor((latlng.lng-west)/(east-west)*fields.width);
   const y=Math.floor((projectedY(north)-projectedY(latlng.lat))/(projectedY(north)-projectedY(south))*fields.height);
   if(x<0||y<0||x>=fields.width||y>=fields.height)return;
   const value=field.values[y*fields.width+x];
   const box=element('div');box.append(element('h3','',type==='clear_sky'?'Clear-sky UV Index':'Forecast UV Index'));
-  box.append(element('p','',Number.isFinite(value)?'Daily maximum: '+value.toFixed(2):'No field value at this position.'));
+  box.append(element('p','',Number.isFinite(value)?'Daily maximum: '+value.toFixed(2):'No UV value at this position.'));
   box.append(element('p','',dateLabel(date)+' · Model terrain'));
   L.popup().setLatLng(latlng).setContent(box).openOn(map);
 }
