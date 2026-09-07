@@ -91,3 +91,26 @@ coordinates and identical hourly `time_bounds`. Observation data also need
 boolean `qc_good(time, poi)`. The caller supplies the instrument-specific unit,
 time-support and quality-control adaptation. Comparisons use shared times and
 points, excluding missing values and observations with `qc_good=False`.
+
+Missing ICON member inputs are marked with quality bit **128**; corresponding
+UV values are NaN, not zero.
+
+## Ensemble dimensions
+
+With the default ensemble download, member-dependent ICON and UV fields have
+`(member, time, cell)` dimensions; POI forecasts have `(member, time, poi)`.
+`member` identifies CTRL 0 and perturbed members 1–20. Native coordinates and
+`time_bounds(time, bounds)` are shared. Attributes record the expected member
+IDs and the minimum coverage fraction. Missing samples remain NaN with quality
+flag 128; daily reductions require 90% complete member products by default.
+
+For hourly point or grid summaries, reduce the computed UV values across
+`member` and mask insufficient coverage, for example
+`points.uvi.median("member").where(points.uvi.count("member") >= 19)` for the
+default 21-member request. Adapt the count if you change the coverage threshold. For a daily
+UV Index product, use [daily export](daily-products.md#ensemble-products): it
+computes member daily peaks before reduction. Averaging atmospheric inputs first
+would lose cloud uncertainty and alter the nonlinear UV calculation.
+
+Download with `fetch-icon --control` to retain the original single-member
+`(time, cell)` / `(time, poi)` layout. Existing CTRL files remain supported.

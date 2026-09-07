@@ -10,6 +10,7 @@ from zoneinfo import ZoneInfo
 import numpy as np
 
 from .radiation import RadiationTable, solar_geometry
+from .ensemble import member_ids, ensemble_metadata, summary, required_members, quantile_available
 
 CONTRACT_VERSION = 'daily-uv-v1'
 CONTRACT_SHA256 = 'aabfc3713c5664d365b5336cebfaa65d119a834a227b0f0542b4b94fc0e9bd36'
@@ -17,6 +18,8 @@ FORECAST_CONTRACT_VERSION = 'daily-uv-v2'
 FORECAST_CONTRACT_SHA256 = hashlib.sha256(
     b'daily-uv-v2: v1 support and peaks; all forecast daylight dates; explicit valid_dates'
 ).hexdigest()
+ENSEMBLE_CONTRACT_VERSION = 'daily-uv-v3'
+ENSEMBLE_CONTRACT_SHA256 = hashlib.sha256(b'daily-uv-v3: memberwise daily/spatial products, then ensemble quantile; uncalibrated uncertainty').hexdigest()
 CATEGORIES = ('low', 'moderate', 'high', 'very_high', 'extreme')
 PEAK_DEFINITION = 'maximum_30min_mean_on_5min_grid_hourly_cloud_reconstruction'
 
@@ -58,11 +61,13 @@ def daylight_hours(value, latitude, longitude):
 def _check_grid(grid, table):
     if grid.attrs.get('radiation_table_sha256') != table.sha256:
         raise ValueError('Radiation table differs from source grid')
+    allow_missing = 'ensemble_members' in grid.attrs or 'minimum_member_fraction' in grid.attrs
     for name in ('ozone_du', 'aod550', 'pressure_pa', 'uv_albedo',
                  'effective_cloud_tau550', 'cloud_scale', 'quality_flag'):
         if name not in grid or grid[name].dims != ('time', 'cell'):
             raise ValueError(f'Missing (time,cell) field: {name}')
-        if not np.isfinite(grid[name]).all() or np.any(grid[name] < 0):
+        if (np.any(np.isinf(grid[name])) or np.any(grid[name] < 0)
+                or ((not allow_missing or name == 'quality_flag') and not np.isfinite(grid[name]).all())):
             raise ValueError(f'Invalid {name}')
         if name != 'quality_flag' and grid[name].attrs.get('units') != ('Pa' if name == 'pressure_pa' else 'DU' if name == 'ozone_du' else '1'):
             raise ValueError(f'Invalid units for {name}')
@@ -90,7 +95,7 @@ def _check_grid(grid, table):
     return bounds
 
 
-def daily_cells(grid, valid_date, table=None, chunk_size=256, *, clear_sky=False):
+def daily_cells(grid, valid_date, table=None, chunk_size=256, *, clear_sky=False, ensemble_quantile=.5):
     """Reconstruct native-cell peaks; gaps in daylight never become partial maxima.
 
     Returns arrays in source-cell order, with NaN only for unavailable values.
@@ -98,7 +103,23 @@ def daily_cells(grid, valid_date, table=None, chunk_size=256, *, clear_sky=False
     remove cloud optical depth and cloud scaling, retaining atmosphere/surface
     and the same full-day coverage requirements.
     """
+    ids = member_ids(grid)
+    ensemble_metadata(ids or [], ensemble_quantile)
     table = RadiationTable() if table is None else table
+    if ids is not None:
+        members = [daily_cells(grid.sel(member=m, drop=True), valid_date, table, chunk_size,
+                               clear_sky=clear_sky) for m in ids]
+        values = np.stack([r['uvi'] for r in members])
+        hourly = np.stack([r['hourly_max_uvi'] for r in members])
+        peaks = np.stack([r['peak_start'] for r in members])
+        _, _, minimum = required_members(grid)
+        count = np.isfinite(values).sum(axis=0)
+        available = count >= minimum
+        return dict(uvi=np.where(available, quantile_available(values, ensemble_quantile, axis=0), np.nan),
+                    hourly_max_uvi=np.where(available, quantile_available(hourly, ensemble_quantile, axis=0), np.nan),
+                    available=available, member_count=count,
+                    quality_flag=np.bitwise_or.reduce([r['quality_flag'] for r in members], axis=0),
+                    peak_start=peaks.min(axis=0), member_peak_start=peaks, member_uvi=values)
     bounds = _check_grid(grid, table)
     if chunk_size < 1:
         raise ValueError('Positive chunk size required')
@@ -128,8 +149,14 @@ def daily_cells(grid, valid_date, table=None, chunk_size=256, *, clear_sky=False
             args = [local[k].values[i] for k in ('ozone_du', 'pressure_pa', 'aod550', 'uv_albedo', 'effective_cloud_tau550')]
             if clear_sky:
                 args[-1] = 0
-            components = table.at(z, *args)[..., 2:]
-            values = 40*components.sum(axis=-1)*distance*(1 if clear_sky else local.cloud_scale.values[i])
+            valid = np.all([np.isfinite(local[k].values[i]) for k in
+                            ('ozone_du', 'pressure_pa', 'aod550', 'uv_albedo', 'effective_cloud_tau550', 'cloud_scale')], axis=0)
+            complete &= valid | ~required[h]
+            values = np.zeros_like(z)
+            if valid.any():
+                selected_args = [arg[valid] if np.ndim(arg) else arg for arg in args]
+                components = table.at(z[:, valid], *selected_args)[..., 2:]
+                values[:, valid] = 40*components.sum(axis=-1)*distance*(1 if clear_sky else local.cloud_scale.values[i, valid])
             if not np.isfinite(values).all() or np.any(values < 0):
                 raise ValueError('Invalid reconstructed UVI')
             samples[h*12:(h+1)*12] = values
@@ -189,15 +216,22 @@ def forecast_dates(grid, first):
     raise ValueError('No forecast daylight at or after issuance date')
 
 
-def export_daily(grid, catalog, issued_at, *, input_sha256, table=None, days=2):
-    """Export two days (v1), four days or all supplied daylight dates (v2)."""
+def export_daily(grid, catalog, issued_at, *, input_sha256, table=None, days=2, ensemble_quantile=.5):
+    """Export CTRL daily products (v1/v2) or memberwise ensemble products (v3)."""
     if days not in (2, 4, 'all'):
         raise ValueError("days must be 2, 4 or 'all'")
     issue = utc_instant(issued_at)
     if not isinstance(input_sha256, str) or len(input_sha256) != 64 or any(c not in '0123456789abcdef' for c in input_sha256):
         raise ValueError('Source file SHA-256 is required')
     table = RadiationTable() if table is None else table
-    _check_grid(grid, table)
+    ids = member_ids(grid)
+    expected, fraction, minimum = required_members(grid)
+    ensemble = ensemble_metadata(ids or [], ensemble_quantile, expected=expected, fraction=fraction)
+    if ids is None:
+        _check_grid(grid, table)
+    else:
+        for m in ids:
+            _check_grid(grid.sel(member=m, drop=True), table)
     entries = catalog['entries']
     if not entries or len({e['id'] for e in entries}) != len(entries):
         raise ValueError('Nonempty, unique catalog identifiers required')
@@ -222,7 +256,8 @@ def export_daily(grid, catalog, issued_at, *, input_sha256, table=None, days=2):
              [str(first + timedelta(days=d)) for d in range(days)])
     rows = []
     for day, valid in enumerate(dates):
-        daily = daily_cells(selected, valid, table) if len(union) and not source_reasons else None
+        daily = (daily_cells(selected, valid, table, ensemble_quantile=ensemble_quantile) if ids is not None
+                 else daily_cells(selected, valid, table)) if len(union) and not source_reasons else None
         for entry, indices in zip(entries, support):
             local = np.array([by_index[int(i)] for i in indices], dtype=int)
             good = local[daily['available'][local]] if daily is not None else np.array([], dtype=int)
@@ -232,11 +267,26 @@ def export_daily(grid, catalog, issued_at, *, input_sha256, table=None, days=2):
                 reasons.append('insufficient_native_support')
             elif daily is not None and len(good)/len(indices) < (.95 if region else 1):
                 reasons.append('incomplete_daylight')
+                if ids is not None:
+                    reasons.append('insufficient_ensemble_members')
             row = dict(location=entry, valid_date=valid, day=day, status='unavailable', reasons=reasons,
                        selected_cells=len(indices), valid_cells=len(good), uvi=None, display_uvi=None, category=None)
+            member_values = None
+            if not reasons and ids is not None:
+                native = daily['member_uvi'][:, local]
+                member_values = np.full(len(ids), np.nan)
+                for m, native_values in enumerate(native):
+                    finite = np.isfinite(native_values)
+                    if finite.sum() >= (5 if region else 1) and finite.mean() >= (.95 if region else 1):
+                        member_values[m] = np.quantile(native_values[finite], .9) if region else native_values[0]
+                if np.isfinite(member_values).sum() < minimum:
+                    reasons.append('insufficient_ensemble_members')
             if not reasons:
                 values = daily['uvi'][good]
                 value = float(np.quantile(values, .9)) if region else float(values[0])
+                if ids is not None:
+                    value = float(quantile_available(member_values, ensemble_quantile))
+                    row['ensemble'] = summary(member_values)
                 integer, category = display_value(value)
                 row.update(uvi=value, display_uvi=integer, category=category,
                            status='degraded' if len(good) < len(indices) else 'ok',
@@ -254,6 +304,16 @@ def export_daily(grid, catalog, issued_at, *, input_sha256, table=None, days=2):
                     row['source_point']['cell'] = int(selected.cell.values[i])
                     row['source_point']['altitude_difference_m'] = row['source_point']['altitude_m']-float(entry['altitude_m'])
                     row['peak_window_start_utc'] = str(daily['peak_start'][i])+'Z'
+                if ids is not None:
+                    peaks = daily['member_peak_start'][:, local]
+                    peaks = peaks[~np.isnat(peaks)]
+                    row.pop('peak_window_start_utc', None)
+                    row['peak_window_start_range_utc'] = [str(peaks.min())+'Z', str(peaks.max())+'Z']
+                    row['native_uvi_range'] = [float(np.nanmin(native)), float(np.nanmax(native))]
+                    row['native_uvi_median'] = float(np.nanmedian(native))
+                    if row['ensemble']['valid_member_count'] < len(expected):
+                        row['status'] = 'degraded'
+                        row['reasons'].append('partial_ensemble_support')
             rows.append(row)
     payload = dict(schema_version=CONTRACT_VERSION, contract_sha256=CONTRACT_SHA256,
                 issued_at=issue.isoformat(), timezone='Europe/Zurich',
@@ -267,6 +327,9 @@ def export_daily(grid, catalog, issued_at, *, input_sha256, table=None, days=2):
     if days != 2:
         payload.update(schema_version=FORECAST_CONTRACT_VERSION,
                        contract_sha256=FORECAST_CONTRACT_SHA256, valid_dates=dates)
+    if ids is not None:
+        payload.update(schema_version=ENSEMBLE_CONTRACT_VERSION,
+                       contract_sha256=ENSEMBLE_CONTRACT_SHA256, valid_dates=dates, ensemble=ensemble)
     return payload
 
 

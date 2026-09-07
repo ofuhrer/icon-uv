@@ -21,6 +21,7 @@ dependencies, including the development tools used for these checks.
 | `icon_uv/radiation.py` | Radiation-table interpolation, cloud inversion and solar geometry |
 | `icon_uv/products.py` | Hourly grid, point and observation-comparison APIs |
 | `icon_uv/daily.py` | Daily peaks, location support and JSON export |
+| `icon_uv/ensemble.py` | Member identity, coverage and ensemble reductions |
 | `icon_uv/cli.py` | Command-line interface |
 | `icon_uv/build_table.py`, `icon_uv/validate.py` | Table generation and numerical reference checks |
 | `icon_uv/data/` | Bundled lookup table and daily JSON Schema |

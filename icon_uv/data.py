@@ -79,29 +79,34 @@ def _decode_bytes(raw):
         return list(grib_messages(f.name))
 
 
-def interval_radiation(leads, means, errors):
+def interval_radiation(leads, means, errors, *, allow_missing=False):
     t = np.asarray(leads, float)
     a = np.asarray(means, float)
     err = np.asarray(errors, float)
     if len(t) < 2 or a.shape[0] != len(t) or err.shape != t.shape:
         raise ValueError("Invalid radiation series shape")
-    if np.any(t < 0) or not np.all(np.diff(t) == 1) or not np.all(np.isfinite(a)):
+    if np.any(t < 0) or not np.all(np.diff(t) == 1) or (not allow_missing and not np.all(np.isfinite(a))):
         raise ValueError("Missing hour, reset, duplicate or nonfinite radiation")
     shape = (-1,) + (1,)*(a.ndim-1)
     flux = np.diff(t.reshape(shape)*a, axis=0)
     tolerance = (t[1:]*err[1:]+t[:-1]*err[:-1]+1e-6).reshape(shape)
+    if allow_missing:
+        valid = np.isfinite(flux) & np.isfinite(tolerance) & (flux >= -tolerance)
+        return np.where(valid, np.maximum(flux, 0), np.nan)
     if np.any(flux < -tolerance):
         raise ValueError("Negative hourly energy beyond GRIB packing error")
     return np.maximum(flux, 0)
 
 
-def fetch_icon(reference, first_lead, last_lead, bbox=BBOX, workers=3):
-    """Return control-run interval fields on a native-grid subset.
+def fetch_icon(reference, first_lead, last_lead, bbox=BBOX, workers=3, *, ensemble=True, minimum_member_fraction=.9):
+    """Return all 21 members (default) or CTRL interval fields on a native subset.
 
     Leads are interval *boundaries*, so 10..34 gives 24 hourly intervals.
     Surface state is averaged from the two endpoints. No temporal gap filling.
     """
     validate_bbox(bbox)
+    if not 0 < minimum_member_fraction <= 1:
+        raise ValueError('Minimum member fraction must be in (0, 1]')
     ref = utc(reference)
     if first_lead < 1 or last_lead <= first_lead:
         raise ValueError("Use positive, increasing boundary leads, e.g. 10..34")
@@ -129,9 +134,9 @@ def fetch_icon(reference, first_lead, last_lead, bbox=BBOX, workers=3):
     variables = ("ASOD_S", "PS", "ALB_RAD", "SNOWC")
 
     def fetch(job):
-        var, lead = job
+        var, lead, perturbed = job
         body = {"collections": [COLLECTION], "forecast:reference_datetime": ref_string,
-                "forecast:variable": var, "forecast:perturbed": False,
+                "forecast:variable": var, "forecast:perturbed": perturbed,
                 "forecast:horizon": f"P{lead//24}DT{lead%24:02d}H00M00S"}
         features = _request(STAC+"/search", body).json()["features"]
         if len(features) != 1:
@@ -140,44 +145,74 @@ def fetch_icon(reference, first_lead, last_lead, bbox=BBOX, workers=3):
         name, entry = next(iter(feature["assets"].items()))
         content = _request(entry["href"]).content
         messages = _decode_bytes(content)
-        if len(messages) != 1:
-            raise ValueError("Expected one ICON control message")
-        m, v, _ = messages[0]
-        if (m.get("uuidOfHGrid") != grid or m["dataDate"] != int(ref.strftime("%Y%m%d"))
-            or m["dataTime"] != int(ref.strftime("%H%M")) or m["endStep"] != lead
-            or m["stepUnits"] != 1 or len(v) != len(lat)):
-            raise ValueError(f"ICON reference/grid/time mismatch for {var}")
-        expected_units = {"ASOD_S": "W m**-2", "PS": "Pa", "ALB_RAD": "%", "SNOWC": "%"}
-        if m["units"] != expected_units[var]:
-            raise ValueError(f"Unexpected units for {var}: {m['units']}")
-        if var == "ASOD_S" and (m["stepType"] != "avg" or m["startStep"] != 0):
-            raise ValueError("ICON ASOD_S must be mean since reference time")
-        if var != "ASOD_S" and m["stepType"] != "instant":
-            raise ValueError(f"Expected instantaneous {var}")
-        if not np.all(np.isfinite(v[ids])):
-            raise ValueError(f"Missing ICON cells in {var}")
-        source = next(link["href"] for link in feature["links"] if link["rel"] == "self")
-        return job, v[ids], m, {"source": source, "asset": name,
-                               "sha256": hashlib.sha256(content).hexdigest()}
+        expected = set(range(1, 21)) if perturbed else {0}
+        members = {}; rejected = set()
+        for m, v, _ in messages:
+            member = m.get('perturbationNumber')
+            if member not in expected:
+                continue
+            if member in members or member in rejected:
+                rejected.add(member); members.pop(member, None); continue
+            try:
+                if (m.get("uuidOfHGrid") != grid or m["dataDate"] != int(ref.strftime("%Y%m%d"))
+                    or m["dataTime"] != int(ref.strftime("%H%M")) or m["endStep"] != lead
+                    or m["stepUnits"] != 1 or len(v) != len(lat)):
+                    raise ValueError(f"ICON reference/grid/time mismatch for {var}")
+                expected_units = {"ASOD_S": "W m**-2", "PS": "Pa", "ALB_RAD": "%", "SNOWC": "%"}
+                if m["units"] != expected_units[var]:
+                    raise ValueError(f"Unexpected units for {var}: {m['units']}")
+                if var == "ASOD_S" and (m["stepType"] != "avg" or m["startStep"] != 0):
+                    raise ValueError("ICON ASOD_S must be mean since reference time")
+                if var != "ASOD_S" and m["stepType"] != "instant":
+                    raise ValueError(f"Expected instantaneous {var}")
+                values = v[ids].copy()
+                valid = np.isfinite(values)
+                if var in ('ALB_RAD', 'SNOWC'):
+                    valid &= (values >= 0) & (values <= 100)
+                if var == 'PS':
+                    valid &= values > 0
+                members[member] = (np.where(valid, values, np.nan), m)
+            except (ValueError, KeyError):
+                rejected.add(member)
+        source = next(link['href'] for link in feature['links'] if link['rel'] == 'self')
+        return job, members, {'source': source, 'asset': name,
+                             'missing_members': sorted(expected-set(members)),
+                             'sha256': hashlib.sha256(content).hexdigest()}
+
+    def fetch_available(job):
+        try:
+            return fetch(job)
+        except (RuntimeError, ValueError, KeyError) as exc:
+            var, lead, perturbed = job
+            # Do not include transport details or signed URLs in failure manifests.
+            return job, {}, {'variable': var, 'lead': lead, 'perturbed': perturbed,
+                             'unavailable': type(exc).__name__}
 
     records = {}
-    jobs = [(v, h) for v in variables for h in leads]
+    jobs = [(v, h, perturbed) for v in variables for h in leads
+            for perturbed in ([False, True] if ensemble else [False])]
     with ThreadPoolExecutor(max_workers=workers) as pool:
-        for i, (job, values, meta, source) in enumerate(pool.map(fetch, jobs), 1):
-            records[job] = (values, meta)
+        for i, (job, members, source) in enumerate(pool.map(fetch_available, jobs), 1):
+            var, lead, _ = job
+            for member, record in members.items():
+                records[var, lead, member] = record
             manifest.append(source)
             if i % 10 == 0 or i == len(jobs):
                 print(f"ICON assets {i}/{len(jobs)}, subset {len(ids)} cells", flush=True)
-    sw = interval_radiation(leads, [records["ASOD_S", h][0] for h in leads],
-                            [records["ASOD_S", h][1]["packingError"] for h in leads])
+    empty = (np.full(len(ids), np.nan), {'packingError': np.nan})
+    member_numbers = list(range(21)) if ensemble else [0]
+    sw = np.stack([interval_radiation(leads, [records.get(('ASOD_S', h, m), empty)[0] for h in leads],
+                       [records.get(('ASOD_S', h, m), empty)[1].get('packingError', np.nan) for h in leads], allow_missing=True) for m in member_numbers])
+    dims = ('member', 'time', 'cell') if ensemble else ('time', 'cell')
     state = {}
     for var, out, divisor in (("PS", "pressure_pa", 1), ("ALB_RAD", "sw_albedo", 100),
                               ("SNOWC", "snow_fraction", 100)):
-        v = np.array([records[var, h][0] for h in leads])/divisor
-        state[out] = (("time", "cell"), (v[:-1]+v[1:])/2)
+        v = np.array([[records.get((var, h, m), empty)[0] for h in leads] for m in member_numbers])/divisor
+        mean = (v[:, :-1]+v[:, 1:])/2
+        state[out] = (dims, mean if ensemble else mean[0])
     base = np.datetime64(ref.replace(tzinfo=None), "ns")
     boundaries = base + np.asarray(leads)*np.timedelta64(1, "h")
-    ds = xr.Dataset(dict(state, sw_down=(("time", "cell"), sw),
+    ds = xr.Dataset(dict(state, sw_down=(dims, sw if ensemble else sw[0]),
                          time_bounds=(("time", "bounds"), np.column_stack([boundaries[:-1], boundaries[1:]]))),
                     coords={"time": boundaries[:-1]+np.timedelta64(30, "m"), "cell": ids,
                             "latitude": ("cell", lat[ids]), "longitude": ("cell", lon[ids]),
@@ -185,8 +220,19 @@ def fetch_icon(reference, first_lead, last_lead, bbox=BBOX, workers=3):
                     attrs={"forecast_reference_time": ref_string, "grid_uuid": grid,
                            "member": 0, "bbox": json.dumps(list(bbox)),
                            "icon_sources": json.dumps(manifest),
-                           "source": "MeteoSwiss ICON-CH2 control, public STAC",
+                           "source": "MeteoSwiss ICON-CH2-EPS, public STAC" if ensemble else "MeteoSwiss ICON-CH2 control, public STAC",
                            "surface_time_treatment": "mean of interval endpoint states"})
+    coverage = {k: float(np.isfinite(ds[k]).mean()) for k in ('sw_down', 'pressure_pa', 'sw_albedo', 'snow_fraction')}
+    fraction = float(np.mean(list(coverage.values())))
+    if fraction < minimum_member_fraction:
+        raise ValueError(f'Only {fraction:.1%} of requested member/field samples available; need {minimum_member_fraction:.1%}')
+    ds.attrs.update(minimum_member_fraction=minimum_member_fraction,
+                    input_coverage_fraction=fraction, field_coverage=json.dumps(coverage),
+                    missing_data_policy='retain missing samples as NaN; require member daylight coverage before daily reduction')
+    if ensemble:
+        ds = ds.assign_coords(member=member_numbers)
+        ds.attrs.pop('member')
+        ds.attrs.update(ensemble_size=21, ensemble_members=json.dumps(member_numbers))
     for name, units in {"sw_down": "W m-2", "pressure_pa": "Pa", "sw_albedo": "1",
                         "snow_fraction": "1", "latitude": "degrees_north",
                         "longitude": "degrees_east", "altitude_m": "m"}.items():

@@ -35,7 +35,7 @@ python -m http.server 8769 --bind 127.0.0.1
 ```
 
 Open [localhost:8769/examples/map/](http://127.0.0.1:8769/examples/map/).
-The included snapshot covers **7–10 September 2026**. Keep the server running:
+The included CTRL snapshot covers **7–10 September 2026**. Keep the server running:
 `index.html` loads separate JSON files and cannot be opened directly with `file://`.
 
 Inside `map/`:
@@ -54,4 +54,5 @@ uv run --no-sync python examples/map/render.py --output work/meteoswiss-map.html
 Then open [localhost:8769/work/meteoswiss-map.html](http://127.0.0.1:8769/work/meteoswiss-map.html).
 The first rebuild downloads and caches swisstopo relief tiles. The
 [map guide](../docs/meteoswiss-map.md) explains how to generate a new four-day
-forecast and refresh its JSON files without rebuilding the page.
+ensemble forecast and refresh its JSON files without rebuilding the page.
+Downloads use all 21 members by default; add `--control` to `fetch-icon` for CTRL only.

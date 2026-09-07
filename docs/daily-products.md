@@ -59,7 +59,7 @@ Coordinates are WGS84 degrees and elevations are metres above sea level.
 Bounding boxes use `[west, south, east, north]`. The full
 [example catalog](../examples/product_locations.json) has Swiss towns
 and mountain regions; adapt its locations and boundaries to your product.
-For the 20-town and six-region map layout, use the
+For the 30-town and six-region map layout, use the
 [MeteoSwiss map example](meteoswiss-map.md).
 
 | Kind | Native-cell selection | Reported value |
@@ -92,7 +92,7 @@ error; stale cycles yield unavailable entries.
 With `--days all`, dates begin on the issuance date and end on the last supplied
 daylight date. A trailing night-only date is omitted. Incomplete daylight on the
 first or last date produces unavailable values, as do gaps on intermediate days.
-The v2 payload adds `valid_dates`, and `day` is the zero-based offset from issuance's
+For CTRL inputs, the v2 payload adds `valid_dates`, and `day` is the zero-based offset from issuance's
 local date. Use `--days 4` for exactly four dates from issuance, retaining unavailable
 values if coverage is short. Python accepts `export_daily(..., days=4)` or
 `export_daily(..., days='all')`. Both use the v2 schema; the default two-day
@@ -103,6 +103,75 @@ For native-terrain clear-sky peaks, Python also provides
 coverage checks and peak definition, with cloud optical depth set to zero and
 cloud scaling set to one. The [map example](meteoswiss-map.md#map-layers) exports
 both gridded peak products.
+
+## Ensemble products
+
+The default `fetch-icon` download contains CTRL (member 0) and perturbed members
+1–20. `run` retains `member` alongside `time` and `cell`; it inverts shortwave
+and calculates UV independently for every member. CAMS composition and the
+radiation table are common to all members. `poi` also preserves the member axis.
+To compute CTRL only, download with `fetch-icon --control` and pass that file
+through the same commands. Python uses `fetch_icon(..., ensemble=False)`.
+
+Daily ensemble products use **daily-uv-v3**, with an explicit `valid_dates` list
+for two, four or all dates. CTRL inputs without a member dimension keep the v1/v2 contracts.
+The reduction order is:
+
+1. Reconstruct each native cell's 30-minute daily peak for each member.
+2. Select the town's suitable cell, or compute the regional spatial P90, within
+   each member.
+3. Take the **ensemble median (P50)** of those unrounded member products.
+4. Round the resulting value once for display and category assignment.
+
+This produces a central estimate of the daily peak. Averaging shortwave inputs
+before UV inversion, or taking the maximum of an hourly ensemble median, would
+produce different quantities. The regional spatial P90 and ensemble P50 are
+separate operations; their order matters.
+
+`--ensemble-quantile 0.75` on `daily` chooses P75 instead of the default P50.
+Python accepts `export_daily(..., ensemble_quantile=.75)` and
+`daily_cells(..., ensemble_quantile=.75)`. An upper quantile gives greater weight
+to sunnier member outcomes; choose and validate it against the cost of
+underprediction for the intended product, rather than assuming it improves accuracy.
+
+The top-level `ensemble` object records member IDs, count, deterministic quantile
+and reduction method. Each available entry adds:
+
+- `ensemble.member_uvi`: member products in the top-level member-ID order.
+- `ensemble.p10`, `p50`, `p90`: linearly interpolated ensemble quantiles.
+- `ensemble.probability_uvi_ge`: fractions of members with **unrounded** UVI at
+  least 3, 6, 8 and 11. These differ from probabilities of rounded categories.
+
+Native UVI range/median and peak-window time range span the supporting cells
+and members. There is no single peak time for the ensemble aggregate, so v3
+omits `peak_window_start_utc`. Existing spatial and daylight coverage requirements
+apply within every contributing member.
+
+### Missing members and fields
+
+By default **90% must be present**. `fetch-icon` retains unavailable field samples
+as NaN and records per-field coverage and missing assets. It stops if the fraction
+of usable member × time × cell × required-field samples falls below 90%; a missing
+accumulation boundary can invalidate both adjacent radiation intervals.
+Set `fetch-icon --minimum-member-fraction 0.8` to choose a different threshold.
+The threshold is recorded in the NetCDF and used by downstream daily products.
+
+Daily values need at least `ceil(fraction × requested members)` complete member
+products: **19 of 21** by default. A member with missing daylight input is excluded
+for the affected location and day; it does not poison other members or days.
+With fewer contributors the value is unavailable. A supported result with missing
+members is `degraded`, with reason `partial_ensemble_support`; it includes
+`ensemble.valid_member_count` and nulls for missing entries in `member_uvi`.
+P10/P50/P90 and exceedance frequencies use the available complete members only.
+Coverage is checked locally, so global download coverage does not guarantee that
+every location/day can be published. Incomplete members are not treated as zero.
+Common metadata, geometry and units must still be valid to interpret an input.
+
+These are uncalibrated member frequencies, not validated confidence intervals.
+They sample ICON weather uncertainty, including cloudiness, but not all ozone,
+aerosol, radiative-transfer, terrain or station-representativeness errors. The
+[validation summary](validation.md) distinguishes the earlier CTRL measurement
+campaign from ensemble verification; ensemble skill needs its own paired evaluation.
 
 ## Peak, rounding and categories
 

@@ -52,11 +52,13 @@ def basemap(cache):
 
 def validate_products(payload, fields=None):
     """Reject mixed source products before publishing a map bundle."""
-    if payload.get('schema_version') not in ('daily-uv-v1', 'daily-uv-v2') or not payload.get('entries'):
+    if payload.get('schema_version') not in ('daily-uv-v1', 'daily-uv-v2', 'daily-uv-v3') or not payload.get('entries'):
         raise ValueError('Expected a nonempty daily UV product')
     if fields is not None:
         if fields.get('schema_version') != 'uv-map-fields-v1' or fields.get('encoding') != 'png-rg-uvi-times-100-alpha-valid':
             raise ValueError('Unsupported map fields')
+        if fields.get('ensemble') != payload.get('ensemble'):
+            raise ValueError('Field/location ensemble definition mismatch')
         for key in ('input_sha256', 'radiation_table_sha256', 'peak_definition'):
             if fields.get(key) != payload.get(key):
                 raise ValueError(f'Field/location product mismatch: {key}')

@@ -50,7 +50,7 @@ button{font:inherit;color:inherit;cursor:pointer}button:focus-visible,a:focus-vi
 <section class="level"><div class="level-head"><span class="range"><span class="tile very_high">8</span><span class="tile very_high">9</span><span class="tile very_high">10</span></span><span>Very high</span></div><b>Additional protection required</b><p>Avoid spending time outdoors as much as possible.</p></section>
 <section class="level"><div class="level-head"><span class="range"><span class="tile extreme extreme-label">11+</span></span><span>Extreme</span></div><b>Additional protection required</b><p>Avoid spending time outdoors as much as possible.</p></section>
 </aside></div>
-<footer><span id="issued"></span><span>ICON-CH2-EPS control member · CAMS composition</span></footer>
+<footer><span id="issued"></span><span id="model-info"></span></footer>
 </main>
 <script type="application/json" id="data-urls">__DATA_URLS__</script>
 <!-- Leaflet 1.9.4 license:
@@ -61,9 +61,10 @@ __LEAFLET_LICENSE__
 'use strict';
 async function loadJSON(url){const response=await fetch(url,{cache:'no-store'});if(!response.ok)throw new Error('Could not load '+url+' ('+response.status+').');return response.json();}
 function validateProducts(forecast,fields){
-  if(!['daily-uv-v1','daily-uv-v2'].includes(forecast.schema_version)||!forecast.entries?.length)throw new Error('Invalid location forecast.');
+  if(!['daily-uv-v1','daily-uv-v2','daily-uv-v3'].includes(forecast.schema_version)||!forecast.entries?.length)throw new Error('Invalid location forecast.');
   if(!fields)return;
   if(fields.schema_version!=='uv-map-fields-v1'||fields.encoding!=='png-rg-uvi-times-100-alpha-valid')throw new Error('Invalid UV map data.');
+  for(const key of ['member_ids','requested_member_ids','minimum_member_fraction','deterministic_quantile','reduction','quantile_method'])if(JSON.stringify(fields.ensemble?.[key])!==JSON.stringify(forecast.ensemble?.[key]))throw new Error('Location and map ensemble definitions differ.');
   for(const key of ['input_sha256','radiation_table_sha256','peak_definition'])if(fields[key]!==forecast[key])throw new Error('Location and map data do not match. Refresh both forecast files together.');
   if(Date.parse(fields.issued_at)!==Date.parse(forecast.issued_at))throw new Error('Location and map issuance times differ.');
   if(JSON.stringify(fields.days.map(d=>d.valid_date))!==JSON.stringify([...new Set(forecast.entries.map(r=>r.valid_date))].sort().slice(0,4)))throw new Error('Location and map dates differ.');
@@ -72,6 +73,7 @@ async function start(){
   const urls=JSON.parse(document.getElementById('data-urls').textContent);
   const [forecast,basemap,fields]=await Promise.all([loadJSON(urls.locations),loadJSON(urls.basemap),urls.fields?loadJSON(urls.fields):null]);
   validateProducts(forecast,fields);
+  document.getElementById('model-info').textContent=(forecast.ensemble?`ICON-CH2-EPS ensemble · ${forecast.ensemble.member_count} members · P${Math.round(100*forecast.ensemble.deterministic_quantile)}`:'ICON-CH2-EPS control member')+' · CAMS composition';
   const dates=[...new Set(forecast.entries.map(e=>e.valid_date))].sort().slice(0,4);
 const reduceMotion=matchMedia('(prefers-reduced-motion: reduce)').matches;
 let locationsVisible=true,mapVisible=Boolean(fields),mapType='forecast';
@@ -111,10 +113,10 @@ const Settings=L.Control.extend({options:{position:'bottomright'},onAdd(){
 
 const markers=L.layerGroup().addTo(map);
 const categoryNames={low:'Low',moderate:'Moderate',high:'High',very_high:'Very high',extreme:'Extreme'};
-const reasonNames={incomplete_daylight:'Full-day forecast coverage is incomplete.',insufficient_native_support:'No suitable model terrain is available.',stale_icon:'The weather forecast is too old.',stale_cams:'The atmospheric composition forecast is too old.',partial_spatial_support:'Some regional cells have missing data.'};
+const reasonNames={incomplete_daylight:'Full-day forecast coverage is incomplete.',insufficient_native_support:'No suitable model terrain is available.',stale_icon:'The weather forecast is too old.',stale_cams:'The atmospheric composition forecast is too old.',partial_spatial_support:'Some regional cells have missing data.',partial_ensemble_support:'Some ensemble members are unavailable.',insufficient_ensemble_members:'Too few complete ensemble members are available.'};
 function element(tag,cls,text){const e=document.createElement(tag);if(cls)e.className=cls;if(text!==undefined)e.textContent=text;return e;}
 function tile(row){return element('span','tile '+(row.display_uvi===null?'missing':row.category),row.display_uvi===null?'—':String(row.display_uvi));}
-function details(rows){const d=element('div');d.append(element('h3','',rows[0].location.label));for(const r of rows){const altitude=r.location.kind==='region_altitude'?`${r.location.altitude_m} m: `:'';d.append(element('p','',altitude+(r.display_uvi===null?'Not available':`UV Index ${r.display_uvi} · ${categoryNames[r.category]}`)));if(r.uvi!==null)d.append(element('p','',`Unrounded UV Index: ${r.uvi.toFixed(2)}`));if(r.reasons.length)d.append(element('p','',r.reasons.map(x=>reasonNames[x]||'Forecast data unavailable.').join(' ')));}return d;}
+function details(rows){const d=element('div');d.append(element('h3','',rows[0].location.label));for(const r of rows){const altitude=r.location.kind==='region_altitude'?`${r.location.altitude_m} m: `:'';d.append(element('p','',altitude+(r.display_uvi===null?'Not available':`UV Index ${r.display_uvi} · ${categoryNames[r.category]}`)));if(r.uvi!==null)d.append(element('p','',`Unrounded UV Index: ${r.uvi.toFixed(2)}`));if(r.ensemble)d.append(element('p','',`Ensemble P10–P90: ${r.ensemble.p10.toFixed(1)}–${r.ensemble.p90.toFixed(1)} · ${r.ensemble.valid_member_count}/${forecast.ensemble.requested_member_ids.length} members`));if(r.reasons.length)d.append(element('p','',r.reasons.map(x=>reasonNames[x]||'Forecast data unavailable.').join(' ')));}return d;}
 function addMarker(rows){
   const loc=rows[0].location,region=loc.kind==='region_altitude',box=element('div','place');
   if(region){
@@ -198,7 +200,16 @@ async function decodeField(date,type){
     const mask=context.getImageData(0,0,canvas.width,canvas.height).data;
     for(let i=0;i<values.length;i++)if(mask[i*4+3]<128)values[i]=NaN;
   }
-  return {url:canvas.toDataURL('image/png'),values};
+  let memberCounts=null;
+  if(day[type+'_member_count']){
+    const countImage=new Image();await new Promise((resolve,reject)=>{countImage.onload=resolve;countImage.onerror=reject;countImage.src=day[type+'_member_count'];});
+    const countCanvas=document.createElement('canvas');countCanvas.width=fields.width;countCanvas.height=fields.height;
+    const countContext=countCanvas.getContext('2d');countContext.drawImage(countImage,0,0);
+    const bytes=countContext.getImageData(0,0,fields.width,fields.height).data;
+    memberCounts=new Uint8Array(values.length);
+    for(let i=0;i<values.length;i++)memberCounts[i]=Math.round(((bytes[4*i]<<8)+bytes[4*i+1])/100);
+  }
+  return {url:canvas.toDataURL('image/png'),values,memberCounts};
 }
 function removeField(){if(fieldLayer)map.removeLayer(fieldLayer);fieldLayer=null;fieldLayerKey=null;}
 function layerNotice(){
@@ -246,6 +257,7 @@ async function inspectField(latlng){
   const box=element('div');box.append(element('h3','',type==='clear_sky'?'Clear-sky UV Index':'Forecast UV Index'));
   box.append(element('p','',Number.isFinite(value)?'Daily maximum: '+value.toFixed(2):'No UV value at this position.'));
   box.append(element('p','',dateLabel(date)+' · Model terrain'));
+  if(field.memberCounts)box.append(element('p','',`Contributing members: ${field.memberCounts[y*fields.width+x]} / ${fields.ensemble.requested_member_ids.length}`));
   L.popup().setLatLng(latlng).setContent(box).openOn(map);
 }
 

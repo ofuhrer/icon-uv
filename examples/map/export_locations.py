@@ -15,6 +15,7 @@ def main():
     parser.add_argument("--grid", type=Path, required=True, help="Saved hourly UV NetCDF")
     parser.add_argument("--issued-at", required=True, help="Timezone-aware issuance, e.g. YYYY-MM-DDT06:00:00Z")
     parser.add_argument("--output", type=Path, default=Path("work/meteoswiss-map.locations.json"))
+    parser.add_argument('--ensemble-quantile', type=float, default=.5, help='Quantile of member daily products (default: median)')
     args = parser.parse_args()
 
     catalog_path = Path(__file__).with_name("locations.json")
@@ -23,7 +24,7 @@ def main():
         input_sha256 = hashlib.file_digest(stream, "sha256").hexdigest()
     with xr.open_dataset(args.grid) as grid:
         payload = export_daily(
-            grid.load(), catalog, args.issued_at, input_sha256=input_sha256, days=4,
+            grid.load(), catalog, args.issued_at, input_sha256=input_sha256, days=4, ensemble_quantile=args.ensemble_quantile,
         )
     write_json_atomic(payload, args.output)
 

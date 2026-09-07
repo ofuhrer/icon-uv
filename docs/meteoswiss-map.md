@@ -22,7 +22,8 @@ The included data contains a dated forecast snapshot for **7–10 September 2026
 from ICON 7 September 00 UTC and CAMS 6 September 12 UTC. The corresponding
 [location JSON](../examples/map/index.locations.json) retains source times, hashes
 and availability details; the field JSON contains all four pairs of gridded layers.
-This is a fixed example, not an automatically refreshed page.
+This is a fixed **CTRL** example, not an automatically refreshed page. New
+downloads use the full ensemble by default.
 
 Day selection updates the map. Labels are thinned when they would overlap,
 giving the Valais and Grisons Alps and the main cities priority; zoom in to
@@ -37,7 +38,9 @@ also have a mountain-elevation table. The cog above Home opens map settings.
 Use a published 00 UTC ICON cycle with the **previous day's 12 UTC CAMS cycle**.
 This avoids waiting for the matching 00 UTC CAMS forecast, typically available
 around 10 UTC. The earlier CAMS cycle covers four complete daylight dates.
-Follow the [installation instructions](../README.md#installation), then set both dates:
+Follow the [installation instructions](../README.md#installation), then set both dates.
+The default download includes all 21 members; add `--control` to `fetch-icon`
+for a CTRL-only calculation:
 
 ```sh
 ICON_REFERENCE="YYYY-MM-DDT00:00:00Z"
@@ -96,7 +99,7 @@ issuance, radiation table, dates and peak definition. Publish matching location
 and field files together. Edit `examples/map/template.html` and rerun
 the renderer when changing the page itself.
 
-The exporter produces four local dates (`daily-uv-v2`), with 46 entries per day:
+The exporter produces four local dates (`daily-uv-v3` for ensembles, `daily-uv-v2` for CTRL), with 46 entries per day:
 30 towns, three elevation bands for each of five Alpine regions, and one band
 for Jura. Mountain bands appear in 3000 / 2000 / 1000 m order. The renderer also
 limits longer input products to their first four dates. Partial daylight dates
@@ -152,11 +155,20 @@ No new Python dependencies or online map services are needed to view the page.
 
 ## Ensemble information
 
-The downloader currently selects **control member 0** (`forecast:perturbed=false`).
-Neither the location product nor the fields contain ensemble spread or probabilities.
-The regional 90th percentile is taken across native cells, not ensemble members.
-An ensemble extension would calculate UV separately for each member before
-forming a median, spread and probabilities of exceeding UV protection thresholds.
+The default download includes all 21 ICON members. Each member is converted to
+UV independently, followed by its daily peak and regional spatial aggregation.
+The displayed value is the ensemble median; location popups also show P10–P90.
+Gridded shading uses the median of native-cell member daily peaks. The footer
+identifies the member count and deterministic quantile, or CTRL for a single
+member input. Location and field popups report the contributing member count.
+At least 19 of 21 complete member products are needed by default. The saved
+September snapshot remains a CTRL example.
+
+Both export scripts accept `--ensemble-quantile`, defaulting to `0.5`. Use the
+same value for locations and fields: the renderer and browser reject mismatched
+ensemble definitions. `fetch-icon --control` selects CTRL-only input; downstream
+commands detect it automatically. See [ensemble products](daily-products.md#ensemble-products)
+for schema details and the interpretation of uncertainty.
 
 ## Locations and regions
 

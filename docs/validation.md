@@ -22,7 +22,7 @@ Every pair of values below gives the first / second forecast day.
 | Weissfluhjoch | 100 / 99 | 0.777 / 0.854 | 86.0% / 80.8% | 76.0% / 72.7% |
 | Payerne | 46 / 46 | 0.484 / 0.502 | 97.8% / 93.5% | 89.1% / 87.0% |
 
-These peaks use matched half-hour windows and fixed UV albedo 0.05 because the
+These CTRL peaks use matched half-hour windows and fixed UV albedo 0.05 because the
 historical archive lacks production snow fraction. Payerne minute observations
 also support the exported 30-minute rolling peak on five-minute window starts:
 MAE is 0.523 / 0.521 UVI. The mountain feed provides half-hour values only.
@@ -62,6 +62,54 @@ DWH quality-category-4 observations. Low, intermediate and high observed sunshin
 durations are represented on 145, 150 and 145 dates respectively; these are
 sunshine strata rather than cloud-type classifications. Station-hours share
 weather systems and are not independent samples.
+
+## Ensemble verification and forecast comparison
+
+A replay of the 7 September 2026 00 UTC ICON cycle used all 21 members, 47 hourly
+intervals and 2,938 native cells supporting the map catalog, with CAMS from
+6 September 12 UTC. Each member's cloud inversion and UV calculation runs
+independently. Checks cover shuffled member ordering, missing members and fields,
+the 90% coverage threshold, and daily/spatial aggregation before ensemble reduction.
+This verifies the implementation; the measurement scores above describe CTRL,
+not ensemble skill or calibrated uncertainty.
+
+The supplied MeteoSwiss maps for 7–8 September provide 28 comparable displayed
+values per day: 12 towns and 16 regional altitude values. Our CTRL values are
+higher on average by 1.1 / 0.8 displayed UVI units for towns and 1.9 / 1.1 for
+regions. Using the ensemble median leaves **51 of 56 rounded values unchanged**.
+The average absolute change from CTRL is only 0.10 / 0.04 unrounded UVI.
+
+| Regional value | Date | Our ensemble median | Member P10–P90 | MeteoSwiss display |
+|---|---|---:|---:|---:|
+| Bernese Alps, 3000 m | 7 September | 8.47 | 8.10–8.85 | 4 |
+| Grisons Alps, 3000 m | 8 September | 7.60 | 7.36–7.89 | 4 |
+
+These differences warrant investigation. They cannot be attributed solely to
+rounding or the choice of CTRL versus ensemble. Two sensitivities identify
+important product assumptions:
+
+- Replacing regional spatial P90 with spatial P50 changes the CTRL Bernese
+  Alps value on 7 September from 8.40 to 7.41, and Grisons Alps on 8 September
+  from 8.04 to 6.84. Our altitude-band boxes and aggregation are not established
+  matches to MeteoSwiss's regions.
+- Holding inferred clouds fixed and replacing snow-dependent UV albedo with
+  0.05 changes those CTRL values to 6.37 and 6.95 respectively. Snow reflection
+  therefore contributes substantially, but this sensitivity does not establish
+  which albedo is correct. Production snow-dependent albedo was not tested by
+  the historical UV campaign. The spatial and albedo sensitivities are separate
+  experiments and should not be added together.
+
+MeteoSwiss describes a [cloud-dependent daily UV forecast](https://www.meteoswiss.admin.ch/weather/weather-and-climate-from-a-to-z/uv-index.html).
+Its exact issuance cycle, regional sampling and cloud treatment cannot be inferred
+from screenshots. A second forecast is a useful comparison, not a measurement
+reference; a narrow ensemble also omits errors shared by every member.
+
+The next validation should align issuance times and product definitions, then
+compare CTRL and ensemble daily peaks against the same Swiss UV observations,
+stratified by cloud conditions, season, altitude and snow. Assess both deterministic
+error and ensemble calibration using interval coverage, CRPS and threshold Brier
+scores. Check shortwave forcing and snow/albedo assumptions before changing the
+regional statistic or selecting an upper ensemble quantile.
 
 ## Numerical accuracy
 

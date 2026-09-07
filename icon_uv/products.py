@@ -9,16 +9,17 @@ from scipy.spatial import cKDTree
 import xarray as xr
 
 from . import __version__
+from .ensemble import member_ids, map_members
 from .data import utc
 from .radiation import FLAG_MEANINGS, RadiationTable, solar_geometry
 
 
-def _check_icon(ds):
+def _check_icon(ds, *, allow_missing=False):
     for name, units in (("pressure_pa", "Pa"), ("sw_down", "W m-2"),
                         ("sw_albedo", "1"), ("snow_fraction", "1")):
         if name not in ds or ds[name].dims != ("time", "cell") or ds[name].attrs.get("units") != units:
             raise ValueError(f"ICON contract: {name}(time,cell) [{units}] required")
-        if not np.all(np.isfinite(ds[name])):
+        if np.any(np.isinf(ds[name])) or (not allow_missing and not np.all(np.isfinite(ds[name]))):
             raise ValueError(f"Missing ICON {name}")
     for name in ("latitude", "longitude", "altitude_m"):
         if ds[name].dims != ("cell",) or not np.all(np.isfinite(ds[name])):
@@ -83,7 +84,10 @@ def compute_grid(icon, cams, table=None, *, chunk_size=2048, samples=4, progress
     samples subdivides solar geometry only, not forecast cloud evolution. Default
     snow conversion is experimental and recorded, not inferred UV observations.
     """
-    _check_icon(icon)
+    if member_ids(icon) is not None:
+        return map_members(compute_grid, icon, cams=cams, table=table,
+                           chunk_size=chunk_size, samples=samples, progress=progress)
+    _check_icon(icon, allow_missing="minimum_member_fraction" in icon.attrs or "ensemble_members" in icon.attrs)
     if chunk_size < 1 or samples not in (1, 2, 4, 6, 12):
         raise ValueError("Positive chunk size; samples must be 1,2,4,6,12")
     table = RadiationTable() if table is None else table
@@ -97,14 +101,20 @@ def compute_grid(icon, cams, table=None, *, chunk_size=2048, samples=4, progress
     shape = (out.sizes["time"], out.sizes["cell"])
     names = ("erythemal_direct", "erythemal_diffuse", "uvi", "clear_sky_uvi",
              "uvi_sample_max", "effective_cloud_tau550", "cloud_scale")
-    result = {name: np.empty(shape, dtype=np.float32) for name in names}
-    flags = np.empty(shape, dtype=np.uint16)
+    result = {name: np.full(shape, np.nan, dtype=np.float32) for name in names}
+    flags = np.full(shape, 128, dtype=np.uint16)
     started = time.monotonic()
     for it, bounds in enumerate(out.time_bounds.values):
         times = _sample_times(bounds, samples)
         for start in range(0, shape[1], chunk_size):
             sl = slice(start, start+chunk_size)
             local = out.isel(time=it, cell=sl)
+            valid = np.all([np.isfinite(local[k].values) for k in
+                            ('sw_down', 'pressure_pa', 'sw_albedo', 'snow_fraction')], axis=0)
+            if not valid.any():
+                continue
+            target = start + np.flatnonzero(valid)
+            local = local.isel(cell=np.flatnonzero(valid))
             z, _, distance = solar_geometry(times[:, None], local.latitude.values[None, :],
                                             local.longitude.values[None, :])
             o, p, a = (local[k].values for k in ("ozone_du", "pressure_pa", "aod550"))
@@ -120,8 +130,8 @@ def compute_grid(icon, cams, table=None, *, chunk_size=2048, samples=4, progress
                                 ("clear_sky_uvi", 40*clear.sum(axis=-1).mean(axis=0)),
                                 ("uvi_sample_max", 40*uv.sum(axis=-1).max(axis=0)),
                                 ("effective_cloud_tau550", tau), ("cloud_scale", scale)):
-                result[name][it, sl] = value
-            flags[it, sl] = flag
+                result[name][it, target] = value
+            flags[it, target] = flag
         if progress:
             print(f"UV hour {it+1}/{shape[0]} ({shape[1]} cells); {time.monotonic()-started:.1f}s", flush=True)
     for name, value in result.items():
@@ -186,6 +196,9 @@ def compute_pois(grid, pois, table=None, *, maximum_distance_km=10):
     AOD and inferred cloud are retained from the nearest cell, explicitly flagged.
     Terrain output is a screening proxy: isotropic sky, no terrain reflections.
     """
+    if member_ids(grid) is not None:
+        return map_members(compute_pois, grid, pois=list(pois), table=table,
+                           maximum_distance_km=maximum_distance_km)
     table = RadiationTable() if table is None else table
     if grid.attrs.get("radiation_table_sha256") != table.sha256:
         raise ValueError("POI radiation table differs from grid; recompute grid with this table")
@@ -205,7 +218,7 @@ def compute_pois(grid, pois, table=None, *, maximum_distance_km=10):
         raise ValueError("POI too far from available ICON cells")
     samples = int(grid.attrs["solar_samples_per_hour"])
     shape = (grid.sizes["time"], len(pois))
-    variables = {k: np.empty(shape) for k in ("uvi", "clear_sky_uvi", "terrain_screened_uvi",
+    variables = {k: np.full(shape, np.nan) for k in ("uvi", "clear_sky_uvi", "terrain_screened_uvi",
                   "erythemal_direct", "erythemal_diffuse", "pressure_pa")}
     flags = grid.quality_flag.values[:, cells].astype(np.uint16) | 16 | 32
     for j, (poi, cell) in enumerate(zip(pois, cells)):
@@ -215,6 +228,10 @@ def compute_pois(grid, pois, table=None, *, maximum_distance_km=10):
         sky = np.mean(np.cos(np.deg2rad(horizon))**2)
         azimuth = np.linspace(0, 360, len(horizon)+1)
         for i, bounds in enumerate(grid.time_bounds.values):
+            if not all(np.isfinite(local[k].values[i]) for k in
+                       ('ozone_du', 'pressure_pa', 'aod550', 'effective_cloud_tau550', 'cloud_scale')):
+                flags[i, j] |= 128
+                continue
             z, az, distance = solar_geometry(_sample_times(bounds, samples), poi.latitude, poi.longitude)
             if np.any((z > 78) & (z < 90)):
                 flags[i, j] |= 64

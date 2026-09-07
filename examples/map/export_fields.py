@@ -16,6 +16,8 @@ import xarray as xr
 
 from icon_uv.daily import PEAK_DEFINITION, daily_cells, utc_instant, write_json_atomic
 
+from icon_uv.ensemble import member_ids, ensemble_metadata, required_members
+
 RADIUS = 6371000.0
 
 
@@ -68,8 +70,11 @@ def png_values(values):
     return 'data:image/png;base64,'+base64.b64encode(png).decode()
 
 
-def export_fields(grid, issued_at, input_sha256, *, width=360):
+def export_fields(grid, issued_at, input_sha256, *, width=360, ensemble_quantile=.5):
     """Daily 30-minute peaks on model terrain, with and without cloud effects."""
+    ids = member_ids(grid)
+    expected, fraction, _ = required_members(grid)
+    ensemble = ensemble_metadata(ids or [], ensemble_quantile, expected=expected, fraction=fraction)
     issue = utc_instant(issued_at)
     for key, limit in [('forecast_reference_time', 24), ('cams_reference_time', 48)]:
         age = (issue-utc_instant(grid.attrs[key])).total_seconds()/3600
@@ -85,12 +90,15 @@ def export_fields(grid, issued_at, input_sha256, *, width=360):
         date = str(first+timedelta(days=d))
         day = {'valid_date': date}
         for mode in ('forecast', 'clear_sky'):
-            result = daily_cells(local, date, clear_sky=mode == 'clear_sky')
+            result = daily_cells(local, date, clear_sky=mode == 'clear_sky', ensemble_quantile=ensemble_quantile)
             values = np.where(inside, result['uvi'][inverse], np.nan)
             day[mode] = png_values(values.reshape(geometry['height'], geometry['width']))
+            if ids is not None:
+                counts = np.where(inside, result['member_count'][inverse], np.nan)
+                day[mode+'_member_count'] = png_values(counts.reshape(geometry['height'], geometry['width']))
         days.append(day)
         print(f'UV map fields: {date}', flush=True)
-    return dict(schema_version='uv-map-fields-v1', issued_at=issue.isoformat(),
+    result = dict(schema_version='uv-map-fields-v1', issued_at=issue.isoformat(),
                 input_sha256=input_sha256, radiation_table_sha256=grid.attrs['radiation_table_sha256'],
                 icon_reference_time=grid.attrs['forecast_reference_time'],
                 cams_reference_time=grid.attrs['cams_reference_time'],
@@ -99,6 +107,9 @@ def export_fields(grid, issued_at, input_sha256, *, width=360):
                 spatial_method='nearest native cell within 3 km; no gap filling',
                 surface='native model terrain, horizontal open horizon',
                 source_cells=int(grid.sizes['cell']), **geometry, days=days)
+    if ids is not None:
+        result['ensemble'] = ensemble
+    return result
 
 
 def main():
@@ -107,13 +118,14 @@ def main():
     parser.add_argument('--issued-at', required=True)
     parser.add_argument('--output', type=Path, default=Path('work/meteoswiss-map.fields.json'))
     parser.add_argument('--width', type=int, default=360, help='Raster columns; native model resolution is unchanged')
+    parser.add_argument('--ensemble-quantile', type=float, default=.5, help='Quantile of member daily peaks (default: median)')
     args = parser.parse_args()
     if args.grid.resolve() == args.output.resolve():
         parser.error('Input grid and output JSON must differ')
     with args.grid.open('rb') as stream:
         digest = hashlib.file_digest(stream, 'sha256').hexdigest()
     with xr.open_dataset(args.grid) as grid:
-        fields = export_fields(grid.load(), args.issued_at, digest, width=args.width)
+        fields = export_fields(grid.load(), args.issued_at, digest, width=args.width, ensemble_quantile=args.ensemble_quantile)
     write_json_atomic(fields, args.output)
     print(args.output)
 

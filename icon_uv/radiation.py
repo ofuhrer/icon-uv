@@ -29,6 +29,7 @@ FLAG_MEANINGS = {
     16: "local_column_approximation",
     32: "terrain_screening_approximation",
     64: "low_sun_plane_parallel_approximation",
+    128: "missing_member_input",
 }
 
 

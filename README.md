@@ -104,8 +104,34 @@ and six mountain regions, including the Jura elevation exception, with a script
 that exports four days and builds an English HTML map with
 zoom, pan, day selection and forecast/clear-sky shading. The [example page](examples/map/index.html)
 and its separate JSON data files are included; serve them with a local HTTP server
-as described in the guide. It uses the ICON control member; ensemble
-spread and probabilities are not calculated.
+as described in the guide. New forecasts use all 21 ICON members by default; daily products report their
+median and uncertainty. The included dated map snapshot uses CTRL.
+
+## Ensemble and CTRL forecasts
+
+`fetch-icon` downloads **all 21 ICON-CH2-EPS members by default**. `run` and `poi`
+retain the member dimension and calculate UV independently for each member.
+`daily` reports the **median of the member daily products**, plus P10/P50/P90,
+individual member values and uncalibrated exceedance frequencies for UVI 3, 6,
+8 and 11. Regional aggregation is performed within each member first. Missing inputs are
+tracked; daily values need at least 90% of the requested members (19 of 21).
+`fetch-icon --minimum-member-fraction 0.8` changes the default coverage threshold.
+
+To use only the deterministic CTRL forecast, add `--control` when downloading:
+
+```sh
+uv run --no-sync icon-uv fetch-icon --control \
+  --reference "$ICON_REFERENCE" --first-lead 1 --last-lead 48 \
+  --output work/icon-control.nc
+uv run --no-sync icon-uv run --icon work/icon-control.nc --cams work/cams.grib \
+  --samples 12 --output work/uv-control.nc
+```
+
+Use that grid with `daily` or `poi`; no further CTRL option is needed.
+Python callers use `fetch_icon(..., ensemble=False)`. Ensemble data and UV
+calculations require roughly 21 times the member-dependent work of CTRL.
+See [ensemble products](docs/daily-products.md#ensemble-products) for reduction
+choices, schema details and uncertainty limits.
 
 ## Calculate a point forecast
 

@@ -14,7 +14,12 @@ from .radiation import DEFAULT_TABLE, RadiationTable
 def main():
     p = argparse.ArgumentParser(description="Compute UV Index fields and daily map data from ICON and CAMS")
     commands = p.add_subparsers(dest="command", required=True)
-    icon = commands.add_parser("fetch-icon", help="Fetch a native-grid ICON-CH2 control subset")
+    icon = commands.add_parser("fetch-icon", help="Fetch a native-grid ICON-CH2 ensemble subset")
+    members = icon.add_mutually_exclusive_group()
+    members.add_argument('--ensemble', dest='ensemble', action='store_true', default=True,
+                         help='All 21 members (default)')
+    members.add_argument('--control', dest='ensemble', action='store_false', help='CTRL member 0 only')
+    icon.add_argument('--minimum-member-fraction', type=float, default=.9, help='Minimum usable member/field fraction (default: 0.9; tolerate up to 10%% missing)')
     icon.add_argument("--reference", required=True)
     icon.add_argument("--first-lead", type=int, required=True)
     icon.add_argument("--last-lead", type=int, required=True)
@@ -31,6 +36,7 @@ def main():
     run.add_argument("--cams", type=Path, required=True)
     run.add_argument("--table", type=Path, default=DEFAULT_TABLE)
     run.add_argument("--chunk-size", type=int, default=2048)
+    run.add_argument("--samples", type=int, choices=(1,2,4,6,12), default=4, help="Solar samples per hour (default: 4; use 12 for daily maps)")
     run.add_argument("--output", type=Path, required=True)
     poi = commands.add_parser("poi", help="Recompute POIs with caller-provided local geometry JSON")
     poi.add_argument("--grid", type=Path, required=True)
@@ -42,6 +48,7 @@ def main():
     daily.add_argument("--catalog", type=Path, required=True)
     daily.add_argument("--days", choices=("2", "4", "all"), default="2", help="Two days (default), four days, or every supplied forecast day")
     daily.add_argument("--issued-at", required=True, help="Timezone-aware issuance timestamp; also fixes replay dates")
+    daily.add_argument('--ensemble-quantile', type=float, default=.5, help='Quantile of member daily products (default: 0.5, median)')
     daily.add_argument("--table", type=Path, default=DEFAULT_TABLE)
     daily.add_argument("--output", type=Path, required=True)
     build = commands.add_parser("build-table", help="Developer only: rebuild LUT with libRadtran")
@@ -51,14 +58,14 @@ def main():
     build.add_argument("--workers", type=int, default=4)
     args = p.parse_args()
     if args.command == "fetch-icon":
-        ds = fetch_icon(args.reference, args.first_lead, args.last_lead, args.bbox)
+        ds = fetch_icon(args.reference, args.first_lead, args.last_lead, args.bbox, ensemble=args.ensemble, minimum_member_fraction=args.minimum_member_fraction)
         write_netcdf(ds, args.output)
     elif args.command == "fetch-cams":
         args.output.parent.mkdir(parents=True, exist_ok=True)
         fetch_cams(args.reference, range(args.first_lead, args.last_lead+1, 3), args.output, args.bbox)
     elif args.command == "run":
         with xr.open_dataset(args.icon) as ds:
-            result = compute_grid(ds.load(), load_cams(args.cams), RadiationTable(args.table), chunk_size=args.chunk_size, progress=True)
+            result = compute_grid(ds.load(), load_cams(args.cams), RadiationTable(args.table), chunk_size=args.chunk_size, samples=args.samples, progress=True)
         write_netcdf(result, args.output)
     elif args.command == "poi":
         locations = [POI(**item) for item in json.loads(args.locations.read_text())]
@@ -72,6 +79,7 @@ def main():
         from .daily import export_daily, write_json_atomic
         with xr.open_dataset(args.grid) as ds:
             payload = export_daily(ds.load(), json.loads(args.catalog.read_text()), args.issued_at,
+                                   ensemble_quantile=args.ensemble_quantile,
                                    days='all' if args.days == 'all' else int(args.days),
                                    table=RadiationTable(args.table),
                                    input_sha256=hashlib.sha256(args.grid.read_bytes()).hexdigest())

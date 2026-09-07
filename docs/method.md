@@ -15,8 +15,10 @@ SW_hour = (t₁ × SW_mean(t₁) − t₀ × SW_mean(t₀)) / (t₁ − t₀)
 
 GRIB packing uncertainty is propagated through this difference. Significant
 negative energy is rejected. Surface pressure, broadband albedo and snow
-fraction are averaged over the two interval endpoints. Downloads select the
-ICON-CH2 control member and preserve its native cell and grid identities.
+fraction are averaged over the two interval endpoints. Downloads select all 21
+ICON-CH2-EPS members by default, preserving member, native-cell and grid identities.
+Use `fetch-icon --control` for CTRL only. Missing samples remain unavailable;
+the default minimum coverage is 90%.
 
 CAMS supplies total-column ozone and aerosol optical depth at 550 nm. Ozone
 is converted from kg/m² to Dobson units. Composition is interpolated bilinearly
@@ -79,6 +81,9 @@ low-sun flag; the response fades to zero between 89° and 90°, with zero at nig
 Hourly output integrates the within-hour samples. Daily output reconstructs
 five-minute solar evolution from each saved hourly cloud state and selects
 30-minute rolling peaks. Regional output aggregates those cell peaks spatially.
+These calculations run independently for each ensemble member. Daily products
+then take the ensemble median and retain quantiles and threshold frequencies;
+CAMS composition and the radiation physics remain common to all members.
 See [daily products](daily-products.md) for exact support and rounding rules,
 and [point forecasts](outputs.md#point-forecasts) for local geometry adjustments.
 
