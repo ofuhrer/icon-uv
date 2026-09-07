@@ -11,7 +11,7 @@
     {
       "id": "genf",
       "kind": "town",
-      "label": "Genf",
+      "label": "Geneva",
       "latitude": 46.205872,
       "longitude": 6.142105,
       "altitude_m": 376,
@@ -20,7 +20,7 @@
     {
       "id": "neuenburg",
       "kind": "town",
-      "label": "Neuenburg",
+      "label": "Neuchâtel",
       "latitude": 46.995129,
       "longitude": 6.929543,
       "altitude_m": 481,
@@ -56,7 +56,7 @@
     {
       "id": "freiburg",
       "kind": "town",
-      "label": "Freiburg",
+      "label": "Fribourg",
       "latitude": 46.805546,
       "longitude": 7.157557,
       "altitude_m": 614,
@@ -92,7 +92,7 @@
     {
       "id": "luzern",
       "kind": "town",
-      "label": "Luzern",
+      "label": "Lucerne",
       "latitude": 47.051125,
       "longitude": 8.305033,
       "altitude_m": 433,
@@ -101,7 +101,7 @@
     {
       "id": "zuerich",
       "kind": "town",
-      "label": "Zürich",
+      "label": "Zurich",
       "latitude": 47.383949,
       "longitude": 8.530146,
       "altitude_m": 405,
@@ -199,12 +199,14 @@
         7.9,
         47.55
       ],
-      "boundary_source": "Example rectangular selection; may overlap adjacent regions and national borders"
+      "boundary_source": "Example rectangular selection; may overlap adjacent regions and national borders",
+      "map_latitude": 46.93,
+      "map_longitude": 6.43
     },
     {
       "id": "walliser_alpen_1000",
       "kind": "region_altitude",
-      "label": "Walliser Alpen",
+      "label": "Valais Alps",
       "altitude_m": 1000,
       "bbox": [
         7.0,
@@ -212,12 +214,14 @@
         8.4,
         46.4
       ],
-      "boundary_source": "Example rectangular selection; may overlap adjacent regions and national borders"
+      "boundary_source": "Example rectangular selection; may overlap adjacent regions and national borders",
+      "map_latitude": 46.03,
+      "map_longitude": 7.73
     },
     {
       "id": "walliser_alpen_2000",
       "kind": "region_altitude",
-      "label": "Walliser Alpen",
+      "label": "Valais Alps",
       "altitude_m": 2000,
       "bbox": [
         7.0,
@@ -225,12 +229,14 @@
         8.4,
         46.4
       ],
-      "boundary_source": "Example rectangular selection; may overlap adjacent regions and national borders"
+      "boundary_source": "Example rectangular selection; may overlap adjacent regions and national borders",
+      "map_latitude": 46.03,
+      "map_longitude": 7.73
     },
     {
       "id": "walliser_alpen_3000",
       "kind": "region_altitude",
-      "label": "Walliser Alpen",
+      "label": "Valais Alps",
       "altitude_m": 3000,
       "bbox": [
         7.0,
@@ -238,12 +244,14 @@
         8.4,
         46.4
       ],
-      "boundary_source": "Example rectangular selection; may overlap adjacent regions and national borders"
+      "boundary_source": "Example rectangular selection; may overlap adjacent regions and national borders",
+      "map_latitude": 46.03,
+      "map_longitude": 7.73
     },
     {
       "id": "berner_alpen_1000",
       "kind": "region_altitude",
-      "label": "Berner Alpen",
+      "label": "Bernese Alps",
       "altitude_m": 1000,
       "bbox": [
         7.3,
@@ -251,12 +259,14 @@
         8.4,
         46.8
       ],
-      "boundary_source": "Example rectangular selection; may overlap adjacent regions and national borders"
+      "boundary_source": "Example rectangular selection; may overlap adjacent regions and national borders",
+      "map_latitude": 46.48,
+      "map_longitude": 7.82
     },
     {
       "id": "berner_alpen_2000",
       "kind": "region_altitude",
-      "label": "Berner Alpen",
+      "label": "Bernese Alps",
       "altitude_m": 2000,
       "bbox": [
         7.3,
@@ -264,12 +274,14 @@
         8.4,
         46.8
       ],
-      "boundary_source": "Example rectangular selection; may overlap adjacent regions and national borders"
+      "boundary_source": "Example rectangular selection; may overlap adjacent regions and national borders",
+      "map_latitude": 46.48,
+      "map_longitude": 7.82
     },
     {
       "id": "berner_alpen_3000",
       "kind": "region_altitude",
-      "label": "Berner Alpen",
+      "label": "Bernese Alps",
       "altitude_m": 3000,
       "bbox": [
         7.3,
@@ -277,12 +289,14 @@
         8.4,
         46.8
       ],
-      "boundary_source": "Example rectangular selection; may overlap adjacent regions and national borders"
+      "boundary_source": "Example rectangular selection; may overlap adjacent regions and national borders",
+      "map_latitude": 46.48,
+      "map_longitude": 7.82
     },
     {
       "id": "glarner_alpen_1000",
       "kind": "region_altitude",
-      "label": "Glarner Alpen",
+      "label": "Glarus Alps",
       "altitude_m": 1000,
       "bbox": [
         8.7,
@@ -290,12 +304,14 @@
         9.3,
         47.0
       ],
-      "boundary_source": "Example rectangular selection; may overlap adjacent regions and national borders"
+      "boundary_source": "Example rectangular selection; may overlap adjacent regions and national borders",
+      "map_latitude": 46.83,
+      "map_longitude": 8.9
     },
     {
       "id": "glarner_alpen_2000",
       "kind": "region_altitude",
-      "label": "Glarner Alpen",
+      "label": "Glarus Alps",
       "altitude_m": 2000,
       "bbox": [
         8.7,
@@ -303,12 +319,14 @@
         9.3,
         47.0
       ],
-      "boundary_source": "Example rectangular selection; may overlap adjacent regions and national borders"
+      "boundary_source": "Example rectangular selection; may overlap adjacent regions and national borders",
+      "map_latitude": 46.83,
+      "map_longitude": 8.9
     },
     {
       "id": "glarner_alpen_3000",
       "kind": "region_altitude",
-      "label": "Glarner Alpen",
+      "label": "Glarus Alps",
       "altitude_m": 3000,
       "bbox": [
         8.7,
@@ -316,12 +334,14 @@
         9.3,
         47.0
       ],
-      "boundary_source": "Example rectangular selection; may overlap adjacent regions and national borders"
+      "boundary_source": "Example rectangular selection; may overlap adjacent regions and national borders",
+      "map_latitude": 46.83,
+      "map_longitude": 8.9
     },
     {
       "id": "buendner_alpen_1000",
       "kind": "region_altitude",
-      "label": "Bündner Alpen",
+      "label": "Grisons Alps",
       "altitude_m": 1000,
       "bbox": [
         9.3,
@@ -329,12 +349,14 @@
         10.5,
         46.9
       ],
-      "boundary_source": "Example rectangular selection; may overlap adjacent regions and national borders"
+      "boundary_source": "Example rectangular selection; may overlap adjacent regions and national borders",
+      "map_latitude": 46.63,
+      "map_longitude": 9.48
     },
     {
       "id": "buendner_alpen_2000",
       "kind": "region_altitude",
-      "label": "Bündner Alpen",
+      "label": "Grisons Alps",
       "altitude_m": 2000,
       "bbox": [
         9.3,
@@ -342,12 +364,14 @@
         10.5,
         46.9
       ],
-      "boundary_source": "Example rectangular selection; may overlap adjacent regions and national borders"
+      "boundary_source": "Example rectangular selection; may overlap adjacent regions and national borders",
+      "map_latitude": 46.63,
+      "map_longitude": 9.48
     },
     {
       "id": "buendner_alpen_3000",
       "kind": "region_altitude",
-      "label": "Bündner Alpen",
+      "label": "Grisons Alps",
       "altitude_m": 3000,
       "bbox": [
         9.3,
@@ -355,12 +379,14 @@
         10.5,
         46.9
       ],
-      "boundary_source": "Example rectangular selection; may overlap adjacent regions and national borders"
+      "boundary_source": "Example rectangular selection; may overlap adjacent regions and national borders",
+      "map_latitude": 46.63,
+      "map_longitude": 9.48
     },
     {
       "id": "tessiner_alpen_1000",
       "kind": "region_altitude",
-      "label": "Tessiner Alpen",
+      "label": "Ticino Alps",
       "altitude_m": 1000,
       "bbox": [
         8.4,
@@ -368,12 +394,14 @@
         9.1,
         46.7
       ],
-      "boundary_source": "Example rectangular selection; may overlap adjacent regions and national borders"
+      "boundary_source": "Example rectangular selection; may overlap adjacent regions and national borders",
+      "map_latitude": 46.39,
+      "map_longitude": 8.72
     },
     {
       "id": "tessiner_alpen_2000",
       "kind": "region_altitude",
-      "label": "Tessiner Alpen",
+      "label": "Ticino Alps",
       "altitude_m": 2000,
       "bbox": [
         8.4,
@@ -381,12 +409,14 @@
         9.1,
         46.7
       ],
-      "boundary_source": "Example rectangular selection; may overlap adjacent regions and national borders"
+      "boundary_source": "Example rectangular selection; may overlap adjacent regions and national borders",
+      "map_latitude": 46.39,
+      "map_longitude": 8.72
     },
     {
       "id": "tessiner_alpen_3000",
       "kind": "region_altitude",
-      "label": "Tessiner Alpen",
+      "label": "Ticino Alps",
       "altitude_m": 3000,
       "bbox": [
         8.4,
@@ -394,7 +424,9 @@
         9.1,
         46.7
       ],
-      "boundary_source": "Example rectangular selection; may overlap adjacent regions and national borders"
+      "boundary_source": "Example rectangular selection; may overlap adjacent regions and national borders",
+      "map_latitude": 46.39,
+      "map_longitude": 8.72
     }
   ]
 }

@@ -98,7 +98,8 @@ to use twelve solar samples per hour when computing the input grid.
 
 The [MeteoSwiss map example](docs/meteoswiss-map.md) provides the 20 town locations
 and six mountain regions, including the Jura elevation exception, with a script
-that exports JSON and prints the values for both days.
+that exports every available forecast day and builds a self-contained English
+HTML map with offline zoom, pan and day selection.
 
 ## Calculate a point forecast
 

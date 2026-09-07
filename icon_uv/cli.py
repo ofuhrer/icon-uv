@@ -37,9 +37,10 @@ def main():
     poi.add_argument("--locations", type=Path, required=True)
     poi.add_argument("--table", type=Path, default=DEFAULT_TABLE)
     poi.add_argument("--output", type=Path, required=True)
-    daily = commands.add_parser("daily", help="Export explicit today/tomorrow map data from a saved UV grid")
+    daily = commands.add_parser("daily", help="Export daily map data from a saved UV grid")
     daily.add_argument("--grid", type=Path, required=True)
     daily.add_argument("--catalog", type=Path, required=True)
+    daily.add_argument("--days", choices=("2", "all"), default="2", help="Two days (default), or every supplied forecast day")
     daily.add_argument("--issued-at", required=True, help="Timezone-aware issuance timestamp; also fixes replay dates")
     daily.add_argument("--table", type=Path, default=DEFAULT_TABLE)
     daily.add_argument("--output", type=Path, required=True)
@@ -71,6 +72,7 @@ def main():
         from .daily import export_daily, write_json_atomic
         with xr.open_dataset(args.grid) as ds:
             payload = export_daily(ds.load(), json.loads(args.catalog.read_text()), args.issued_at,
+                                   days='all' if args.days == 'all' else 2,
                                    table=RadiationTable(args.table),
                                    input_sha256=hashlib.sha256(args.grid.read_bytes()).hexdigest())
         write_json_atomic(payload, args.output)

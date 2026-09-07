@@ -3,6 +3,8 @@
 `icon-uv daily` turns a saved UV grid and a location catalog into JSON for today
 and tomorrow in Europe/Zurich. The output contains raw UVI, rounded display
 values, categories and the source/support information needed by a renderer.
+Add `--days all` to export every local date containing supplied forecast daylight.
+This uses the v2 schema; the default two-day output keeps the v1 schema.
 
 ## Prepare the grid
 
@@ -87,6 +89,12 @@ with the same inputs and catalog produces the same payload. ICON may be at most
 24 hours old and CAMS at most 48 hours old at issuance. Future cycles raise an
 error; stale cycles yield unavailable entries.
 
+With `--days all`, dates begin on the issuance date and end on the last supplied
+daylight date. A trailing night-only date is omitted. Incomplete daylight on the
+first or last date produces unavailable values, as do gaps on intermediate days.
+The v2 payload adds `valid_dates`, and `day` is the zero-based offset from issuance's
+local date. The Python equivalent is `export_daily(..., days='all')`.
+
 ## Peak, rounding and categories
 
 The daily peak is the maximum reconstructed 30-minute mean, evaluated at
@@ -148,3 +156,5 @@ jsonschema.validate(payload, schema)
 Schema validation checks structure. Calendar pairing, freshness at consumption,
 rounding consistency and support-count relationships also have semantic rules
 implemented by the exporter and covered by the test suite.
+
+Use [the v2 schema](../icon_uv/data/daily-uv-v2.schema.json) for `--days all` output.

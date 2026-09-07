@@ -23,11 +23,11 @@ def main():
         input_sha256 = hashlib.file_digest(stream, "sha256").hexdigest()
     with xr.open_dataset(args.grid) as grid:
         payload = export_daily(
-            grid.load(), catalog, args.issued_at, input_sha256=input_sha256,
+            grid.load(), catalog, args.issued_at, input_sha256=input_sha256, days='all',
         )
     write_json_atomic(payload, args.output)
 
-    for day in (0, 1):
+    for day in range(len(payload['valid_dates'])):
         rows = [row for row in payload["entries"] if row["day"] == day]
         print(f"\n{rows[0]['valid_date']} (Europe/Zurich)")
         print(f"{'Location':<29} {'UVI':>4}  {'Category':<10}  Status")

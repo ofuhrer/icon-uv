@@ -13,6 +13,10 @@ from .radiation import RadiationTable, solar_geometry
 
 CONTRACT_VERSION = 'daily-uv-v1'
 CONTRACT_SHA256 = 'aabfc3713c5664d365b5336cebfaa65d119a834a227b0f0542b4b94fc0e9bd36'
+FORECAST_CONTRACT_VERSION = 'daily-uv-v2'
+FORECAST_CONTRACT_SHA256 = hashlib.sha256(
+    b'daily-uv-v2: v1 support and peaks; all forecast daylight dates; explicit valid_dates'
+).hexdigest()
 CATEGORIES = ('low', 'moderate', 'high', 'very_high', 'extreme')
 PEAK_DEFINITION = 'maximum_30min_mean_on_5min_grid_hourly_cloud_reconstruction'
 
@@ -158,8 +162,33 @@ def select_support(grid, entry):
     raise ValueError('Unsupported location kind')
 
 
-def export_daily(grid, catalog, issued_at, *, input_sha256, table=None):
-    """Return a versioned two-day JSON-compatible payload with no implicit clock."""
+def forecast_dates(grid, first):
+    """Dates from issuance through the last supplied daylight interval.
+
+    A trailing night-only local date is excluded. Gaps and partial daylight days
+    remain visible and are assessed by daily_cells, never scored as full peaks.
+    """
+    bounds = grid.time_bounds.values.astype('datetime64[ns]')
+    if not len(bounds) or not grid.sizes['cell']:
+        raise ValueError('Forecast dates require nonempty time and cell dimensions')
+    last = utc_instant(str(bounds[-1, 1] - np.timedelta64(1, 's')) + 'Z')
+    last = last.astimezone(ZoneInfo('Europe/Zurich')).date()
+    # Corners bound the geographic domain without allocating a full-grid solar array.
+    lat = grid.latitude.values; lon = grid.longitude.values
+    latitudes = [lat.min(), lat.min(), lat.max(), lat.max()]
+    longitudes = [lon.min(), lon.max(), lon.min(), lon.max()]
+    while last >= first:
+        hours, required = daylight_hours(str(last), latitudes, longitudes)
+        if np.any(required & np.isin(hours, bounds[:, 0])[:, None]):
+            return [str(first + timedelta(days=d)) for d in range((last-first).days+1)]
+        last -= timedelta(days=1)
+    raise ValueError('No forecast daylight at or after issuance date')
+
+
+def export_daily(grid, catalog, issued_at, *, input_sha256, table=None, days=2):
+    """Export two days (v1), or all supplied forecast daylight dates (v2)."""
+    if days != 2 and days != 'all':
+        raise ValueError("days must be 2 or 'all'")
     issue = utc_instant(issued_at)
     if not isinstance(input_sha256, str) or len(input_sha256) != 64 or any(c not in '0123456789abcdef' for c in input_sha256):
         raise ValueError('Source file SHA-256 is required')
@@ -185,9 +214,10 @@ def export_daily(grid, catalog, issued_at, *, input_sha256, table=None):
     selected = grid.isel(cell=union)
     by_index = {int(cell): i for i, cell in enumerate(union)}
     first = issue.astimezone(ZoneInfo('Europe/Zurich')).date()
+    dates = (forecast_dates(grid, first) if days == 'all' else
+             [str(first + timedelta(days=d)) for d in (0, 1)])
     rows = []
-    for day in (0, 1):
-        valid = str(first+timedelta(days=day))
+    for day, valid in enumerate(dates):
         daily = daily_cells(selected, valid, table) if len(union) and not source_reasons else None
         for entry, indices in zip(entries, support):
             local = np.array([by_index[int(i)] for i in indices], dtype=int)
@@ -221,7 +251,7 @@ def export_daily(grid, catalog, issued_at, *, input_sha256, table=None):
                     row['source_point']['altitude_difference_m'] = row['source_point']['altitude_m']-float(entry['altitude_m'])
                     row['peak_window_start_utc'] = str(daily['peak_start'][i])+'Z'
             rows.append(row)
-    return dict(schema_version=CONTRACT_VERSION, contract_sha256=CONTRACT_SHA256,
+    payload = dict(schema_version=CONTRACT_VERSION, contract_sha256=CONTRACT_SHA256,
                 issued_at=issue.isoformat(), timezone='Europe/Zurich',
                 peak_definition=PEAK_DEFINITION, category_basis='rounded_integer_half_up',
                 catalog_sha256=hashlib.sha256(json.dumps(catalog, sort_keys=True, allow_nan=False).encode()).hexdigest(),
@@ -230,6 +260,10 @@ def export_daily(grid, catalog, issued_at, *, input_sha256, table=None):
                 assumptions=grid.attrs.get('assumptions', 'source assumptions not supplied'),
                 temporal_limitation='hourly cloud state; solar evolution reconstructed at five-minute midpoints',
                 entries=rows)
+    if days == 'all':
+        payload.update(schema_version=FORECAST_CONTRACT_VERSION,
+                       contract_sha256=FORECAST_CONTRACT_SHA256, valid_dates=dates)
+    return payload
 
 
 def write_json_atomic(payload, path):
