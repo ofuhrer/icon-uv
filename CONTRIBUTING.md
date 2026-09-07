@@ -25,18 +25,17 @@ dependencies, including the development tools used for these checks.
 | `icon_uv/build_table.py`, `icon_uv/validate.py` | Table generation and numerical reference checks |
 | `icon_uv/data/` | Bundled lookup table and daily JSON Schema |
 | `docs/` | Usage, field reference and method documentation |
-| `examples/` | Point geometry and daily-product location catalogs |
+| `examples/` | Point geometry, daily-product catalog and UV map example |
 | `tests/` | Input, numerical, calendar, output and regression checks |
 
 ## Data and generated files
 
 Keep source, tests, examples, schemas, user documentation and the bundled
 radiation table in Git. Research tools, campaign definitions, downloaded data,
-notebooks and generated results stay local. The curated map snapshot
-(`examples/meteoswiss_map.locations.json`, `examples/meteoswiss_map.fields.json`,
-`examples/meteoswiss_map.basemap.json` and `examples/meteoswiss_map.html`) is an
-exception: keep it checked in so the example works immediately. Edit the HTML
-template and regenerate the page when changing its presentation. Use `work/<study>/` for new study
+notebooks and generated results stay local. The curated map snapshot in
+`examples/map/index*.json` and `examples/map/index.html` is an exception: keep it
+checked in so the example works immediately. Edit `examples/map/template.html`
+and regenerate `index.html` when changing its presentation. Use `work/<study>/` for new study
 inputs and outputs; it is ignored by Git and excluded from distributions.
 
 Preserve local inputs, environment locks and source hashes when retaining a

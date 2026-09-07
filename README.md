@@ -96,10 +96,11 @@ The [daily-products guide](docs/daily-products.md) explains custom catalogs,
 regional aggregation, freshness and missing-data handling. It also shows how
 to use twelve solar samples per hour when computing the input grid.
 
+The [examples overview](examples/README.md) covers the included inputs and scripts.
 The [MeteoSwiss map example](docs/meteoswiss-map.md) provides 30 town locations
 and six mountain regions, including the Jura elevation exception, with a script
 that exports four days and builds an English HTML map with
-zoom, pan, day selection and forecast/clear-sky shading. The [example page](examples/meteoswiss_map.html)
+zoom, pan, day selection and forecast/clear-sky shading. The [example page](examples/map/index.html)
 and its separate JSON data files are included; serve them with a local HTTP server
 as described in the guide. It uses the ICON control member; ensemble
 spread and probabilities are not calculated.

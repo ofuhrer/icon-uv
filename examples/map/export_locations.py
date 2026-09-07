@@ -14,10 +14,10 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--grid", type=Path, required=True, help="Saved hourly UV NetCDF")
     parser.add_argument("--issued-at", required=True, help="Timezone-aware issuance, e.g. YYYY-MM-DDT06:00:00Z")
-    parser.add_argument("--output", type=Path, default=Path("work/meteoswiss-map.json"))
+    parser.add_argument("--output", type=Path, default=Path("work/meteoswiss-map.locations.json"))
     args = parser.parse_args()
 
-    catalog_path = Path(__file__).with_name("meteoswiss_map_locations.json")
+    catalog_path = Path(__file__).with_name("locations.json")
     catalog = json.loads(catalog_path.read_text(encoding="utf-8"))
     with args.grid.open("rb") as stream:
         input_sha256 = hashlib.file_digest(stream, "sha256").hexdigest()

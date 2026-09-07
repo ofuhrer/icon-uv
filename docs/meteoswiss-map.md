@@ -14,13 +14,13 @@ From the repository root, start a local server:
 python -m http.server 8769 --bind 127.0.0.1
 ```
 
-Open [the example map](http://127.0.0.1:8769/examples/meteoswiss_map.html).
+Open [the example map](http://127.0.0.1:8769/examples/map/index.html).
 Keep the server running while viewing the page. Opening the HTML directly with
 `file://` does not allow the browser to load the separate JSON files.
 
 The included data contains a dated forecast snapshot for **7–10 September 2026**, with 184 location entries
 from ICON 7 September 00 UTC and CAMS 6 September 12 UTC. The corresponding
-[location JSON](../examples/meteoswiss_map.locations.json) retains source times, hashes
+[location JSON](../examples/map/index.locations.json) retains source times, hashes
 and availability details; the field JSON contains all four pairs of gridded layers.
 This is a fixed example, not an automatically refreshed page.
 
@@ -69,15 +69,15 @@ Set issuance to the intended morning time on the ICON initialization date.
 Replays use their original issuance, which controls local dates and source-age checks.
 
 ```sh
-uv run --no-sync python examples/meteoswiss_map.py \
+uv run --no-sync python examples/map/export_locations.py \
   --grid work/uv.nc --issued-at "YYYY-MM-DDT06:00:00Z" \
   --output work/meteoswiss-map.locations.json
 
-uv run --no-sync python examples/meteoswiss_fields.py \
+uv run --no-sync python examples/map/export_fields.py \
   --grid work/uv.nc --issued-at "YYYY-MM-DDT06:00:00Z" \
   --output work/meteoswiss-map.fields.json
 
-uv run --no-sync python examples/render_meteoswiss_map.py \
+uv run --no-sync python examples/map/render.py \
   --input work/meteoswiss-map.locations.json --fields work/meteoswiss-map.fields.json \
   --output work/meteoswiss-map.html
 ```
@@ -93,7 +93,7 @@ Forecasts can be refreshed by replacing the location and field JSON files at
 the same paths; the HTML stays unchanged. The page loads them afresh on reload.
 Both the renderer and browser check that the products share the same grid hash,
 issuance, radiation table, dates and peak definition. Publish matching location
-and field files together. Edit `examples/meteoswiss_map.template.html` and rerun
+and field files together. Edit `examples/map/template.html` and rerun
 the renderer when changing the page itself.
 
 The exporter produces four local dates (`daily-uv-v2`), with 46 entries per day:
@@ -106,7 +106,7 @@ defines rounding, categories, coverage rules and schema. The CLI equivalent is:
 
 ```sh
 uv run --no-sync icon-uv daily --days 4 \
-  --grid work/uv.nc --catalog examples/meteoswiss_map_locations.json \
+  --grid work/uv.nc --catalog examples/map/locations.json \
   --issued-at "YYYY-MM-DDT06:00:00Z" --output work/meteoswiss-map.locations.json
 ```
 
@@ -142,7 +142,7 @@ pixel takes the geographically nearest native cell within 3 km; gaps remain
 transparent. Town markers additionally match terrain height, so they can use a
 different cell. The map clips the overlay to the swisstopo relief footprint.
 
-The [field JSON](../examples/meteoswiss_map.fields.json) embeds numerical PNG
+The [field JSON](../examples/map/index.fields.json) embeds numerical PNG
 rasters on a Web Mercator display grid, 360 pixels wide by default. Their red
 and green bytes encode UV Index truncated to 0.01; alpha distinguishes missing
 values from zero. This preserves the rounded category boundaries. Display
@@ -160,7 +160,7 @@ forming a median, spread and probabilities of exceeding UV protection thresholds
 
 ## Locations and regions
 
-The [catalog](../examples/meteoswiss_map_locations.json) contains Geneva,
+The [catalog](../examples/map/locations.json) contains Geneva,
 Neuchâtel, Lausanne, Sion, Bern, Fribourg, Delémont, Basel, Aarau, Lucerne,
 Zurich, Schaffhausen, St. Gallen, Vaduz, Glarus, Chur, Davos, St. Moritz,
 Scuol, Locarno, Interlaken, Grindelwald, Zermatt, Brig, Andermatt, Engelberg,
@@ -202,5 +202,5 @@ cells used in the calculation.
 The grey relief uses swisstopo's
 [Light Base Map terrain layer](https://api3.geo.admin.ch/rest/services/api/MapServer/ch.swisstopo.leichte-basiskarte_reliefschattierung/legend)
 through its [WMTS service](https://docs.geo.admin.ch/visualize-data/wmts.html).
-Leaflet 1.9.4 is vendored with its [BSD 2-Clause license](../examples/vendor/leaflet-LICENSE)
+Leaflet 1.9.4 is vendored with its [BSD 2-Clause license](../examples/map/vendor/leaflet-LICENSE)
 and embedded in the generated page. Basemap attribution is displayed on the map.

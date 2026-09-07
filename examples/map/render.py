@@ -70,7 +70,7 @@ def validate_products(payload, fields=None):
 def render(data_urls):
     """Return static HTML containing data URLs, never forecast values."""
     here = Path(__file__).parent
-    template = (here / 'meteoswiss_map.template.html').read_text(encoding='utf-8')
+    template = (here / 'template.html').read_text(encoding='utf-8')
     replacements = {
         '__LEAFLET_CSS__': (here / 'vendor/leaflet-1.9.4.css').read_text(),
         '__LEAFLET_JS__': (here / 'vendor/leaflet-1.9.4.js').read_text().split('//# sourceMappingURL=')[0],
@@ -111,15 +111,15 @@ def write_bundle(input_path, fields_path, output, cache):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--input', type=Path, default=Path(__file__).with_name('meteoswiss_map.locations.json'),
+    parser.add_argument('--input', type=Path, default=Path(__file__).with_name('index.locations.json'),
                         help='Daily UV JSON (default: bundled example snapshot)')
     parser.add_argument('--output', type=Path, default=Path('work/meteoswiss-map.html'))
-    parser.add_argument('--fields', type=Path, help='Daily field JSON from meteoswiss_fields.py')
+    parser.add_argument('--fields', type=Path, help='Daily field JSON from export_fields.py')
     parser.add_argument('--cache', type=Path, default=Path('work/swisstopo-relief-tiles'))
     args = parser.parse_args()
     field_path = args.fields
-    if field_path is None and args.input.resolve() == Path(__file__).with_name('meteoswiss_map.locations.json').resolve():
-        field_path = Path(__file__).with_name('meteoswiss_map.fields.json')
+    if field_path is None and args.input.resolve() == Path(__file__).with_name('index.locations.json').resolve():
+        field_path = Path(__file__).with_name('index.fields.json')
     urls = write_bundle(args.input, field_path, args.output, args.cache)
     print(f'{args.output} ({args.output.stat().st_size / 1024:.0f} KiB HTML)')
     print('Data: '+', '.join(url for url in urls.values() if url))

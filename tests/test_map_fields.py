@@ -10,7 +10,7 @@ import pytest
 
 from test_daily import grid
 
-spec = importlib.util.spec_from_file_location('map_fields', Path(__file__).resolve().parents[1]/'examples/meteoswiss_fields.py')
+spec = importlib.util.spec_from_file_location('map_fields', Path(__file__).resolve().parents[1]/'examples/map/export_fields.py')
 fields = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(fields)
 

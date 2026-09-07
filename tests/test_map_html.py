@@ -9,7 +9,7 @@ import pytest
 
 
 spec = importlib.util.spec_from_file_location(
-    'map_renderer', Path(__file__).resolve().parents[1] / 'examples/render_meteoswiss_map.py')
+    'map_renderer', Path(__file__).resolve().parents[1] / 'examples/map/render.py')
 renderer = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(renderer)
 
@@ -29,12 +29,12 @@ def test_catalog_text_cannot_escape_data_script_or_expand_template_tokens():
 
 def test_bundled_snapshot_is_complete_and_page_matches_template_and_json():
     root = Path(__file__).resolve().parents[1]
-    payload = json.loads((root / 'examples/meteoswiss_map.locations.json').read_text())
+    payload = json.loads((root / 'examples/map/index.locations.json').read_text())
     schema = json.loads((root / 'icon_uv/data/daily-uv-v2.schema.json').read_text())
     Draft202012Validator(schema, format_checker=FormatChecker()).validate(payload)
     assert payload['example_snapshot'] is True
     assert len(payload['valid_dates']) == 4
-    catalog = json.loads((root / 'examples/meteoswiss_map_locations.json').read_text())
+    catalog = json.loads((root / 'examples/map/locations.json').read_text())
     ids = {e['id'] for e in catalog['entries']}
     assert len(payload['entries']) == 4*len(ids)
     for day, date in enumerate(payload['valid_dates']):
@@ -45,12 +45,12 @@ def test_bundled_snapshot_is_complete_and_page_matches_template_and_json():
         unavailable = [r for r in rows if r['location']['id'] == 'zermatt']
         assert len(unavailable) == 1 and unavailable[0]['display_uvi'] is None
         assert 'insufficient_native_support' in unavailable[0]['reasons']
-    html = (root / 'examples/meteoswiss_map.html').read_text()
+    html = (root / 'examples/map/index.html').read_text()
     urls = json.loads(re.search(r'id="data-urls">(.*?)</script>', html, re.S).group(1))
-    assert urls == {kind: f'meteoswiss_map.{kind}.json' for kind in ('locations', 'fields', 'basemap')}
-    tiles = json.loads((root / 'examples' / urls['basemap']).read_text())
+    assert urls == {kind: f'index.{kind}.json' for kind in ('locations', 'fields', 'basemap')}
+    tiles = json.loads((root / 'examples/map' / urls['basemap']).read_text())
     assert tiles['images'] and all(s.startswith('data:image/png;base64,') for s in tiles['images'].values())
-    fields = json.loads((root / 'examples' / urls['fields']).read_text())
+    fields = json.loads((root / 'examples/map' / urls['fields']).read_text())
     assert len(fields['days']) == 4
     assert all(d[mode].startswith('data:image/png;base64,') for d in fields['days'] for mode in ('forecast', 'clear_sky'))
     renderer.validate_products(payload, fields)
@@ -62,8 +62,8 @@ def test_bundled_snapshot_is_complete_and_page_matches_template_and_json():
 @pytest.mark.parametrize('key', ['input_sha256', 'radiation_table_sha256', 'peak_definition', 'issued_at'])
 def test_renderer_rejects_mixed_field_and_location_sources(key):
     root = Path(__file__).resolve().parents[1]
-    payload = json.loads((root / 'examples/meteoswiss_map.locations.json').read_text())
-    fields = json.loads((root / 'examples/meteoswiss_map.fields.json').read_text())
+    payload = json.loads((root / 'examples/map/index.locations.json').read_text())
+    fields = json.loads((root / 'examples/map/index.fields.json').read_text())
     fields[key] = '2026-09-08T06:00:00Z' if key == 'issued_at' else 'different'
     with pytest.raises(ValueError, match='mismatch'):
         renderer.validate_products(payload, fields)
@@ -72,9 +72,9 @@ def test_renderer_rejects_mixed_field_and_location_sources(key):
 def test_forecasts_can_refresh_without_rebuilding_html(tmp_path, monkeypatch):
     root = Path(__file__).resolve().parents[1]
     source = tmp_path / 'source.json'
-    payload = json.loads((root / 'examples/meteoswiss_map.locations.json').read_text())
+    payload = json.loads((root / 'examples/map/index.locations.json').read_text())
     source.write_text(json.dumps(payload))
-    field_path = root / 'examples/meteoswiss_map.fields.json'
+    field_path = root / 'examples/map/index.fields.json'
     tiles = {'images': {}, 'zoom': 9, 'bounds': [[45, 5], [48, 11]]}
     monkeypatch.setattr(renderer, 'basemap', lambda _: tiles)
     output = tmp_path / 'out' / 'uv map.html'
@@ -96,7 +96,7 @@ def test_forecasts_can_refresh_without_rebuilding_html(tmp_path, monkeypatch):
 
 def test_invalid_pair_is_rejected_before_writing_bundle(tmp_path, monkeypatch):
     root = Path(__file__).resolve().parents[1]
-    payload = json.loads((root / 'examples/meteoswiss_map.locations.json').read_text())
+    payload = json.loads((root / 'examples/map/index.locations.json').read_text())
     payload['input_sha256'] = 'wrong'
     source = tmp_path / 'source.json'
     source.write_text(json.dumps(payload))
@@ -105,5 +105,5 @@ def test_invalid_pair_is_rejected_before_writing_bundle(tmp_path, monkeypatch):
     monkeypatch.setattr(renderer, 'basemap', unexpected_download)
     output = tmp_path / 'out' / 'map.html'
     with pytest.raises(ValueError, match='mismatch'):
-        renderer.write_bundle(source, root / 'examples/meteoswiss_map.fields.json', output, tmp_path / 'cache')
+        renderer.write_bundle(source, root / 'examples/map/index.fields.json', output, tmp_path / 'cache')
     assert not output.parent.exists()
