@@ -1,0 +1,51 @@
+name: Publish to PyPI
+
+# Dispatch against an existing release tag after configuring the Trusted Publisher.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pypi-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    name: Require a published GitHub release
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Validate the selected ref
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          if [ "$GITHUB_REF_TYPE" != tag ]; then
+            echo 'Select a version tag, e.g. gh workflow run publish.yml --ref v0.1.0'
+            exit 1
+          fi
+          test "$(gh release view "$GITHUB_REF_NAME" --json isDraft --jq .isDraft)" = false
+
+  checks:
+    needs: release
+    uses: ./.github/workflows/tests.yml
+
+  publish:
+    needs: checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment:
+      name: pypi
+      url: https://pypi.org/p/icon-uv
+    permissions:
+      id-token: write
+    steps:
+      - name: Download tested distributions
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: distributions
+          path: dist/
+      - name: Publish with PyPI Trusted Publishing
+        uses: pypa/gh-action-pypi-publish@dc37677b2e1c63e2034f94d8a5b11f265b73ba33 # v1.14.2

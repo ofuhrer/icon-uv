@@ -9,6 +9,7 @@ uv run --no-sync icon-uv --help
 uv run --no-sync python tools/generate_schemas.py --check
 uv build --out-dir work/dist
 uv run --no-sync python tools/check_distribution.py work/dist
+uv run --no-sync twine check --strict work/dist/*
 ```
 
 The normal tests use synthetic fixtures and temporary files; they require no
@@ -18,6 +19,9 @@ GitHub Actions runs these checks on Python 3.11 and 3.13. The suite includes a
 credential-free saved-input example using the real bundled radiation table.
 The distribution check installs the wheel in an isolated environment outside
 the source tree and loads every packaged schema and the table.
+CI also checks PyPI metadata and saves the tested wheel and source archive.
+See the [release guide](docs/releasing.md) for version tags, GitHub releases
+and the one-time PyPI Trusted Publisher setup.
 
 ## Project layout
 
