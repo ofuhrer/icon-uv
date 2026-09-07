@@ -12,6 +12,8 @@ and the surrounding area, producing:
 Calculations run locally using a bundled radiation lookup table. An external
 radiative-transfer solver is only needed when rebuilding that table.
 
+[![Swiss UV forecast map with town values, Alpine elevation bands and sun-protection guidance](docs/images/uv-map.png)](docs/meteoswiss-map.md)
+
 ## Installation
 
 Python 3.11 or newer and [uv](https://docs.astral.sh/uv/) are required for the
