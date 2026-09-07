@@ -1,6 +1,7 @@
 # icon-uv
 
 [![CI](https://github.com/ofuhrer/icon-uv/actions/workflows/tests.yml/badge.svg)](https://github.com/ofuhrer/icon-uv/actions/workflows/tests.yml)
+[![PyPI](https://img.shields.io/pypi/v/icon-uv)](https://pypi.org/project/icon-uv/)
 [![GitHub release](https://img.shields.io/github/v/release/ofuhrer/icon-uv)](https://github.com/ofuhrer/icon-uv/releases/latest)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue)](https://github.com/ofuhrer/icon-uv/blob/main/pyproject.toml)
 [![License: BSD-3-Clause](https://img.shields.io/badge/license-BSD--3--Clause-blue)](https://github.com/ofuhrer/icon-uv/blob/main/LICENSE)
@@ -24,13 +25,13 @@ radiative-transfer solver is only needed when rebuilding that table.
 Install the **0.1.0 release** into a Python 3.11+ environment:
 
 ```sh
-pip install 'icon-uv[cams] @ https://github.com/ofuhrer/icon-uv/releases/download/v0.1.0/icon_uv-0.1.0-py3-none-any.whl'
+pip install 'icon-uv[cams]==0.1.0'
 icon-uv --help
 ```
 
 The wheel includes the radiation table and JSON schemas. To get the example
-scripts and develop from source, use the repository setup below. PyPI publishing
-is prepared separately; see the [release guide](https://github.com/ofuhrer/icon-uv/blob/main/docs/releasing.md).
+scripts and develop from source, use the repository setup below. For release and
+publishing steps, see the [release guide](https://github.com/ofuhrer/icon-uv/blob/main/docs/releasing.md).
 
 Python 3.11 or newer and [uv](https://docs.astral.sh/uv/) are required for the
 following setup:
